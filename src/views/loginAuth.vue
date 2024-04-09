@@ -50,8 +50,8 @@ const handleSubmit = async ({ values, errors }) => {
 	loading.value = false
 }
 
-const toLoginAuth = (e) => {
-	router.push('loginAuth')
+const toLogin = (e) => {
+	router.push('login')
 }
 
 </script>
@@ -72,37 +72,36 @@ const toLoginAuth = (e) => {
 			<div class="w-11/12 pb-10 pl-5 pr-5 mx-auto md:w-6/12 md:rounded-r">
 				<h2 class="pb-0 mt-10 mb-10 text-3xl">{{ $t('sys.login.title') }}</h2>
 				<a-form :model="form" @submit="handleSubmit">
-					<a-form-item field="username" :hide-label="true"
-						:rules="[{ required: true, message: $t('sys.login.usernameNotice') }]">
-						<a-input v-model="form.username" class="w-full" size="large"
-							:placeholder="$t('sys.login.username')" allow-clear>
+					<!-- <a-form-item field="username" :hide-label="true" :rules="[{ required: true, message: $t('sys.login.usernameNotice') }]">
+						<a-input v-model="form.username" class="w-full" size="large" :placeholder="$t('sys.login.username')" allow-clear>
 							<template #prefix><icon-user /></template>
 						</a-input>
-					</a-form-item>
+					</a-form-item> -->
 
-					<a-form-item field="password" :hide-label="true"
-						:rules="[{ required: true, message: $t('sys.login.passwordNotice') }]">
-						<a-input-password v-model="form.password" :placeholder="$t('sys.login.password')" size="large"
-							allow-clear>
+					<a-form-item field="password" :hide-label="true" :rules="[{ required: true, message: $t('sys.login.passwordNotice') }]">
+						<a-input-password v-model="form.password" :placeholder="$t('sys.login.password')" size="large" allow-clear>
 							<template #prefix><icon-lock /></template>
 						</a-input-password>
 					</a-form-item>
 
-					<a-form-item field="code" :hide-label="true" :rules="[
-						{
-							required: true,
-							match: /^[a-zA-Z0-9]{4}$/,
-							message: $t('sys.login.verifyCodeNotice'),
-						},
-					]">
+					<!-- <a-form-item
+						field="code"
+						:hide-label="true"
+						:rules="[
+							{
+								required: true,
+								match: /^[a-zA-Z0-9]{4}$/,
+								message: $t('sys.login.verifyCodeNotice'),
+							},
+						]"
+					>
 						<a-input v-model="form.code" :placeholder="$t('sys.login.verifyCode')" size="large" allow-clear>
 							<template #prefix><icon-safe /></template>
 							<template #append>
-								<img :src="captcha" style="height: 120px; height: 36px; cursor: pointer"
-									@click="refreshCaptcha" />
+								<img :src="captcha" style="height: 120px; height: 36px; cursor: pointer" @click="refreshCaptcha" />
 							</template>
 						</a-input>
-					</a-form-item>
+					</a-form-item> -->
 
 					<a-form-item :hide-label="true" class="mt-5">
 						<a-button html-type="submit" type="primary" long size="large" :loading="loading">
@@ -112,7 +111,7 @@ const toLoginAuth = (e) => {
 
 					<a-divider orientation="center">{{ $t('sys.login.otherLoginType') }}</a-divider>
 					<div class="flex items-stretch justify-around w-1/4 pt-2 mx-auto">
-						<a-button @click="toLoginAuth" type="outline" long size="medium" :loading="loading">授权码登录</a-button>
+						<a-button @click="toLogin" type="outline" long size="medium" :loading="loading">密码登录</a-button>
 					</div>
 					<!-- <div class="flex items-stretch justify-around w-3/4 pt-2 mx-auto">
 						<a-avatar class="other-login wechat"><icon-wechat /></a-avatar>
@@ -135,7 +134,6 @@ const toLoginAuth = (e) => {
 	width: 100%;
 	height: 100%;
 }
-
 .bg-backdrop-layout {
 	top: 0;
 	left: 0;
@@ -145,14 +143,12 @@ const toLoginAuth = (e) => {
 	z-index: 2;
 	backdrop-filter: blur(25px);
 }
-
 .login-container {
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	background-size: cover;
 	z-index: 3;
-
 	.login-width {
 		max-width: 950px;
 		background: #fff;
@@ -176,14 +172,12 @@ const toLoginAuth = (e) => {
 		display: flex;
 		margin-top: 20px;
 		color: #333;
-
 		span {
 			font-size: 28px;
 			margin-left: 15px;
 			color: rgb(var(--primary-6));
 		}
 	}
-
 	.slogan {
 		font-size: 16px;
 		line-height: 50px;
@@ -201,7 +195,6 @@ const toLoginAuth = (e) => {
 	.alipay:hover {
 		background: #165dff;
 	}
-
 	.wechat:hover {
 		background: #0f9c02;
 	}

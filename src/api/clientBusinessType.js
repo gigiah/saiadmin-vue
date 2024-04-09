@@ -1,7 +1,7 @@
 import { request } from '@/utils/request.js'
 
 /**
- * 文章管理 API接口
+ * 客户经营类型 API接口
  */
 export default {
 
@@ -11,7 +11,7 @@ export default {
    */
   getPageList (params = {}) {
     return request({
-      url: '/news/article/index',
+      url: '/clientBusinessType/index',
       method: 'get',
       params
     })
@@ -23,7 +23,7 @@ export default {
    */
   getRecyclePageList (params = {}) {
     return request({
-      url: '/news/article/recycle',
+      url: '/clientBusinessType/recycle',
       method: 'get',
       params
     })
@@ -35,7 +35,7 @@ export default {
    */
   save (params = {}) {
     return request({
-      url: '/news/article/save',
+      url: '/clientBusinessType/save',
       method: 'post',
       data: params
     })
@@ -47,7 +47,7 @@ export default {
    */
   read (id) {
     return request({
-      url: '/news/article/read/' + id,
+      url: '/clientBusinessType/read/' + id,
       method: 'get'
     })
   },
@@ -58,7 +58,7 @@ export default {
    */
   delete (data) {
     return request({
-      url: '/news/article/destroy',
+      url: '/clientBusinessType/destroy',
       method: 'delete',
       data
     })
@@ -70,7 +70,7 @@ export default {
    */
   recovery (data) {
     return request({
-      url: '/news/article/recovery',
+      url: '/clientBusinessType/recovery',
       method: 'post',
       data
     })
@@ -82,7 +82,7 @@ export default {
    */
   update (id, data = {}) {
     return request({
-      url: '/news/article/update/' + id,
+      url: '/clientBusinessType/update/' + id,
       method: 'put',
       data
     })
@@ -94,7 +94,7 @@ export default {
    */
   changeStatus(data = {}) {
     return request({
-      url: '/news/article/changeStatus',
+      url: '/clientBusinessType/changeStatus',
       method: 'post',
       data
     })

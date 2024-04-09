@@ -1,7 +1,7 @@
 import { request } from '@/utils/request.js'
 
 /**
- * 文章分类 API接口
+ * 客户信用级别 API接口
  */
 export default {
 
@@ -11,7 +11,7 @@ export default {
    */
   getPageList (params = {}) {
     return request({
-      url: '/news/category/index',
+      url: '/clientCreditType/index',
       method: 'get',
       params
     })
@@ -23,7 +23,7 @@ export default {
    */
   getRecyclePageList (params = {}) {
     return request({
-      url: '/news/category/recycle',
+      url: '/clientCreditType/recycle',
       method: 'get',
       params
     })
@@ -35,7 +35,7 @@ export default {
    */
   save (params = {}) {
     return request({
-      url: '/news/category/save',
+      url: '/clientCreditType/save',
       method: 'post',
       data: params
     })
@@ -47,7 +47,7 @@ export default {
    */
   read (id) {
     return request({
-      url: '/news/category/read/' + id,
+      url: '/clientCreditType/read/' + id,
       method: 'get'
     })
   },
@@ -58,7 +58,7 @@ export default {
    */
   delete (data) {
     return request({
-      url: '/news/category/destroy',
+      url: '/clientCreditType/destroy',
       method: 'delete',
       data
     })
@@ -70,7 +70,7 @@ export default {
    */
   recovery (data) {
     return request({
-      url: '/news/category/recovery',
+      url: '/clientCreditType/recovery',
       method: 'post',
       data
     })
@@ -82,7 +82,7 @@ export default {
    */
   update (id, data = {}) {
     return request({
-      url: '/news/category/update/' + id,
+      url: '/clientCreditType/update/' + id,
       method: 'put',
       data
     })
@@ -94,7 +94,7 @@ export default {
    */
   changeStatus(data = {}) {
     return request({
-      url: '/news/category/changeStatus',
+      url: '/clientCreditType/changeStatus',
       method: 'post',
       data
     })

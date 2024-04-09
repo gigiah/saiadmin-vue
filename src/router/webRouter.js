@@ -27,6 +27,11 @@ const routes = [
     component: () => import('@/views/login.vue'),
     meta: { title: '登录' }
   }, {
+    name: 'loginAuth',
+    path: '/loginAuth',
+    component: () => import('@/views/loginAuth.vue'),
+    meta: { title: '授权码登录' }
+  }, {
     path: "/:pathMatch(.*)*",
     hidden: true,
     meta: { title: '访问的页面不存在' },
