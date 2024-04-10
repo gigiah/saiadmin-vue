@@ -1,5 +1,5 @@
 <template>
-  <div class="justify-between p-4 ma-content-block lg:flex">
+  <div class="ma-content-block lg:flex justify-between p-4">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -8,7 +8,7 @@
 
 <script setup>
   import { ref, reactive, computed } from 'vue'
-  import api from '@/api/authLogin'
+  import api from '@/api/craftGroup'
   import { Message } from '@arco-design/web-vue'
 
   const crudRef = ref()
@@ -23,10 +23,10 @@
     rowSelection: { showCheckedAll: true },
     operationColumn: true,
     operationColumnWidth: 160,
-    add: { show: true, api: api.save, auth: ['/authLogin/save'] },
-    edit: { show: true, api: api.update, auth: ['/authLogin/update'] },
-    delete: { show: true, api: api.delete, auth: ['/authLogin/destroy'] },
-    recovery: { show: true, api: api.recovery, auth: ['/authLogin/recovery']},
+    add: { show: true, api: api.save, auth: ['/craftGroup/save'] },
+    edit: { show: true, api: api.update, auth: ['/craftGroup/update'] },
+    delete: { show: true, api: api.delete, auth: ['/craftGroup/destroy'] },
+    recovery: { show: true, api: api.recovery, auth: ['/craftGroup/recovery']},
     formOption: { width: 800 },
   })
 
@@ -43,18 +43,18 @@
       commonRules: [{ required: true, message: '主键必填' }],
     },
     {
-      title: '人员ID',
-      dataIndex: 'sys_user_id',
+      title: '编组名称',
+      dataIndex: 'name',
       width: 180,
-      search: false,
-      addDisplay: false, 
-      editDisplay: false,
-      hide: true,
+      search: true,
+      addDisplay: true, 
+      editDisplay: true,
+      hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '人员ID必填' }],
+      commonRules: [{ required: true, message: '编组名称必填' }],
     },
     {
-      title: '授权码',
+      title: '编组编号',
       dataIndex: 'code',
       width: 180,
       search: true,
@@ -62,47 +62,19 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '授权码必填' }],
+      commonRules: [{ required: true, message: '编组编号必填' }],
     },
     {
-      title: '开始时间',
-      dataIndex: 'start_time',
-      width: 180,
-      search: true,
-      addDisplay: true, 
-      addDefaultValue: '0000-00-00 00:00:00',
-      editDisplay: true,
-      hide: false,
-      searchFormType: 'range',
-      showTime: true,
-      formType: 'date',
-      commonRules: [{ required: false, message: '开始时间必填' }],
-    },
-    {
-      title: '结束时间',
-      dataIndex: 'end_time',
-      width: 180,
-      search: true,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      searchFormType: 'range',
-      showTime: true,
-      formType: 'date',
-      commonRules: [{ required: false, message: '结束时间必填' }],
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
+      title: '编组ID集合',
+      dataIndex: 'craft_ids',
       width: 100,
-      search: true,
+      search: false,
       addDisplay: true, 
-      addDefaultValue: 1,
       editDisplay: true,
       hide: false,
-      dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-      formType: 'radio',
-      commonRules: [{ required: false, message: '状态必填' }],
+      dict: { data: [], translation: true },
+      formType: 'select',
+      commonRules: [{ required: false, message: '编组ID集合必填' }],
     },
     {
       title: '创建者',
@@ -130,7 +102,7 @@
       title: '创建时间',
       dataIndex: 'create_time',
       width: 180,
-      search: false,
+      search: true,
       addDisplay: false, 
       editDisplay: false,
       hide: true,
