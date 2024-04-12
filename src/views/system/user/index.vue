@@ -1,10 +1,10 @@
 <template>
-	<div class="ma-content-block lg:flex justify-between p-4">
-		<div class="lg:w-2/12 w-full h-full p-2 shadow">
+	<div class="justify-between p-4 ma-content-block lg:flex">
+		<div class="w-full h-full p-2 shadow lg:w-2/12">
 			<ma-tree-slider v-model="depts" searchPlaceholder="搜索部门" :field-names="{ title: 'label', key: 'value' }" :selectedKeys="defaultKey" @click="switchDept" />
 		</div>
 
-		<div class="lg:w-10/12 w-full lg:ml-4 mt-5 lg:mt-0">
+		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
 			<!-- CRUD 组件 -->
 			<ma-crud :options="crud" :columns="columns" ref="crudRef">
 				<!-- 状态列 -->
@@ -230,7 +230,7 @@ const columns = reactive([
 		treeCheckable: false,
 		treeCheckStrictly: true,
 		dict: { url: '/core/dept/index?tree=true' },
-		commonRules: [{ required: true, message: '所属部门必选' }],
+		// commonRules: [{ required: true, message: '所属部门必选' }],
 		validateTrigger: 'focus',
 		editDefaultValue: (record) => {
 			return record.dept_id == 0 ? undefined : record.dept_id

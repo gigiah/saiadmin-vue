@@ -20,7 +20,7 @@
           </a-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="部门列表" field="dept_ids" v-show="form.data_scope == '2'">
+      <a-form-item label="部门列表" field="dept_id" v-show="form.data_scope == '2'">
         <a-spin :loading="loading" tip="部门加载中..." class="w-full">
           <div class="w-full">
             <a-space class="mt-1.5" size="large">
@@ -28,7 +28,7 @@
               <a-checkbox @change="handlerSelect">全选/全不选</a-checkbox>
               <a-checkbox v-model="cancelLinkage" @change="handlerLinkage">关闭父子级联动</a-checkbox>
             </a-space>
-            <div class="tree-container p-2">
+            <div class="p-2 tree-container">
               <ma-tree-slider
                 ref="tree"
                 v-model="deptList"
@@ -112,7 +112,7 @@
   const submit = async (done) => {
     const nodes = tree.value.maTree.getCheckedNodes()
     const ids = nodes.map( item => item.id )
-    const response = await role.updateDataPermission(form.value.id, { data_scope: form.value.data_scope, dept_ids: ids })
+    const response = await role.updateDataPermission(form.value.id, { data_scope: form.value.data_scope, dept_id: ids })
     response.code === 200 && Message.success(response.message)
     emit('success')
     done(true)

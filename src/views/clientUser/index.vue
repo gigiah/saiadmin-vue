@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -61,7 +61,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientBrandType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '品牌权属必填' }],
     },
@@ -73,7 +73,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientBusinessType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '经营类型必填' }],
     },
@@ -85,7 +85,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientCreditType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '信用级别必填' }],
     },
@@ -97,21 +97,21 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientLevelType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '客户级别必填' }],
     },
     {
-      title: '物流费用方式',
+      title: '物流费方式',
       dataIndex: 'logistics_type_id',
       width: 100,
       search: true,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientLogisticsType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
-      commonRules: [{ required: true, message: '物流费用方式必填' }],
+      commonRules: [{ required: true, message: '物流费方式必填' }],
     },
     {
       title: '行业类别',
@@ -121,7 +121,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientProfessionType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '行业类别必填' }],
     },
@@ -133,7 +133,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientSalesType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '销售类型必填' }],
     },
@@ -145,7 +145,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientTaxpayerType/index?type=all',  props: { label: 'name', value: 'id' } },
       formType: 'select',
       commonRules: [{ required: true, message: '纳税人资格必填' }],
     },
@@ -315,7 +315,7 @@
       commonRules: [{ required: true, message: '客户名称必填' }],
     },
     {
-      title: '微信小程序使用权限',
+      title: '小程序使用权',
       dataIndex: 'miniapp_usage',
       width: 100,
       search: false,

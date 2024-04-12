@@ -61,7 +61,8 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      formType: 'select',
+      dict: { url: '/productType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       commonRules: [{ required: true, message: '产品类别必填' }],
     },
     {
@@ -72,7 +73,8 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      formType: 'select',
+      dict: { url: '/productGrade/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       commonRules: [{ required: true, message: '产品级别必填' }],
     },
     {
@@ -83,7 +85,8 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      formType: 'select',
+      dict: { url: '/productPictureType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       commonRules: [{ required: true, message: '画面类型必填' }],
     },
     {
@@ -94,7 +97,8 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      formType: 'select',
+      dict: { url: '/pricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       commonRules: [{ required: true, message: '计价方式必填' }],
     },
     {
@@ -105,7 +109,8 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      formType: 'select',
+      dict: { url: '/pricingUnit/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       commonRules: [{ required: true, message: '计量单位必填' }],
     },
     {
@@ -160,7 +165,7 @@
       search: false,
       addDisplay: true, 
       editDisplay: true,
-      hide: false,
+      hide: true,
       formType: 'editor',
       commonRules: [{ required: false, message: '详情页必填' }],
     },

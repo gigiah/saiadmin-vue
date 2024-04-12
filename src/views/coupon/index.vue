@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -68,12 +68,13 @@
     {
       title: '减免类型',
       dataIndex: 'discount_type',
-      width: 180,
+      width: 100,
       search: true,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
+      dict: { name: 'bizCouponDiscountType', props: { label: 'label', value: 'value' }, translation: true },
+      formType: 'select',
       commonRules: [{ required: true, message: '减免类型必填' }],
     },
     {
