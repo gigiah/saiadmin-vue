@@ -1,5 +1,5 @@
 <template>
-  <div class="justify-between p-4 ma-content-block lg:flex">
+  <div class="ma-content-block lg:flex justify-between p-4">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -47,9 +47,9 @@
       dataIndex: 'sys_user_id',
       width: 180,
       search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
+      addDisplay: false, 
+      editDisplay: false,
+      hide: true,
       formType: 'input',
       commonRules: [{ required: false, message: '人员ID必填' }],
     },
@@ -61,7 +61,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientBrandType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '品牌权属必填' }],
     },
@@ -73,7 +73,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientBusinessType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '经营类型必填' }],
     },
@@ -85,7 +85,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientCreditType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '信用级别必填' }],
     },
@@ -97,21 +97,21 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientLevelType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '客户级别必填' }],
     },
     {
-      title: '物流费方式',
+      title: '物流费用方式',
       dataIndex: 'logistics_type_id',
       width: 100,
       search: true,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientLogisticsType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
-      commonRules: [{ required: true, message: '物流费方式必填' }],
+      commonRules: [{ required: true, message: '物流费用方式必填' }],
     },
     {
       title: '行业类别',
@@ -121,7 +121,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientProfessionType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '行业类别必填' }],
     },
@@ -133,7 +133,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientSalesType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '销售类型必填' }],
     },
@@ -145,7 +145,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      dict: { url: '/clientTaxpayerType/index?type=all',  props: { label: 'name', value: 'id' } },
+      
       formType: 'select',
       commonRules: [{ required: true, message: '纳税人资格必填' }],
     },
@@ -153,7 +153,7 @@
       title: '品牌名称',
       dataIndex: 'brand_name',
       width: 180,
-      search: true,
+      search: false,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
@@ -169,7 +169,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '品牌证书必填' }],
+      commonRules: [{ required: true, message: '品牌证书必填' }],
     },
     {
       title: '办公地点',
@@ -180,7 +180,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '办公地点必填' }],
+      commonRules: [{ required: true, message: '办公地点必填' }],
     },
     {
       title: '联系人',
@@ -191,7 +191,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '联系人必填' }],
+      commonRules: [{ required: true, message: '联系人必填' }],
     },
     {
       title: '手机号',
@@ -202,7 +202,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '手机号必填' }],
+      commonRules: [{ required: true, message: '手机号必填' }],
     },
     {
       title: '微信号',
@@ -213,18 +213,19 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '微信号必填' }],
+      commonRules: [{ required: true, message: '微信号必填' }],
     },
     {
       title: '结算方式',
       dataIndex: 'settle_method_id',
-      width: 180,
+      width: 100,
       search: false,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
-      commonRules: [{ required: false, message: '结算方式必填' }],
+      
+      formType: 'select',
+      commonRules: [{ required: true, message: '结算方式必填' }],
     },
     {
       title: '授信额度',
@@ -235,7 +236,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '授信额度必填' }],
+      commonRules: [{ required: true, message: '授信额度必填' }],
     },
     {
       title: '月结起点',
@@ -246,7 +247,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '月结起点必填' }],
+      commonRules: [{ required: true, message: '月结起点必填' }],
     },
     {
       title: '月结支付日',
@@ -257,7 +258,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '月结支付日必填' }],
+      commonRules: [{ required: true, message: '月结支付日必填' }],
     },
     {
       title: '云盘容量',
@@ -268,7 +269,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '云盘容量必填' }],
+      commonRules: [{ required: true, message: '云盘容量必填' }],
     },
     {
       title: '发票抬头',
@@ -279,7 +280,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '发票抬头必填' }],
+      commonRules: [{ required: true, message: '发票抬头必填' }],
     },
     {
       title: '税号',
@@ -290,7 +291,7 @@
       editDisplay: true,
       hide: false,
       formType: 'input',
-      commonRules: [{ required: false, message: '税号必填' }],
+      commonRules: [{ required: true, message: '税号必填' }],
     },
     {
       title: '公司名称',
@@ -315,76 +316,28 @@
       commonRules: [{ required: true, message: '客户名称必填' }],
     },
     {
-      title: '小程序使用权',
+      title: '微信小程序使用权限',
       dataIndex: 'miniapp_usage',
       width: 100,
-      search: false,
+      search: true,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
       dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
       formType: 'radio',
-      commonRules: [{ required: false, message: '微信小程序使用权限必填' }],
+      commonRules: [{ required: true, message: '微信小程序使用权限必填' }],
     },
     {
       title: '状态',
       dataIndex: 'status',
       width: 100,
-      search: false,
+      search: true,
       addDisplay: true, addDefaultValue: 1,
       editDisplay: true,
       hide: false,
       dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-      formType: 'select',
-      commonRules: [{ required: false, message: '状态必填' }],
-    },
-    {
-      title: '财务专员',
-      dataIndex: 'finance_sys_id',
-      width: 100,
-      search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      
-      formType: 'select',
-      commonRules: [{ required: false, message: '财务专员必填' }],
-    },
-    {
-      title: '客服专员',
-      dataIndex: 'service_sys_id',
-      width: 100,
-      search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      
-      formType: 'select',
-      commonRules: [{ required: false, message: '客服专员必填' }],
-    },
-    {
-      title: '印前专员',
-      dataIndex: 'preprint_sys_id',
-      width: 100,
-      search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      
-      formType: 'select',
-      commonRules: [{ required: false, message: '印前专员必填' }],
-    },
-    {
-      title: '营销专员',
-      dataIndex: 'market_sys_id',
-      width: 100,
-      search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      
-      formType: 'select',
-      commonRules: [{ required: false, message: '营销专员必填' }],
+      formType: 'radio',
+      commonRules: [{ required: true, message: '状态必填' }],
     },
     {
       title: '创建者',
