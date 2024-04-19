@@ -1,34 +1,37 @@
 <template>
-	<div class="ma-content-block lg:flex justify-between p-4">
-		<div class="lg:w-2/12 w-full h-full p-2 shadow">
-			<ma-tree-slider
-				v-model="sliderData"
-				:search-placeholder="$t('maResource.searchResource')"
-				:field-names="{ title: 'label', key: 'value' }"
-				@click="handlerClick"
-				icon="icon-folder"
-				:selected-keys="['all']"
-			/>
+	<div class="justify-between p-4 ma-content-block lg:flex">
+		<div class="w-full h-full p-2 shadow lg:w-2/12">
+			<ma-tree-slider v-model="sliderData" :search-placeholder="$t('maResource.searchResource')"
+				:field-names="{ title: 'label', key: 'value' }" @click="handlerClick" icon="icon-folder"
+				:selected-keys="['all']" />
 		</div>
 
-		<div class="lg:w-10/12 w-full lg:ml-4 mt-5 lg:mt-0">
+		<a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">
+			<template #title>
+				请点击或拖动文件上传
+			</template>
+			<div class="">
+				<ma-upload v-model="triggerUpload" type="file" multiple="true" tip=""/>
+			</div>
+		</a-modal>
+
+		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
 			<!-- CRUD 组件 -->
 			<ma-crud :options="crud" :columns="columns" ref="crudRef">
 				<!-- 表格按钮后置扩展 -->
 				<template #tableAfterButtons>
 					<a-input-group v-if="mode === 'window'">
-						<a-button @click="selectAll"
-							><template #icon><icon-select-all /></template>全选</a-button
-						>
-						<a-button @click="flushAll"
-							><template #icon><icon-eraser /></template>清除</a-button
-						>
+						<a-button @click="selectAll"><template #icon><icon-select-all /></template>全选</a-button>
+						<a-button @click="flushAll"><template #icon><icon-eraser /></template>清除</a-button>
 					</a-input-group>
+					<a-button @click="handleUploadClick" type="primary" status="normal"
+						class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>上传</a-button>
 				</template>
 				<!-- 工具按钮扩展 -->
 				<template #tools>
 					<a-tooltip :content="mode === 'list' ? '切换橱窗模式' : '切换列表模式'">
-						<a-button shape="circle" @click="switchMode"><icon-apps v-if="mode === 'list'" /><icon-list v-else /></a-button>
+						<a-button shape="circle" @click="switchMode"><icon-apps v-if="mode === 'list'" /><icon-list
+								v-else /></a-button>
 					</a-tooltip>
 				</template>
 				<!-- 自定义内容 -->
@@ -40,21 +43,18 @@
 									<div class="mb-2 image-content">
 										<a-checkbox :value="record.id" class="checkbox">
 											<template #checkbox="{ checked }">
-												<a-tag :checked="checked" color="blue" checkable><icon-check /> 选择</a-tag>
+												<a-tag :checked="checked" color="blue" checkable><icon-check />
+													选择</a-tag>
 											</template>
 										</a-checkbox>
-										<a-image
-											width="190"
-											height="190"
-											show-loader
-											:title="record.object_name"
+										<a-image width="190" height="190" show-loader :title="record.object_name"
 											:description="`大小：${record.size_info}`"
-											:src="/image/g.test(record.mime_type) ? tool.attachUrl(record.url, getStoreMode(record.storage_mode)) : $url + 'not-image.png'"
-										>
+											:src="/image/g.test(record.mime_type) ? tool.attachUrl(record.url, getStoreMode(record.storage_mode)) : $url + 'not-image.png'">
 											<template #extra>
 												<div class="actions">
 													<a-tooltip content="下载此文件">
-														<span class="action" @click="download(record)"><icon-download /></span>
+														<span class="action"
+															@click="download(record)"><icon-download /></span>
 													</a-tooltip>
 													<a-tooltip>
 														<span class="action"><icon-info-circle /></span>
@@ -77,7 +77,8 @@
 
 				<!-- 预览内容自定义 -->
 				<template #url="{ record }">
-					<a-image class="list-image" v-if="/image/g.test(record.mime_type)" width="40px" height="40px" :src="tool.attachUrl(record.url, getStoreMode(record.storage_mode))" />
+					<a-image class="list-image" v-if="/image/g.test(record.mime_type)" width="40px" height="40px"
+						:src="tool.attachUrl(record.url, getStoreMode(record.storage_mode))" />
 					<a-avatar v-else shape="square" style="top: 0px">{{ record.suffix }}</a-avatar>
 				</template>
 
@@ -111,6 +112,22 @@ onMounted(async () => {
 	treeData.data.unshift({ label: '所有', value: 'all' })
 	sliderData.value = treeData.data
 })
+
+const visible = ref(false);
+
+const triggerUpload = ref("");
+
+const handleOk = () => {
+	visible.value = false;
+};
+
+const handleCancel = () => {
+	visible.value = false;
+}
+
+const handleUploadClick = () => {
+	visible.value = true;
+}
 
 const handlerClick = async (value) => {
 	const type = value[0] === 'all' ? undefined : value[0]
@@ -233,7 +250,9 @@ const columns = reactive([
 </script>
 
 <script>
-export default { name: 'system:attachment' }
+export default {
+	name: 'system:attachment',
+}
 </script>
 
 <style scoped>
@@ -248,18 +267,23 @@ export default { name: 'system:attachment' }
 	object-fit: contain;
 	background-color: var(--color-fill-4);
 }
+
 :deep(.arco-image-with-footer-inner .arco-image-footer) {
 	padding: 9px;
 }
+
 :deep(.arco-image-footer-caption-title) {
 	font-size: 14px;
 }
+
 :deep(.arco-image-footer-extra) {
 	position: relative;
 }
+
 :deep(.arco-avatar-square) {
 	top: -6px;
 }
+
 .window-list {
 	display: flex;
 	width: 100%;
@@ -267,19 +291,23 @@ export default { name: 'system:attachment' }
 	flex-direction: row;
 	align-content: center;
 }
+
 .image-content {
 	position: relative;
 }
+
 .image-content .checkbox {
 	position: absolute;
 	z-index: 10;
 	right: -16px;
 	color: #fff;
 }
+
 :deep(.arco-tag-checkable) {
 	color: #fff;
 	background: rgba(0, 0, 0, 0.5);
 }
+
 /* :deep(.arco-tag-checkable:hover) {
   color: #555;
 } */
@@ -290,6 +318,7 @@ export default { name: 'system:attachment' }
 	right: 9px;
 	bottom: -24px;
 }
+
 .action {
 	padding: 5px 4px;
 	font-size: 14px;
@@ -298,11 +327,19 @@ export default { name: 'system:attachment' }
 	line-height: 1;
 	cursor: pointer;
 }
+
 .action:first-child {
 	margin-left: 0;
 }
 
 .action:hover {
 	background: rgba(0, 0, 0, 0.5);
+}
+
+.upload-modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

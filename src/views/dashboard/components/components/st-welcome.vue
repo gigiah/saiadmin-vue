@@ -1,19 +1,15 @@
 <template>
 	<div class="flex justify-between">
-		<div class="ma-content-block rounded-sm flex justify-between w-full p-3">
-			<div class="pl-0 flex inline-block">
-				<a-avatar :size="75" class="hidden lg:inline-block">
-					<img :src="userStore.user && userStore.user.avatar ? $tool.showFile(userStore.user.avatar) : $url + 'avatar.jpg'" />
-				</a-avatar>
+		<div class="flex justify-between w-full p-3 rounded-sm ma-content-block">
+			<div class="flex inline-block pl-0">
 				<div class="pl-3 mt-2">
 					<div class="content-block-title">{{ userStore.user.nickname || userStore.user.username }}，欢迎回来！</div>
-					<div class="leading-5 mt-2">
-						欢迎使用SaiAdmin后台权限管理系统，系统开源、免费使用。本系统前端采用的是
-						<a-button type="outline">MineAdmin</a-button> 喜欢的请去点个 ⭐Star。
+					<div class="mt-2 leading-5">
+						欢迎使用本系统
 					</div>
 				</div>
 			</div>
-			<div class="datetime ml-5 hidden md:block">
+			<div class="hidden ml-5 datetime md:block">
 				<h2 class="text-3xl text-center">{{ time }}</h2>
 				<p class="text-base">{{ day }}</p>
 			</div>

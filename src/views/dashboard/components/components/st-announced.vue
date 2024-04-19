@@ -1,17 +1,16 @@
 
 <template>
-  <div class="w-full lg:w-9/12 ma-content-block rounded-sm p-3 mt-3">
+  <div class="w-full p-3 mt-3 rounded-sm lg:w-12/12 ma-content-block">
     <div class="flex justify-between">
       系统公告
-      <a-link>更多</a-link>
+      <!-- <a-link>更多</a-link> -->
     </div>
     <a-table :data="data" :columns="columns" class="mt-2" :pagination="false">
       <template #title="{ record }">
         <a-link @click="viewDetail(record)">{{ record.title }}</a-link>
       </template>
     </a-table>
-
-    <a-modal v-model:visible="detailVisible" fullscreen :footer="false">
+    <a-modal v-model:visible="detailVisible" fullscreen :footer="true">
       <template #title>公告详情</template>
       <a-typography :style="{ marginTop: '-30px' }">
         <a-typography-title class="text-center">
@@ -32,7 +31,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import noticeApi from '@/api/system/notice';
+import noticeApi from '@/api/notice';
 
 const data = ref([])
 const columns = reactive([
