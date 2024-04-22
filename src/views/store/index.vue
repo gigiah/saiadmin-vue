@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -72,7 +72,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '营销区域必填' }],
     },
@@ -84,7 +84,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storeBusinessType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '经营模式必填' }],
     },
@@ -96,7 +96,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storeProductType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '产品线必填' }],
     },
@@ -108,7 +108,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '价格体系必填' }],
     },
@@ -184,9 +184,9 @@
       dataIndex: 'sys_user_id',
       width: 180,
       search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
+      addDisplay: false, 
+      editDisplay: false,
+      hide: true,
       formType: 'input',
       commonRules: [{ required: false, message: '人员ID必填' }],
     },
@@ -195,9 +195,9 @@
       dataIndex: 'consignee_id',
       width: 180,
       search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
+      addDisplay: false, 
+      editDisplay: false,
+      hide: true,
       formType: 'input',
       commonRules: [{ required: false, message: '收货地址ID必填' }],
     },

@@ -65,7 +65,7 @@ const toLoginAuth = (e) => {
 					<img :src="`${$url}logo.png`" width="45" /><span>{{ $title }}</span>
 				</div>
 				<div class="flex justify-end slogan">
-					<span>---- {{ $t('sys.login.slogan') }}</span>
+					<span>{{ $t('sys.login.slogan') }}</span>
 				</div>
 			</div>
 

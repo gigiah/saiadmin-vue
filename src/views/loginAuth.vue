@@ -65,12 +65,12 @@ const toLogin = (e) => {
 					<img :src="`${$url}logo.png`" width="45" /><span>{{ $title }}</span>
 				</div>
 				<div class="flex justify-end slogan">
-					<span>---- {{ $t('sys.login.slogan') }}</span>
+					<span>{{ $t('sys.login.slogan') }}</span>
 				</div>
 			</div>
 
 			<div class="w-11/12 pb-10 pl-5 pr-5 mx-auto md:w-6/12 md:rounded-r">
-				<h2 class="pb-0 mt-10 mb-10 text-3xl">{{ $t('sys.login.title') }}</h2>
+				<h2 class="pb-0 mt-10 mb-10 text-3xl">{{ $t('sys.login.authTitle') }}</h2>
 				<a-form :model="form" @submit="handleSubmit">
 					<!-- <a-form-item field="username" :hide-label="true" :rules="[{ required: true, message: $t('sys.login.usernameNotice') }]">
 						<a-input v-model="form.username" class="w-full" size="large" :placeholder="$t('sys.login.username')" allow-clear>

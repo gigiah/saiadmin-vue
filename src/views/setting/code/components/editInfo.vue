@@ -65,7 +65,7 @@
 									<a-select
 										style="width: 100%"
 										v-model="form.template"
-										:options="[{ label: 'saiadmin官方模板', value: 'saiadmin' }]"
+										:options="[{ label: '默认模板', value: 'saiadmin' }]"
 										allow-clear
 										allow-search
 										placeholder="请选择生成模板"

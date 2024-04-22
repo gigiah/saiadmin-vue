@@ -43,8 +43,9 @@ export default {
   goHome: '回到首页',
   notFoundPage: '啊哦，访问的页面被火星人劫走了...',
   login: {
-    slogan: '开箱即用的高质量中后台管理系统',
-    title: '登录',
+    slogan: '您的理想打印伙伴，在每一个重要时刻为您呈现完美',
+    title: '密码登录',
+    authTitle: '授权码登录',
     username: '账户',
     usernameNotice: '请输入账户',
     password: '密码',
