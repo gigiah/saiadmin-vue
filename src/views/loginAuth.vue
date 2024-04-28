@@ -12,7 +12,7 @@ const loading = ref(false)
 
 let isDevelop = import.meta.env.VITE_APP_ENV === 'development'
 
-var odata = isDevelop ? { username: 'admin', password: '123456', code: '' } : { username: '', password: '', code: '' }
+let odata = { code: '' }
 
 const form = reactive(odata)
 
@@ -27,7 +27,7 @@ const refreshCaptcha = () => {
 	})
 }
 
-refreshCaptcha()
+// refreshCaptcha()
 
 const userStore = useUserStore()
 
@@ -39,10 +39,10 @@ const handleSubmit = async ({ values, errors }) => {
 	}
 	loading.value = true
 	if (!errors) {
-		const result = await userStore.login(form)
+		const result = await userStore.loginAuth(form)
 		if (!result) {
 			loading.value = false
-			refreshCaptcha()
+			// refreshCaptcha()
 			return
 		}
 		router.push(redirect)
@@ -78,8 +78,8 @@ const toLogin = (e) => {
 						</a-input>
 					</a-form-item> -->
 
-					<a-form-item field="password" :hide-label="true" :rules="[{ required: true, message: $t('sys.login.passwordNotice') }]">
-						<a-input-password v-model="form.password" :placeholder="$t('sys.login.password')" size="large" allow-clear>
+					<a-form-item field="code" :hide-label="true" :rules="[{ required: true, message: $t('sys.login.authCodeNotice') }]">
+						<a-input-password v-model="form.code" :placeholder="$t('sys.login.authCode')" size="large" allow-clear>
 							<template #prefix><icon-lock /></template>
 						</a-input-password>
 					</a-form-item>

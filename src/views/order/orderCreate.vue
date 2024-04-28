@@ -1,13 +1,16 @@
 <template>
-	<div class="h-full p-3">
-		<div class="p-5 ma-content-block">
+	<div class="h-full">
+		<div class="p-3 ma-content-block">
 			<ma-form v-model="form" :columns="columns" ref="maForm" @onSubmit="handlerSubmit"></ma-form>
+			<ma-form v-for="item in storeForm"></ma-form>
 		</div>
 	</div>
 </template>
 <script setup>
 import { ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
+
+const storeForm = ref([])
 
 const form = ref({})
 
@@ -17,76 +20,16 @@ const columns = ref([
 		customClass: ['mb-2'],
 		cols: [
 			{
-				span: 24,
-				formList: [
-					{
-						formType: 'divider',
-						title: '基础信息',
-					},
-				],
-			},
-			{
-				span: 3,
-				formList: [
-					{
-						formType: 'upload',
-						dataIndex: 'avatar',
-						title: '免冠照片',
-						hideLabel: !0,
-					},
-				],
-			},
-			{
-				span: 21,
+				span: 6,
 				formList: [
 					{
 						formType: 'grid-tailwind',
-						colNumber: 3,
+						colNumber: 1,
 						cols: [
 							{
 								formList: [
 									{
-										title: '姓名',
-										dataIndex: 'name',
-										rules: [{ required: true, message: '请输入姓名' }],
-									},
-								],
-							},
-							{
-								formList: [
-									{
-										title: '出生年月',
-										dataIndex: 'bron',
-										formType: 'date',
-									},
-								],
-							},
-							{
-								formList: [
-									{
-										title: '求职意向',
-										dataIndex: 'zhiwei',
-									},
-								],
-							},
-						],
-					},
-					{
-						formType: 'grid-tailwind',
-						colNumber: 3,
-						cols: [
-							{
-								formList: [
-									{
-										title: '籍贯',
-										dataIndex: 'jiguan',
-									},
-								],
-							},
-							{
-								formList: [
-									{
-										title: '政治面貌',
+										title: '门店名称',
 										dataIndex: 'mianmao',
 										formType: 'select',
 										dict: {
@@ -108,58 +51,6 @@ const columns = ref([
 									},
 								],
 							},
-							{
-								formList: [
-									{
-										title: '现居地',
-										dataIndex: 'xianjudi',
-										formType: 'input',
-									},
-								],
-							},
-						],
-					},
-					{
-						formType: 'grid-tailwind',
-						colNumber: 3,
-						cols: [
-							{
-								formList: [
-									{
-										title: '联系电话',
-										dataIndex: 'dianhua',
-									},
-								],
-							},
-							{
-								formList: [
-									{
-										title: '邮箱',
-										dataIndex: 'email',
-									},
-								],
-							},
-							{
-								formList: [
-									{
-										title: '目前状态',
-										dataIndex: 'zhuangtai',
-										formType: 'select',
-										dict: {
-											data: [
-												{
-													label: '在职',
-													value: 1,
-												},
-												{
-													label: '待业',
-													value: 2,
-												},
-											],
-										},
-									},
-								],
-							},
 						],
 					},
 				],
@@ -168,39 +59,36 @@ const columns = ref([
 	},
 	{
 		formType: 'card',
-		title: '教育经历',
-		hideLabel: !0,
+		title: '已选门店',
+		hideLabel: true,
 		customClass: ['mb-5'],
+		
 		formList: [
 			{
-				title: '添加教育经历',
 				formType: 'children-form',
 				dataIndex: 'shangxuejingli',
 				type: 'table',
+				hideLabel: true,
 				formList: [
 					{
 						dataIndex: 'qishinian',
-						title: '起始年月',
-						formType: 'date',
-						mode: 'month',
+						title: '门店名称',
 					},
 					{
 						dataIndex: 'endnian',
-						title: '结束年月',
-						formType: 'date',
-						mode: 'month',
+						title: '营销区域',
 					},
 					{
 						dataIndex: 'xuexiao',
-						title: '毕业学校',
+						title: '经营模式',
 					},
 					{
 						dataIndex: 'xueli',
-						title: '学历',
+						title: '产品线',
 					},
 					{
 						dataIndex: 'zhuanye',
-						title: '主修专业',
+						title: '价格体系',
 					},
 				],
 			},

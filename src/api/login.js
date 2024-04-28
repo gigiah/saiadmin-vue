@@ -27,6 +27,19 @@ export default {
 	},
 
 	/**
+	 * 授权码登录
+	 * @param {object} params
+	 * @returns
+	 */
+	authLogin(params = {}) {
+		return request({
+			url: '/core/authLogin',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
 	 * 用户退出
 	 * @param {object} params
 	 * @returns

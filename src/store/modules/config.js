@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 
 let defaultConfig = {
-  site_name: 'LFP',
+  site_name: '大格广告服务系统',
   site_keywords: '',
   site_desc: '',
   site_record_number: '',

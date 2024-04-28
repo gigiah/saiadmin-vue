@@ -83,6 +83,20 @@ const useUserStore = defineStore('user', {
       })
     },
 
+    loginAuth(form) {
+      return loginApi.authLogin(form).then(r => {
+        if (r.code === 200) {
+          this.setToken(r.data.token)
+          return true
+        } else {
+          return false
+        }
+      }).catch(e => {
+        console.error(e)
+        return false
+      })
+    },
+
     async logout() {
       // await loginApi.logout()
       tool.local.remove('tags')

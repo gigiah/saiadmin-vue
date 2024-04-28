@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -50,7 +50,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storeGallery/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '相册ID必填' }],
     },
@@ -120,7 +120,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storeProductType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '产品线必填' }],
     },
@@ -132,7 +132,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: true, message: '价格体系必填' }],
     },
@@ -144,7 +144,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '原产品ID必填' }],
     },
