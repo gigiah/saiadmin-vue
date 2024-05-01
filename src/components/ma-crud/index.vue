@@ -1,7 +1,7 @@
 
 <template>
-  <a-layout-content class="flex flex-col lg:h-full relative w-full">
-    <div class="_crud-header flex flex-col mb-2" ref="crudHeaderRef">
+  <a-layout-content class="relative flex flex-col w-full lg:h-full">
+    <div class="flex flex-col mb-2 _crud-header" ref="crudHeaderRef">
       <a-tabs
           v-if="isArray(options.tabs.data) && options.tabs.data.length > 0"
           v-model:active-key="options.tabs.defaultKey"
@@ -10,7 +10,7 @@
           :hide-content="true"
           @change="tabChange"
           @tab-click="maEvent.customeEvent(options.tabs, $event, 'onClick')"
-          class="ma-tabs mb-5"
+          class="mb-5 ma-tabs"
       >
         <template #extra><slot name="tabExtra"></slot></template>
         <a-tab-pane :key="item.value" :title="item.label" v-for="item in options.tabs.data">
@@ -42,8 +42,8 @@
     </div>
     <div class="mb-2"><slot name="middleContent"></slot></div>
     <div class="_crud-content">
-      <div class="operation-tools lg:flex justify-between mb-3" ref="crudOperationRef">
-        <a-space class="lg:flex block lg:inline-block" >
+      <div class="justify-between mb-3 operation-tools lg:flex" ref="crudOperationRef">
+        <a-space class="block lg:flex lg:inline-block" >
           <slot name="tableBeforeButtons"></slot>
           <slot name="tableButtons">
             <a-button
@@ -51,7 +51,7 @@
               v-auth="options.add.auth || []"
               v-role="options.add.role || []"
               @click="addAction" type="primary"
-              class="w-full lg:w-auto mt-2 lg:mt-0"
+              class="w-full mt-2 lg:w-auto lg:mt-0"
             >
               <template #icon><icon-plus /></template>{{ options.add.text || '新增' }}
             </a-button>
@@ -66,7 +66,7 @@
                 v-auth="options.delete.auth || []"
                 v-role="options.delete.role || []"
                 type="primary" status="danger"
-                class="w-full lg:w-auto mt-2 lg:mt-0"
+                class="w-full mt-2 lg:w-auto lg:mt-0"
               >
                 <template #icon><icon-delete /></template>
                 {{ isRecovery ? options.delete.realText || '删除' : options.delete.text || '删除' }}
@@ -83,7 +83,7 @@
                 v-auth="options.recovery.auth || []"
                 v-role="options.recovery.role || []"
                 type="primary" status="success"
-                class="w-full lg:w-auto mt-2 lg:mt-0"
+                class="w-full mt-2 lg:w-auto lg:mt-0"
               >
                 <template #icon><icon-undo /></template>{{ options.recovery.text || '恢复' }}</a-button>
             </a-popconfirm>
@@ -93,7 +93,7 @@
               v-auth="options.import.auth || []"
               v-role="options.import.role || []"
               @click="importAction"
-              class="w-full lg:w-auto mt-2 lg:mt-0"
+              class="w-full mt-2 lg:w-auto lg:mt-0"
             ><template #icon><icon-upload /></template>{{ options.import.text || '导入' }}</a-button>
 
             <a-button
@@ -101,14 +101,14 @@
               v-auth="options.export.auth || []"
               v-role="options.export.role || []"
               @click="exportAction"
-              class="w-full lg:w-auto mt-2 lg:mt-0"
+              class="w-full mt-2 lg:w-auto lg:mt-0"
             ><template #icon><icon-download /></template>{{ options.export.text || '导出' }}</a-button>
 
             <a-button
               type="secondary"
               @click="handlerExpand"
               v-if="options.isExpand"
-              class="w-full lg:w-auto mt-2 lg:mt-0"
+              class="w-full mt-2 lg:w-auto lg:mt-0"
             >
               <template #icon>
                 <icon-expand v-if="! expandState" />
@@ -119,7 +119,7 @@
           </slot>
           <slot name="tableAfterButtons"></slot>
         </a-space>
-        <a-space class="lg:mt-0 mt-2" v-if="options.showTools">
+        <a-space class="mt-2 lg:mt-0" v-if="options.showTools">
           <slot name="tools"></slot>
           <a-tooltip
             :content="isRecovery ? '显示正常数据' : '显示回收站数据'"
@@ -211,7 +211,7 @@
         </slot>
       </div>
     </div>
-    <div class="_crud-footer mt-3 text-right" ref="crudFooterRef" v-if="total > 0 && openPagination && !options.tablePagination">
+    <div class="mt-3 text-right _crud-footer" ref="crudFooterRef" v-if="total > 0 && openPagination && !options.tablePagination">
       <a-pagination
         :total="total"
         show-total show-jumper show-page-size
@@ -658,6 +658,10 @@ const setSelecteds = (key) => {
   selecteds.value = key
 }
 
+const getSelecteds = () => {
+  return selecteds
+}
+
 const switchDataType = async () => {
   isRecovery.value = ! isRecovery.value
   currentApi.value = isRecovery.value && options.value.recycleApi && isFunction(options.value.recycleApi)
@@ -814,7 +818,7 @@ const getColumnService = (strictMode = true) => {
 }
 
 defineExpose({
-  refresh, requestData, addAction, editAction, getTableData, setSelecteds,
+  refresh, requestData, addAction, editAction, getTableData, setSelecteds, getSelecteds,
   getCurrentAction, getFormData, getFormColumns, getColumnService, getCurrentPage, getPageSize, getTotal,
   requestParams, isRecovery, tableRef,
   crudFormRef, crudSearchRef, crudImportRef, crudSettingRef
