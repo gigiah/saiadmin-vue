@@ -1,6 +1,6 @@
 <template>
 	<div class="h-full p-3">
-		<div class="ma-content-block p-5">
+		<div class="p-5 ma-content-block">
 			<ma-form v-model="form" :columns="columns" ref="maForm" @onSubmit="handlerSubmit"></ma-form>
 		</div>
 	</div>

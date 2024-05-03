@@ -100,4 +100,16 @@ export default {
     })
   },
 
+  /**
+   * 提交订单
+   * @returns
+   */
+  handleCreateOrder(data = {}) {
+    return request({
+      url: '/order/handleCreateOrder',
+      method: 'post',
+      data
+    })
+  },
+
 }

@@ -1,7 +1,8 @@
 <template>
   <div class="h-full ma-content-block">
     <!--门店表单-->
-    <a-modal fullscreen v-model:visible="showStore" title="门店选择" @cancel="handleCancel" @before-ok="handleBeforeOk">
+    <a-modal v-model:visible="showStore" :width="1400" title="门店选择" @cancel="handleCancel"
+      @before-ok="handleBeforeOk">
       <a-form :model="storeForm">
         <ma-crud :options="crud" :columns="storeColumns" ref="crudRef">
         </ma-crud>
@@ -17,35 +18,57 @@
     </a-space>
     <!--订单表单-->
     <div class="p-3 ma-content-block">
-      <ma-form v-model="form" :options="options" :columns="columns" @submit="handleSubmit">
+      <ma-form v-if="showForm" v-model="form" :options="options" :columns="columns" @submit="handleSubmit">
       </ma-form>
     </div>
   </div>
 </template>
 <script setup>
 import { ref, reactive } from 'vue'
-import { Notification, Message } from '@arco-design/web-vue'
+import { Notification, Message, Button, Modal } from '@arco-design/web-vue'
+import orderApi from '@/api/order'
 import storeApi from '@/api/store'
 import warehouseAddressApi from '@/api/warehouseAddress'
+import productApi from '@/api/product'
+import attachmentApi from '@/api/system/attachment'
+import couponApi from '@/api/coupon'
 
 const form = ref({})//订单表单
 const options = ref({})//订单选项
 const columns = ref([])//订单字段
 const crudRef = ref()//选择门店的crud
 const showStore = ref(false)//是否弹出选择对话框
+const showForm = ref(false)//是否展示订单表单
 const selectStore = reactive({
   storeIds: new Set(), // 使用Set来存储已经选择的ID
 });
-const warehouse = ref([])//仓库地址
+const warehouses = ref([])//仓库地址
+const products = ref([])//产品库
+const productSelect = ref([])//产品选项
+const files = ref([])//文件库
+const filesSelect = ref([])//文件选项
+const coupons = ref([])//卡券
+
+//删除门店
+const remove = (dataIndexObj) => {
+  let dataIndex = dataIndexObj.id
+  const index = columns.value.findIndex((c) => c.dataIndex === dataIndex);
+  if (index !== -1) {
+    columns.value.splice(index, 1)//删除表格
+    selectStore.storeIds.delete(dataIndex)//删除hash
+    if (columns.value.length == 0) showForm.value = false
+  }
+  console.log('delete table', columns.value)
+};
 
 //加载仓库地址
-const loadWarehouseAddresses = () => {
+const getWarehouses = () => {
   warehouseAddressApi.getPageList({ type: 'all' })
     .then(res => {
-      res.data.forEach(function (address) {
-        warehouse.value.push({
-          label: address.address,
-          value: address.id
+      res.data.forEach(function (item) {
+        warehouses.value.push({
+          label: item.address,
+          value: item.id
         })
       })
     })
@@ -53,7 +76,87 @@ const loadWarehouseAddresses = () => {
       console.error("获取仓库地址失败", error)
     });
 }
-loadWarehouseAddresses()
+getWarehouses()
+
+//加载产品库
+const getProducts = () => {
+  productApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        products.value.push(item)
+        productSelect.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取产品库失败", error)
+    });
+}
+getProducts()
+
+//加载文件库
+const getFiles = () => {
+  attachmentApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        files.value.push(item)
+        filesSelect.value.push({
+          label: item.origin_name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取文件库失败", error)
+    });
+}
+getFiles()
+
+//加载卡券列表
+const getCoupons = () => {
+  couponApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        coupons.value.push(item)
+      })
+    })
+    .catch(error => {
+      console.error("获取卡券列表失败", error)
+    });
+}
+getCoupons()
+
+const selectProduct = (id) => {
+  let product = {}
+  products.value.forEach(function (item) {
+    if (item.id == id) {
+      product = item
+    }
+  })
+  return product
+}
+
+//处理产品选择后变更
+const updateProduct = (storeId, productDetails) => {
+  // 找到对应的订单表单
+  console.log(columns.value)
+  const orderForm = columns.value.find(column => column.dataIndex === storeId);
+  console.log('orderForm', orderForm)
+  if (orderForm) {
+    // 找到产品级别的输入字段
+    console.log(orderForm.formList)
+    const orderList = orderForm.formList.find(field => field.dataIndex === 'order-list-' + storeId);
+    const productGradeField = orderList.formList.find(field => field.dataIndex === 'product_grade');
+    console.log(productGradeField)
+    if (productGradeField) {
+      // 更新产品级别字段的值
+      productGradeField.value = productDetails.grade
+    }
+  }
+};
+
 
 const handleClickAddStore = () => {
   showStore.value = true;
@@ -68,6 +171,8 @@ const handleBeforeOk = (done) => {
       selectStore.storeIds.add(store.id)
     }
   })
+  showForm.value = true
+  console.log('add table', columns.value)
   window.setTimeout(() => {
     done()
     // prevent close
@@ -84,7 +189,51 @@ const filterStoreByIds = (ids, data) => {
 }
 
 const handleSubmit = async ({ values, errors }) => {
-  console.log(values)
+  Modal.info({
+    title: '提示',
+    content: '确定提交订单吗？',
+    simple: false,
+    onBeforeOk: (done) => {
+      console.log('form data', form.value)
+      let data = integrateData(form.value)
+      console.log('integrate data', data);
+      orderApi.handleCreateOrder(data)
+      columns.value = []
+      selectStore.storeIds.clear()
+      done(true)
+      Notification.success('订单提交成功')
+    },
+  })
+
+}
+
+const integrateData = (data) => {
+  const result = [];
+  // 遍历 JSON 对象的键
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      // 获取 ID（例如："order-list-1" 中的 "1"）
+      const idMatch = key.match(/(\d+)$/);
+      if (idMatch) {
+        const id = idMatch[0];
+        // 查找或创建对应 ID 的集成对象
+        let orderGroup = result.find(item => item.id === id);
+        if (!orderGroup) {
+          orderGroup = { id: id, orderList: [], consignee: null };
+          result.push(orderGroup);
+        }
+        // 根据键名决定如何处理数据
+        if (key.startsWith('order-list')) {
+          // 将 "order-list-x" 的数组合并到 orderList
+          orderGroup.orderList.push(...data[key]);
+        } else if (key.startsWith('consignee')) {
+          // 将 "consignee-x" 的值设置为 consignee
+          orderGroup.consignee = data[key];
+        }
+      }
+    }
+  }
+  return result;
 }
 
 const storeForm = ref({})
@@ -93,7 +242,7 @@ const crud = reactive({
   recycleApi: storeApi.getRecyclePageList,
   showIndex: true,
   searchColNumber: 5,
-  pageLayout: 'fixed',
+  pageLayout: 'normal',
   rowSelection: { showCheckedAll: true },
   operationColumn: false,
   operationColumnWidth: 160,
@@ -192,13 +341,15 @@ const orderTemplate = (title, storeId) => {
   const data = {
     formType: 'card',
     title: title,
-    customClass: ['mt-3', 'mb-5'],
+    dataIndex: storeId,
+    customClass: ['m-3'],
+    extra: '删除',
+    remove: remove,
     formList: [
       {
         dataIndex: 'consignee-' + storeId, title: '收货地址', formType: 'select',
-        data: warehouse,
-        // data: { url: '/warehouseAddress/index?type=all', props: { label: 'address', value: 'id' }, translation: true },
-        // rules: [{ required: true, message: '请选择收货地址' }]
+        data: warehouses,
+        rules: [{ required: true, message: '请选择收货地址' }]
       },
       // {
       //   title: '下单产品', formType: 'divider', orientation: 'left', margin: '30px',
@@ -207,41 +358,25 @@ const orderTemplate = (title, storeId) => {
         title: '订单列表', dataIndex: 'order-list-' + storeId, formType: 'children-form', type: 'table', emptyRow: 1, hideLabel: true,
         formList: [
           {
-            dataIndex: 'product_name',
+            dataIndex: 'product_id',
             title: '产品名称',
             formType: 'select',
             placeholder: '请选择',
-            data: [
-              {
-                label: '产品A',
-                value: 1,
-              },
-              {
-                label: '产品B',
-                value: 2,
-              },
-            ],
-            // rules: [{ required: true, message: '请选择产品' }]
+            data: productSelect,
+            onChange: (id) => {
+              let product = selectProduct(id)
+              updateProduct(storeId, product)
+            },
+            rules: [{ required: true, message: '请选择产品' }]
           },
           {
             dataIndex: 'associated_file',
             title: '上传文件',
             formType: 'select',
             placeholder: '请选择',
-            data:
-              [
-                {
-                  label: '文件1',
-                  value: 1,
-                },
-                {
-                  label: '文件2',
-                  value: 2,
-                },
-              ],
-            // rules: [{ required: true, message: '请选择上传文件' }]
+            data: filesSelect,
+            rules: [{ required: true, message: '请选择上传文件' }]
           },
-
           {
             dataIndex: 'product_grade',
             title: '产品级别',
@@ -258,19 +393,19 @@ const orderTemplate = (title, storeId) => {
             dataIndex: 'width',
             title: '宽度',
             placeholder: '请输入',
-            // rules: [{ required: true, message: '请输入' }]
+            rules: [{ required: true, message: '请输入' }]
           },
           {
             dataIndex: 'height',
             title: '高度',
             placeholder: '请输入',
-            // rules: [{ required: true, message: '请输入' }]
+            rules: [{ required: true, message: '请输入' }]
           },
           {
-            dataIndex: 'nums',
+            dataIndex: 'count',
             title: '数量',
             placeholder: '请输入',
-            // rules: [{ required: true, message: '请输入' }]
+            rules: [{ required: true, message: '请输入' }]
           },
           {
             dataIndex: 'remark',
