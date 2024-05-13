@@ -19,6 +19,8 @@
     :validate-trigger="props.component.validateTrigger"
     :validate-status="props.component.validateStatus"
     :class="[ props.component.customClass ]"
+    :show-btn="[ props.component.showBtn ]"
+    :data-list="[ props.component.dataList ]"
   >
     <a-collapse
       :default-active-key="defaultOpenKeys"
@@ -68,7 +70,7 @@
         <table class="arco-table-element" cellpadding="0" cellspacing="0">
           <thead>
             <tr class="arco-table-tr">
-              <th class="arco-table-th" width="60">
+              <th v-if="component.showBtn" class="arco-table-th" width="60">
                 <span class="arco-table-cell arco-table-cell-align-center">
                   <a-button type="primary" @click="addItem()" size="small" shape="round">
                     <template #icon>
@@ -94,7 +96,7 @@
           <tbody>
             <template v-for="(item, index) in formModel[props.component.dataIndex]">
               <tr class="arco-table-tr">
-                <td class="arco-table-td">
+                <td v-if="component.showBtn" class="arco-table-td">
                   <span class="arco-table-cell">
                     <a-button type="primary"
                       status="danger"
@@ -190,6 +192,7 @@ if (props.component.type == 'table') {
 
 const addItem = async (data = {}) => {
   let index = formModel.value[props.component.dataIndex].length
+  // console.log('viewFormList', viewFormList.value)
   viewFormList.value[index] = cloneDeep(formList)
   maEvent.customeEvent(props.component, {formList: viewFormList.value[index], data, index: index}, 'onAdd')
   formModel.value[props.component.dataIndex].push(data)
@@ -210,7 +213,13 @@ const getChildrenDataIndex = (index, dataIndex) => {
 
 maEvent.handleCommonEvent(props.component, 'onCreated')
 onMounted(async () => {
-  if (formModel.value[props.component.dataIndex].length === 0) {
+  // console.log('props.component.dataList', props.component.dataList)
+  if(props.component.dataList){
+    for (let i = 0; i < (props.component.dataList.length); i++) {
+      console.log('data', props.component.dataList[i])
+      await addItem(props.component.dataList[i])
+    }
+  }else if (formModel.value[props.component.dataIndex].length === 0) {
     for (let i = 0; i < (props.component.emptyRow ?? 1); i++) {
       await addItem()
     }

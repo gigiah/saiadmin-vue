@@ -3,7 +3,8 @@
     :class="[props.component?.customClass]" :extra="props.component?.extra" :bordered="props.component?.bordered"
     :loading="props.component?.loading" :hoverable="props.component?.hoverable" :size="props.component?.size"
     :header-style="props.component?.headerStyle" :body-style="props.component?.bodyStyle"
-    :remove-card="props.component?.removeCard">
+    :remove-card="props.component?.removeCard"
+    >
     <template #title>
       <slot :name="`cardTitle-${props.component?.dataIndex ?? ''}`">{{ props.component?.title }}</slot>
     </template>
@@ -16,7 +17,7 @@
     <!--定制的删除按钮-->
     <template #extra>
       <slot :name="`cardExtra-${props.component?.dataIndex ?? ''}`">
-        <a @click="handleExtraClick(props.component)"><a-link>{{ props.component?.extra }}</a-link></a>
+        <a @click="handleExtraRemove(props.component)"><a-link>{{ props.component?.extra }}</a-link></a>
       </slot>
     </template>
     <template v-for="(component, componentIndex) in (props.component?.formList ?? [])" :key="componentIndex">
@@ -39,7 +40,7 @@ maEvent.handleCommonEvent(props.component, 'onCreated')
 onMounted(() => {
   maEvent.handleCommonEvent(props.component, 'onMounted')
 })
-const handleExtraClick = (component) => {
+const handleExtraRemove = (component) => {
   maEvent.customeEvent(component, { id: component?.dataIndex }, 'remove')
 }
 </script>

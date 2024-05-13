@@ -6,14 +6,36 @@
 				:selected-keys="['all']" />
 		</div>
 
-		<a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">
+		<!-- <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">
 			<template #title>
 				请点击或拖动文件上传
 			</template>
-			<div class="">
-				<ma-upload v-model="triggerUpload" type="file" multiple="true" tip=""/>
-			</div>
+<div class="">
+	<ma-upload v-model="triggerUpload" type="file" multiple="true" tip="" />
+</div>
+</a-modal> -->
+
+		<a-modal v-model:visible="visible" title="上传文件" @ok="handleOk" @cancel="handleCancel">
+			<a-form ref="uploadForm" model="formData">
+				<a-form-item label="源文件">
+					<a-upload action="/path/to/upload/source" :file-list="formData.sourceFiles"
+						@change="handleSourceChange">
+						<a-button>
+							<a-icon type="upload" /> 点击上传
+						</a-button>
+					</a-upload>
+				</a-form-item>
+				<a-form-item label="预览图">
+					<a-upload action="/path/to/upload/preview" :file-list="formData.previewImages"
+						@change="handlePreviewChange">
+						<a-button>
+							<a-icon type="upload" /> 点击上传
+						</a-button>
+					</a-upload>
+				</a-form-item>
+			</a-form>
 		</a-modal>
+
 
 		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
 			<!-- CRUD 组件 -->
@@ -24,7 +46,7 @@
 						<a-button @click="selectAll"><template #icon><icon-select-all /></template>全选</a-button>
 						<a-button @click="flushAll"><template #icon><icon-eraser /></template>清除</a-button>
 					</a-input-group>
-					<a-button @click="handleUploadClick" type="primary" status="normal"
+					<a-button @click="showModal" type="primary" status="normal"
 						class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>上传</a-button>
 				</template>
 				<!-- 工具按钮扩展 -->
@@ -107,6 +129,11 @@ const mode = ref('list')
 const sliderData = ref([])
 const selecteds = ref([])
 
+const formData = ref({
+	sourceFiles: [],
+	previewImages: [],
+})
+
 onMounted(async () => {
 	const treeData = await commonApi.getDict('attachment_type')
 	treeData.data.unshift({ label: '所有', value: 'all' })
@@ -117,16 +144,35 @@ const visible = ref(false);
 
 const triggerUpload = ref("");
 
-const handleOk = () => {
-	visible.value = false;
-};
+// const handleOk = () => {
+// 	visible.value = false;
+// };
 
+// const handleCancel = () => {
+// 	visible.value = false;
+// }
+
+// const handleUploadClick = () => {
+// 	visible.value = true;
+// }
+
+const showModal = () => {
+	visible.value = true
+}
+const handleOk = () => {
+	console.log('保存文件', formData.value);
+	visible.value = false;
+}
 const handleCancel = () => {
 	visible.value = false;
 }
-
-const handleUploadClick = () => {
-	visible.value = true;
+const handleSourceChange = (info) => {
+	// 处理源文件的上传状态变化
+	formData.value.sourceFiles = info.fileList;
+}
+const handlePreviewChange = (info) => {
+	// 处理预览图的上传状态变化
+	formData.value.previewImages = info.fileList;
 }
 
 const handlerClick = async (value) => {
@@ -337,9 +383,9 @@ export default {
 }
 
 .upload-modal-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 </style>

@@ -2,17 +2,28 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <template #operationBeforeExtend="{ record }">
+        <a-space size="mini">
+            <a-link @click="viewItems(record)"><icon-menu /> 查看内容</a-link>
+        </a-space>
+      </template>
     </ma-crud>
+    <store-gallery-item ref="itemRef" @success="() => crudRef.refresh()" />
   </div>
 </template>
 
 <script setup>
   import { ref, reactive, computed } from 'vue'
   import api from '@/api/storeGallery'
+  import storeGalleryItem from '@/views/storeGalleryItem/index.vue'
   import { Message } from '@arco-design/web-vue'
 
   const crudRef = ref()
+  const itemRef = ref()
 
+  const viewItems = (record) => {
+    itemRef.value.open(record)
+  }
 
   const crud = reactive({
     api: api.getPageList,

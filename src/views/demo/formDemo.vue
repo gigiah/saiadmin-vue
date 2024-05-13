@@ -177,6 +177,7 @@ const columns = ref([
 				formType: 'children-form',
 				dataIndex: 'shangxuejingli',
 				type: 'table',
+				showBtn: true,
 				formList: [
 					{
 						dataIndex: 'qishinian',
@@ -217,6 +218,7 @@ const columns = ref([
 				formType: 'children-form',
 				dataIndex: 'workjingli',
 				type: 'group',
+				showBtn: true,
 				formList: [
 					{
 						dataIndex: 'qishinian',

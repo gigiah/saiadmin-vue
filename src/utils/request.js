@@ -106,7 +106,7 @@ function createRequest (service) {
     const configDefault = {
       headers: Object.assign(
         {
-          'Authorization': token,
+          'Platform-Authorization': token,
           'Accept-Language': setting?.language || 'zh_CN',
           'Content-Type': get(config, 'headers.Content-Type', 'application/json;charset=UTF-8')
         },
