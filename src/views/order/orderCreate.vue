@@ -173,6 +173,7 @@ const handleClickAddStore = () => {
   showStore.value = true
 }
 const handleBeforeOk = (done) => {
+  console.log(crudRef.value)
   let selected = filterStoreByIds(crudRef.value.getSelecteds().value, crudRef.value.getTableData())
   selected.forEach(function (store) {
     if (selectStore.storeIds.has(store.id)) {
@@ -374,14 +375,15 @@ const orderTemplate = (title, storeId) => {
             formType: 'select',
             placeholder: '请选择',
             data: productSelect,
-            onChange: (id) => {
-              let product = selectProduct(id)
-              updateProduct(storeId, product)
-            },
-            // onChange: (val) => {
-            //   console.log('val', val)
-            //   return { product_picture_type: { display: false } }
+            // onChange: (id) => {
+            //   let product = selectProduct(id)
+            //   updateProduct(storeId, product)
             // },
+            onControl: (val, maFormObject ) => {
+              console.log('val', val)
+              console.log('maFormObject', maFormObject)
+              return { product_picture_type: { display: false } }
+            },
             rules: [{ required: true, message: '请选择产品' }]
           },
           {

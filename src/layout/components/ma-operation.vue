@@ -124,25 +124,6 @@ const isFullScreen = ref(false)
 const showLogoutModal = ref(false)
 const isDev = ref(import.meta.env.DEV)
 
-const announcements = ref([])
-
-const current = ref([])
-let timer = null
-
-const row = ref({})
-const detailVisible = ref(false)
-
-const viewDetail = async (record) => {
-  row.value = record
-  detailVisible.value = true
-}
-
-onMounted(async () => {
-  const res = await noticeApi.getPageList({ limit: 5, orderBy: 'id', orderType: 'desc' })
-  announcements.value = res.data.data
-  startMarquee()
-})
-
 const handleSelect = async (name) => {
   if (name === 'userCenter') {
     router.push({ name: 'userCenter' })
@@ -150,12 +131,21 @@ const handleSelect = async (name) => {
   if (name === 'clearCache') {
     const res = await commonApi.clearAllCache()
     tool.local.remove('dictData')
-    res.success && Message.success(res.message)
+    res.code === 200 && Message.success(res.message)
   }
   if (name === 'logout') {
     showLogoutModal.value = true
     document.querySelector('#app').style.filter = 'grayscale(1)'
   }
+}
+if (name === 'clearCache') {
+  const res = await commonApi.clearAllCache()
+  tool.local.remove('dictData')
+  res.success && Message.success(res.message)
+}
+if (name === 'logout') {
+  showLogoutModal.value = true
+  document.querySelector('#app').style.filter = 'grayscale(1)'
 }
 
 const handleLogout = async () => {
