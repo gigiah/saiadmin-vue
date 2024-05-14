@@ -1,12 +1,12 @@
 
 <template>
-  <div class="w-full p-2 resource-container h-full lg:flex lg:justify-between rounded-sm">
+  <div class="w-full h-full p-2 rounded-sm resource-container lg:flex lg:justify-between">
     <a-modal v-model:visible="openNetworkModal" :ok-text="$t('sys.save')" :on-before-ok="saveNetworkImg" draggable>
       <template #title>{{ $t('maResource.saveNetworkImage') }}</template>
       <a-input v-model="networkImg" class="mb-3" :placeholder="$t('maResource.networkImageNotice')" allow-clear />
       <a-image :src="networkImg" width="100%" style="min-height: 150px;" />
     </a-modal>
-    <div class="lg:w-1/5 w-full p-2 shadow">
+    <div class="w-full p-2 shadow lg:w-1/5">
       <ma-tree-slider
         v-model="sliderData"
         :search-placeholder="$t('maResource.searchResource')"
@@ -16,7 +16,7 @@
         :selected-keys="['all']"
       />
     </div>
-    <div class="w-full lg:ml-3 mt-3 lg:mt-2 flex flex-col">
+    <div class="flex flex-col w-full mt-3 lg:ml-3 lg:mt-2">
       
       <div class="lg:flex lg:justify-between">
         <div class="flex">
@@ -27,15 +27,15 @@
         </div>
         <a-input
           v-model="filename"
-          class="input-search lg:mt-0 mt-2"
+          class="mt-2 input-search lg:mt-0"
           :placeholder="$t('maResource.searchFileNotice')"
           @press-enter="searchFile"
         />
       </div>
       <a-spin :loading="resourceLoading" :tip="$t('maResource.loadingText')" class="h-full">
-        <div class="resource-list mt-2" ref="rl" v-if="attachmentList && attachmentList.length > 0">
+        <div class="mt-2 resource-list" ref="rl" v-if="attachmentList && attachmentList.length > 0">
           <div
-            class="item rounded-sm"
+            class="rounded-sm item"
             v-for="(item, index) in attachmentList"
             :key="item.hash"
             @click="selectFile(item, index)"
@@ -48,7 +48,7 @@
               "
               v-if="item.mime_type.indexOf('image') !== -1"
             />
-            <div v-else class="text-3xl w-full h-full flex items-center justify-center">
+            <div v-else class="flex items-center justify-center w-full h-full text-3xl">
               {{`.${item.suffix}`}}
             </div>
             <a-tooltip position="bottom">

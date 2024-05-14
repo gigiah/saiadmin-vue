@@ -80,6 +80,59 @@ const getMyCoupon = () => {
 }
 getMyCoupon()
 
+//加载仓库地址
+const getWarehouses = () => {
+  warehouseAddressApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        warehouses.value.push({
+          label: item.address,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取仓库地址失败", error)
+    })
+}
+getWarehouses()
+
+//加载产品库
+const getProducts = () => {
+  productApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        products.value.push(item)
+        productSelect.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取产品库失败", error)
+    })
+}
+getProducts()
+
+//加载文件库
+const getFiles = () => {
+  attachmentApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        files.value.push(item)
+        filesSelect.value.push({
+          label: item.origin_name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取文件库失败", error)
+    })
+}
+getFiles()
+
 const handleSubmit = async ({ values, errors }) => {
   Modal.info({
     title: '提示',
@@ -185,10 +238,21 @@ const orderTemplate = (orderId, orderItem, orderGoods) => {
         ],
       },
       {
-        dataIndex: 'add-time-' + orderId, title: '录入时间', formType: 'input', placeholder: orderItem.create_time, readonly: true, disabled: true,
+        dataIndex: 'add-time-' + orderId,
+        title: '录入时间',
+        formType: 'input',
+        defaultValue: orderItem.create_time,
+        disabled: true,
+        readonly: true,
       },
       {
-        dataIndex: 'consignee-' + orderId, title: '收货地址', formType: 'input', placeholder: orderItem.consignee_name, disabled: false
+        dataIndex: 'consignee-' + orderItem.store_id,
+        title: '收货地址',
+        formType: 'select',
+        data: warehouses,
+        valueKey: 'id',
+        defaultValue: orderItem.consignee_id,
+        rules: [{ required: true, message: '请选择收货地址' }]
       },
       {
         title: '订单列表',

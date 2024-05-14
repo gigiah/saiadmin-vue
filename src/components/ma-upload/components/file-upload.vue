@@ -1,21 +1,15 @@
 <template>
-	<div class="upload-file w-full">
-		<a-upload
-			:custom-request="uploadFileHandler"
-			:show-file-list="false"
-			:multiple="config.multiple"
-			:accept="config.accept"
-			:disabled="config.disabled"
-			:tip="config.tip"
-			:draggable="config.draggable"
-			:limit="config.limit"
-		>
+	<div class="w-full upload-file">
+		<a-upload :custom-request="uploadFileHandler" :show-file-list="false" :multiple="config.multiple"
+			:accept="config.accept" :disabled="config.disabled" :tip="config.tip" :draggable="config.draggable"
+			:limit="config.limit">
 			<template #upload-button v-if="config.draggable">
 				<slot name="customer">
-					<div style="background-color: var(--color-fill-2); border: 1px dashed var(--color-fill-4)" class="rounded text-center p-7 w-full">
+					<div style="background-color: var(--color-fill-2); border: 1px dashed var(--color-fill-4)"
+						class="w-full text-center rounded p-7">
 						<div>
 							<icon-upload class="text-5xl text-gray-400" />
-							<div class="text-red-600 font-bold">
+							<div class="font-bold text-red-600">
 								{{ config.title === 'buttonText' ? $t('upload.buttonText') : config.title }}
 							</div>
 							将文件拖到此处，或<span style="color: #3370ff">点击上传</span>
@@ -26,22 +20,22 @@
 		</a-upload>
 	</div>
 	<!-- 单文件 -->
-	<div class="file-list mt-2" v-if="!config.multiple && currentItem?.url && config.showList">
+	<div class="mt-2 file-list" v-if="!config.multiple && currentItem?.url && config.showList">
 		<a-button class="delete" @click="removeSignFile()">
 			<template #icon><icon-delete /></template>
 		</a-button>
 		<div class="file-item">
-			{{ currentItem.url }}
+			{{ currentItem.name }}
 		</div>
 	</div>
 
 	<!-- 多文件 -->
-	<div v-if="config.showList" class="file-list mt-2" v-for="(file, idx) in showFileList" :key="idx">
+	<div v-if="config.showList" class="mt-2 file-list" v-for="(file, idx) in showFileList" :key="idx">
 		<a-button class="delete" @click="removeFile(idx)">
 			<template #icon><icon-delete /></template>
 		</a-button>
 		<div class="file-item">
-			{{ file.url }}
+			{{ file.name }}
 		</div>
 	</div>
 </template>
@@ -56,9 +50,9 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const props = defineProps({
-	modelValue: { type: [String, Number, Array], default: () => {} },
+	modelValue: { type: [String, Number, Array], default: () => { } },
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'getUploadName'])
 const config = inject('config')
 const storageMode = inject('storageMode')
 const showFileList = ref([])
@@ -88,14 +82,16 @@ const uploadFileHandler = async (options) => {
 		result.url = tool.attachUrl(result.url, storageMode[result.storage_mode])
 		if (!config.multiple) {
 			signFile.value = result[config.returnType]
+			emit('getUploadName', result.origin_name)
 			emit('update:modelValue', signFile.value)
 			currentItem.value.url = result.url
 		} else {
-			showFileList.value.push(result)
-			let files = []
-			files = showFileList.value.map((item) => {
-				return item[config.returnType]
+			showFileList.value.push({
+				name: result.origin_name,
+				url: result.url,
 			})
+			let files = []
+			files = showFileList.value
 			emit('update:modelValue', files)
 		}
 	}
@@ -122,16 +118,16 @@ const init = async () => {
 			const result = await props.modelValue.map(async (item) => {
 				return await getFileUrl(config.returnType, item, storageMode)
 			})
-			const data = await Promise.all(result)
-			if (config.returnType === 'url') {
-				showFileList.value = data.map((url) => {
-					return { url }
-				})
-			} else {
-				showFileList.value = data.map((item) => {
-					return { url: item.url }
-				})
-			}
+			// const data = await Promise.all(result)
+			// if (config.returnType === 'url') {
+			// 	showFileList.value = data.map((url) => {
+			// 		return { url }
+			// 	})
+			// } else {
+			// 	showFileList.value = data.map((item) => {
+			// 		return { url: item.url }
+			// 	})
+			// }
 		} else {
 			showFileList.value = []
 		}
@@ -171,7 +167,9 @@ watch(
 	height: 36px;
 	line-height: 36px;
 	padding: 0 10px;
+	min-width: 600px;
 	width: 100%;
+
 	.delete {
 		position: absolute;
 		z-index: 99;

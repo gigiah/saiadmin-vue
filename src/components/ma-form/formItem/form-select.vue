@@ -29,6 +29,7 @@
 				:limit="props.component.limit"
 				:field-names="props.component.fieldNames"
 				:scrollbar="props.component.scrollbar"
+				:default-value="props.component.defaultValue"
 				@input-value-change="maEvent.handleInputEvent(props.component, $event)"
 				@change="handleCascaderChangeEvent($event)"
 				@remove="maEvent.customeEvent(props.component, $event, 'onRemove')"

@@ -23,6 +23,7 @@
         :search-button="props.component.searchButton"
         :loading="props.component.invisibleButton"
         :button-text="props.component.buttonText"
+        :default-value="props.component.defaultValue"
         @input="maEvent.handleInputEvent(props.component, $event)"
         @change="maEvent.handleChangeEvent(props.component, $event)"
         @press-enter="maEvent.handleCommonEvent(props.component, 'onPressEnter')"

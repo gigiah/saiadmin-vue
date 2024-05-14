@@ -9,9 +9,9 @@
     </a-modal>
     <a-space class="p-3">
       <a-button type="primary" @click="handleClickAddStore">新增门店订单</a-button>
-      <a-select v-if="showForm" placeholder="请选择卡券" allow-search>
+      <!-- <a-select v-if="showForm" placeholder="请选择卡券" allow-search>
         <a-option v-for="item of coupons" :value="item.value" :label="item.label" />
-      </a-select>
+      </a-select> -->
     </a-space>
     <!--订单表单-->
     <div class="p-3 ma-content-block">
@@ -29,7 +29,6 @@ import couponItemApi from '@/api/couponItem'
 import warehouseAddressApi from '@/api/warehouseAddress'
 import productApi from '@/api/product'
 import attachmentApi from '@/api/system/attachment'
-// import couponApi from '@/api/coupon'
 
 const form = ref({})//订单表单
 const options = ref({})//订单选项
@@ -49,26 +48,33 @@ const coupons = ref([])//卡券
 
 //删除门店
 const removeStore = (dataIndexObj) => {
-  let dataIndex = dataIndexObj.id
-  const index = columns.value.findIndex((c) => c.dataIndex === dataIndex)
+  let id = dataIndexObj.id
+  const index = columns.value.findIndex((c) => c.dataIndex === id)
   if (index !== -1) {
     columns.value.splice(index, 1)//删除表格
-    selectStore.storeIds.delete(dataIndex)//删除hash
+    selectStore.storeIds.delete(id)//删除hash
     if (columns.value.length == 0) showForm.value = false
   }
-  console.log('delete table', columns.value)
+
+  let consigneeIndex = 'consignee-' + id
+  let orderListIndex = 'order-list-' + id
+  delete form.value[consigneeIndex]
+  delete form.value[orderListIndex]
+
+  console.log('after delete new form', form.value)
+  console.log('after delete new table', columns.value)
 }
 
 //加载卡券
-const getMyCoupon = () => {
-  couponItemApi.getMyCoupon()
-    .then(res => {
-      coupons.value = res.data
-    }).catch(error => {
-      console.error("获取卡券失败", error)
-    })
-}
-getMyCoupon()
+// const getMyCoupon = () => {
+//   couponItemApi.getMyCoupon()
+//     .then(res => {
+//       coupons.value = res.data
+//     }).catch(error => {
+//       console.error("获取卡券失败", error)
+//     })
+// }
+// getMyCoupon()
 
 //加载仓库地址
 const getWarehouses = () => {
@@ -125,7 +131,7 @@ getFiles()
 
 // //加载卡券列表
 // const getCoupons = () => {
-//   couponApi.getPageList({ type: 'all' })
+//   couponItemApi.getPageList({ type: 'all' })
 //     .then(res => {
 //       res.data.forEach(function (item) {
 //         coupons.value.push(item)
@@ -173,7 +179,6 @@ const handleClickAddStore = () => {
   showStore.value = true
 }
 const handleBeforeOk = (done) => {
-  console.log(crudRef.value)
   let selected = filterStoreByIds(crudRef.value.getSelecteds().value, crudRef.value.getTableData())
   selected.forEach(function (store) {
     if (selectStore.storeIds.has(store.id)) {
@@ -213,6 +218,7 @@ const handleSubmit = async ({ values, errors }) => {
       columns.value = []
       selectStore.storeIds.clear()
       done(true)
+      form.value = {}
       Notification.success('订单提交成功')
     },
   })
@@ -350,7 +356,7 @@ const storeColumns = reactive([
 ])
 
 const orderTemplate = (title, storeId) => {
-  let data = {
+  const data = {
     formType: 'card',
     title: title,
     dataIndex: storeId,
@@ -359,7 +365,9 @@ const orderTemplate = (title, storeId) => {
     remove: removeStore,
     formList: [
       {
-        dataIndex: 'consignee-' + storeId, title: '收货地址', formType: 'select',
+        dataIndex: 'consignee-' + storeId,
+        title: '收货地址',
+        formType: 'select',
         data: warehouses,
         rules: [{ required: true, message: '请选择收货地址' }]
       },
@@ -375,14 +383,16 @@ const orderTemplate = (title, storeId) => {
             formType: 'select',
             placeholder: '请选择',
             data: productSelect,
-            // onChange: (id) => {
-            //   let product = selectProduct(id)
-            //   updateProduct(storeId, product)
-            // },
-            onControl: (val, maFormObject ) => {
-              console.log('val', val)
-              console.log('maFormObject', maFormObject)
-              return { product_picture_type: { display: false } }
+            control: (val, maFormObject) => {
+              console.log(val)
+              console.log(maFormObject)
+              // if (val) {
+              //   productApi.read(val)
+              //     .then(res => {
+              //       maFormObject.product_type_id = res.data.type_id
+              //       maFormObject.product_grade_id = res.data.grade_id
+              //     })
+              // }
             },
             rules: [{ required: true, message: '请选择产品' }]
           },
@@ -398,6 +408,8 @@ const orderTemplate = (title, storeId) => {
             dataIndex: 'product_grade',
             title: '产品级别',
             placeholder: '',
+            addDefaultValue: 'add',
+            editDefaultValue: 'edit',
             disabled: true,
           },
           {

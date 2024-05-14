@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<ma-image-upload v-if="props.type === 'image'" v-model="file" />
-		<ma-file-upload v-if="props.type === 'file'" v-model="file" />
+		<ma-file-upload v-if="props.type === 'file'" v-model="file" @getUploadName="(value) => emit('getUploadName', value)"  />
 		<ma-chunk-upload v-if="props.type === 'chunk'" v-model="file" />
 	</div>
 </template>
@@ -14,7 +14,7 @@ import MaImageUpload from './components/image-upload.vue'
 import MaFileUpload from './components/file-upload.vue'
 import MaChunkUpload from './components/chunk-upload.vue'
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'getUploadName'])
 const file = ref()
 const props = defineProps({
 	modelValue: { type: [String, Number, Array], default: () => {} },
