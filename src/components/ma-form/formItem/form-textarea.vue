@@ -19,6 +19,7 @@
         :show-word-limit="props.component.showWordLimit"
         :word-length="props.component.wordLength"
         :word-slice="props.component.wordSlice"
+        :default-value="props.component.defaultValue"
         @input="maEvent.handleInputEvent(props.component, $event)"
         @change="maEvent.handleChangeEvent(props.component, $event)"
         @clear="maEvent.handleCommonEvent(props.component, 'onClear')"

@@ -151,6 +151,7 @@ const requestCascaderData = async (val, dict, dictList, name) => {
 export const handlerCascader = async (val, column, columns, dictList, formModel, clearData = true) => {
   if (column.cascaderItem && isArray(column.cascaderItem)) {
     column.cascaderItem.map(async name => {
+      console.log('name', name)
       const dict = columns.find(col => col.dataIndex === name && col.dict).dict
       clearData && set(formModel, name, undefined)
       requestCascaderData(val, dict, dictList, name)

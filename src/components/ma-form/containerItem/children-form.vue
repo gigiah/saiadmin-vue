@@ -57,7 +57,7 @@
           <thead>
             <tr class="arco-table-tr">
               <th v-if="component.showBtn" class="arco-table-th" width="60">
-                <span class="arco-table-cell arco-table-cell-align-center">
+                <span class="arco-table-cell">
                   <a-button type="primary" @click="addItem()" size="small" shape="round">
                     <template #icon>
                       <icon-plus />
@@ -66,13 +66,13 @@
                 </span>
               </th>
               <th class="arco-table-th" :width="60">
-                <span class="arco-table-cell arco-table-cell-align-center">
+                <span class="arco-table-cell">
                   <span class="arco-table-th-title">序号</span>
                 </span>
               </th>
               <template v-for="component in viewFormList[0]">
                 <th class="arco-table-th" :width="component.width">
-                  <span class="arco-table-cell arco-table-cell-align-center">
+                  <span class="arco-table-cell">
                     <span class="arco-table-th-title">{{ component.title }}</span>
                   </span>
                 </th>
@@ -227,7 +227,6 @@ const init = async () => {
 
 const addItem = async (data = {}) => {
   let index = formModel.value[props.component.dataIndex].length
-  // console.log('viewFormList', viewFormList.value)
   viewFormList.value[index] = cloneDeep(formList)
   maEvent.customeEvent(props.component, { formList: viewFormList.value[index], data, index: index }, 'onAdd')
 
@@ -235,8 +234,7 @@ const addItem = async (data = {}) => {
   maEvent.handleCommonEvent(props.component, 'onMounted')
   viewFormList.value[index].init && await init()
   maEvent.handleCommonEvent(viewFormList.value[index], 'onInit')
-  console.log('fuck', viewFormList.value[index])
-  
+
   formModel.value[props.component.dataIndex].push(data)
 }
 
@@ -255,10 +253,9 @@ const getChildrenDataIndex = (index, dataIndex) => {
 
 maEvent.handleCommonEvent(props.component, 'onCreated')
 onMounted(async () => {
-  // console.log('props.component.dataList', props.component.dataList)
   if (props.component.dataList) {
     for (let i = 0; i < (props.component.dataList.length); i++) {
-      console.log('data', props.component.dataList[i])
+      // console.log('data-list-item', props.component.dataList[i])
       await addItem(props.component.dataList[i])
     }
   } else if (formModel.value[props.component.dataIndex].length === 0) {
@@ -271,6 +268,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.arco-table .arco-table-cell{
+  padding: 6px 9px;
+}
+
 :deep(.arco-form-item-content-flex) {
   display: block;
 }

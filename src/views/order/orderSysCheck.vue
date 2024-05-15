@@ -16,6 +16,8 @@ import storeApi from '@/api/store'
 import warehouseAddressApi from '@/api/warehouseAddress'
 import productApi from '@/api/product'
 import attachmentApi from '@/api/system/attachment'
+import pricingTypeApi from '@/api/pricingType'
+import pricingUnitApi from '@/api/pricingUnit'
 import couponItemApi from '@/api/couponItem'
 
 const list = ref([])
@@ -37,6 +39,8 @@ const productSelect = ref([])//产品选项
 const files = ref([])//文件库
 const filesSelect = ref([])//文件选项
 const coupons = ref([])//卡券
+const pricingType = ref([])//计价方式
+const pricingUnit = ref([])//计量单位
 
 // 加载订单
 const getList = async () => {
@@ -115,6 +119,40 @@ const getProducts = () => {
 }
 getProducts()
 
+//加载计价方式
+const getPricingType = () => {
+  pricingTypeApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        pricingType.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取计价方式失败", error)
+    })
+}
+getPricingType()
+
+//加载计量单位
+const getPricingUnit = () => {
+  pricingUnitApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        pricingUnit.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取计量单位失败", error)
+    })
+}
+getPricingUnit()
+
 //加载文件库
 const getFiles = () => {
   attachmentApi.getPageList({ type: 'all' })
@@ -181,21 +219,21 @@ const integrateData = (data) => {
 }
 
 const orderTemplate = (orderId, orderItem, orderGoods) => {
-  console.log('Order Item:', orderItem);
-  console.log('Order Goods:', orderGoods);
+  console.log('Order Item:', orderItem)
+  console.log('Order Goods:', orderGoods)
 
   const handlePassClick = () => {
-    console.log('Pass button clicked for orderId:', orderId);
+    console.log('Pass button clicked for orderId:', orderId)
   };
 
   const handleDenyClick = () => {
-    console.log('Deny button clicked for orderId:', orderId);
+    console.log('Deny button clicked for orderId:', orderId)
     // 其他处理逻辑
-  };
+  }
 
   const data = {
     formType: 'card',
-    title: orderItem.store_name,
+    title: orderItem.store_name + ' [' + orderItem.code + ']',
     dataIndex: orderId,
     customClass: ['m-3'],
     extra: '',
@@ -246,13 +284,14 @@ const orderTemplate = (orderId, orderItem, orderGoods) => {
         readonly: true,
       },
       {
-        dataIndex: 'consignee-' + orderItem.store_id,
+        dataIndex: 'consignee-' + orderId,
         title: '收货地址',
         formType: 'select',
         data: warehouses,
         valueKey: 'id',
         defaultValue: orderItem.consignee_id,
-        rules: [{ required: true, message: '请选择收货地址' }]
+        rules: [{ required: true, message: '请选择收货地址' }],
+
       },
       {
         title: '订单列表',
@@ -267,19 +306,15 @@ const orderTemplate = (orderId, orderItem, orderGoods) => {
           {
             dataIndex: 'product_id',
             title: '产品名称',
-            formType: 'input',
+            formType: 'select',
             placeholder: '请选择',
-            // data: productSelect,
-            // onChange: (id) => {
-            //   let product = selectProduct(id)
-            //   updateProduct(storeId, product)
-            // },
+            data: productSelect,
             rules: [{ required: true, message: '请选择产品' }]
           },
           {
             dataIndex: 'associated_file',
             title: '文件名',
-            formType: 'input',
+            formType: 'select',
             placeholder: '请选择',
             data: filesSelect,
             rules: [{ required: true, message: '请选择上传文件' }]
@@ -330,12 +365,16 @@ const orderTemplate = (orderId, orderItem, orderGoods) => {
             dataIndex: 'pricing_type_id',
             title: '计价方式',
             placeholder: '',
+            formType: 'select',
+            data: pricingType,
             disabled: true,
           },
           {
             dataIndex: 'pricing_unit_id',
             title: '计量单位',
             placeholder: '',
+            formType: 'select',
+            data: pricingUnit,
             disabled: true,
           },
           {

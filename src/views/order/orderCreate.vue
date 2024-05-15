@@ -1,38 +1,51 @@
 <template>
-  <div class="h-full ma-content-block">
-    <!--门店表单-->
-    <a-modal v-model:visible="showStore" :width="1400" title="门店选择" @cancel="handleCancel" @before-ok="handleBeforeOk">
-      <a-form :model="storeForm">
-        <ma-crud :options="crud" :columns="storeColumns" ref="crudRef">
-        </ma-crud>
-      </a-form>
-    </a-modal>
-    <a-space class="p-3">
-      <a-button type="primary" @click="handleClickAddStore">新增门店订单</a-button>
-      <!-- <a-select v-if="showForm" placeholder="请选择卡券" allow-search>
+  <a-spin :loading="isLoading" tip="加载中...">
+    <div class="h-full ma-content-block">
+      <!--门店表单-->
+      <a-modal v-model:visible="showStore" :width="1400" title="门店选择" @cancel="handleCancel"
+        @before-ok="handleBeforeOk">
+        <a-form :model="storeForm">
+          <ma-crud :options="crud" :columns="storeColumns" ref="crudRef">
+          </ma-crud>
+        </a-form>
+      </a-modal>
+      <a-space class="p-3">
+        <a-button type="primary" @click="handleClickAddStore">新增门店订单</a-button>
+        <!-- <a-select v-if="showForm" placeholder="请选择卡券" allow-search>
         <a-option v-for="item of coupons" :value="item.value" :label="item.label" />
       </a-select> -->
-    </a-space>
-    <!--订单表单-->
-    <div class="p-3 ma-content-block">
-      <ma-form v-if="showForm" v-model="form" :options="options" :columns="columns" @submit="handleSubmit">
-      </ma-form>
+      </a-space>
+      <!--订单表单-->
+      <div class="p-3 ma-content-block">
+        <ma-form v-if="showForm" v-model="form" :options="options" :columns="columns" @submit="handleSubmit">
+        </ma-form>
+      </div>
     </div>
-  </div>
+  </a-spin>
+
 </template>
 <script setup>
 import { ref, reactive } from 'vue'
 import { Notification, Message, Button, Modal } from '@arco-design/web-vue'
+import tool from '@/utils/tool'
 import orderApi from '@/api/order'
 import storeApi from '@/api/store'
 import couponItemApi from '@/api/couponItem'
 import warehouseAddressApi from '@/api/warehouseAddress'
 import productApi from '@/api/product'
-import attachmentApi from '@/api/system/attachment'
+import craftGroupApi from '@/api/craftGroup'
+import gradeApi from '@/api/productGrade'
+import pictureTypeApi from '@/api/productPictureType'
+import pricingTypeApi from '@/api/pricingType'
+import pricingUnitApi from '@/api/pricingUnit'
+import fileApi from '@/api/uploadBatch'
 
+const isLoading = ref(false)
 const form = ref({})//订单表单
-const options = ref({})//订单选项
-const columns = ref([])//订单字段
+const options = ref({
+  size: 'small',
+})//订单表单选项
+const columns = ref([])//订单表单字段
 const crudRef = ref()//选择门店的crud
 const showStore = ref(false)//是否弹出选择对话框
 const showForm = ref(false)//是否展示订单表单
@@ -41,28 +54,107 @@ const selectStore = reactive({
 })
 const warehouses = ref([])//仓库地址
 const products = ref([])//产品库
+const craftGroup = ref([])//工艺选项组
 const productSelect = ref([])//产品选项
 const files = ref([])//文件库
 const filesSelect = ref([])//文件选项
-const coupons = ref([])//卡券
+// const coupons = ref([])//卡券
+const grade = ref([])//产品级别
+const pictureType = ref([])//画面类型
+const pricingType = ref([])//计价方式
+const pricingUnit = ref([])//计量单位
+
+const disableSiblings = (array, valuesToMatch) => {
+  // craftGroup.value.forEach(parentItem => {
+  //   if (parentItem.children && parentItem.children.length > 0) {
+  //     const isSelected = parentItem.children.some(child => valuesToMatch.includes(child.value));
+  //     parentItem.children.forEach(child => {
+  //       if (isSelected) {
+  //         child.disabled = !valuesToMatch.includes(child.value);
+  //       } else {
+  //         if (child.disabled) {
+  //           delete child.disabled;
+  //         }
+  //       }
+  //     });
+  //   }
+  // });
+}
+
+const integrateData = (data) => {
+  const result = []
+  // 遍历 JSON 对象的键
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      // 获取 ID（例如："order-list-1" 中的 "1"）
+      const idMatch = key.match(/(\d+)$/)
+      if (idMatch) {
+        const id = idMatch[0]
+        // 查找或创建对应 ID 的集成对象
+        let orderGroup = result.find(item => item.id === id)
+        if (!orderGroup) {
+          orderGroup = { id: id, orderList: [], consignee: null }
+          result.push(orderGroup)
+        }
+        // 根据键名决定如何处理数据
+        if (key.startsWith('order-list')) {
+          // 将 "order-list-x" 的数组合并到 orderList
+          orderGroup.orderList.push(...data[key])
+        } else if (key.startsWith('consignee')) {
+          // 将 "consignee-x" 的值设置为 consignee
+          orderGroup.consignee = data[key]
+        }
+      }
+    }
+  }
+  return result
+}
+
+//加载缓存数据
+const render = () => {
+  isLoading.value = true
+  let storeForm = tool.local.get('currentForm')
+  if (storeForm) {
+    showStore.value = false
+    showForm.value = false
+    //重新构造数据
+    let newData = integrateData(storeForm)
+    //错开时间渲染
+    window.setTimeout(() => {
+      newData.forEach(function (item) {
+        let store = findStoreById(item.id, crudRef.value.getTableData())
+        columns.value.push(orderTemplate(store.name, store.id, item.consignee, item.orderList))
+      })
+      isLoading.value = false
+      showForm.value = true
+    }, 3000)
+  } else {
+    isLoading.value = false
+  }
+}
+render()
 
 //删除门店
 const removeStore = (dataIndexObj) => {
   let id = dataIndexObj.id
   const index = columns.value.findIndex((c) => c.dataIndex === id)
   if (index !== -1) {
-    columns.value.splice(index, 1)//删除表格
     selectStore.storeIds.delete(id)//删除hash
-    if (columns.value.length == 0) showForm.value = false
   }
-
+  //本地缓存清空
+  let storeForm = tool.local.get('currentForm')
   let consigneeIndex = 'consignee-' + id
   let orderListIndex = 'order-list-' + id
-  delete form.value[consigneeIndex]
-  delete form.value[orderListIndex]
-
-  console.log('after delete new form', form.value)
-  console.log('after delete new table', columns.value)
+  delete storeForm[consigneeIndex]
+  delete storeForm[orderListIndex]
+  tool.local.set('currentForm', storeForm)
+  //当前全部清空
+  form.value = {}
+  columns.value = []
+  render()
+  if (selectStore.storeIds.size == 0) {
+    showForm.value = false
+  }
 }
 
 //加载卡券
@@ -111,14 +203,95 @@ const getProducts = () => {
 }
 getProducts()
 
+
+//加载工艺选项组
+const getCraftGroup = () => {
+  craftGroupApi.getTree({ type: 'all' })
+    .then(res => {
+      craftGroup.value = res.data
+    })
+    .catch(error => {
+      console.error("获取工艺选项组失败", error)
+    })
+}
+getCraftGroup()
+
+//加载产品级别
+const getGrade = () => {
+  gradeApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        grade.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取产品级别失败", error)
+    })
+}
+getGrade()
+
+//加载画面类型
+const getPictureType = () => {
+  pictureTypeApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        pictureType.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取画面类型失败", error)
+    })
+}
+getPictureType()
+
+//加载计价方式
+const getPricingType = () => {
+  pricingTypeApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        pricingType.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取计价方式失败", error)
+    })
+}
+getPricingType()
+
+//加载计量单位
+const getPricingUnit = () => {
+  pricingUnitApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        pricingUnit.value.push({
+          label: item.name,
+          value: item.id
+        })
+      })
+    })
+    .catch(error => {
+      console.error("获取计量单位失败", error)
+    })
+}
+getPricingUnit()
+
 //加载文件库
 const getFiles = () => {
-  attachmentApi.getPageList({ type: 'all' })
+  fileApi.getPageList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
         files.value.push(item)
         filesSelect.value.push({
-          label: item.origin_name,
+          label: item.title,
           value: item.id
         })
       })
@@ -128,20 +301,6 @@ const getFiles = () => {
     })
 }
 getFiles()
-
-// //加载卡券列表
-// const getCoupons = () => {
-//   couponItemApi.getPageList({ type: 'all' })
-//     .then(res => {
-//       res.data.forEach(function (item) {
-//         coupons.value.push(item)
-//       })
-//     })
-//     .catch(error => {
-//       console.error("获取卡券列表失败", error)
-//     })
-// }
-// getCoupons()
 
 const selectProduct = (id) => {
   let product = {}
@@ -153,28 +312,6 @@ const selectProduct = (id) => {
   return product
 }
 
-//处理产品选择后变更
-const updateProduct = (storeId, productDetails) => {
-  console.log('productDetails', productDetails)
-  // 找到对应的订单表单
-  console.log(columns.value)
-  const orderForm = columns.value.find(column => column.dataIndex === storeId)
-  console.log('orderForm', orderForm)
-  if (orderForm) {
-    // 找到产品级别的输入字段
-    console.log('orderForm.formList', orderForm.formList)
-    const orderList = orderForm.formList.find(field => field.dataIndex === 'order-list-' + storeId)
-    const productGradeField = orderList.formList.find(field => field.dataIndex === 'product_grade')
-    console.log('productGradeField', productGradeField)
-    console.log('productDetails.grade', productDetails.grade_id)
-    if (productGradeField) {
-      // 更新产品级别字段的值
-      productGradeField.placeholder = productDetails.grade_id
-    }
-  }
-}
-
-
 const handleClickAddStore = () => {
   showStore.value = true
 }
@@ -185,7 +322,7 @@ const handleBeforeOk = (done) => {
       Notification.warning(store.name + '已存在!')
     } else {
       columns.value.push(orderTemplate(store.name, store.id))
-      selectStore.storeIds.add(store.id)
+
     }
   })
   showForm.value = true
@@ -205,6 +342,10 @@ const filterStoreByIds = (ids, data) => {
   return data.filter(item => ids.includes(item.id))
 }
 
+const findStoreById = (id, data) => {
+  return data.find(store => store.id == id)
+}
+
 const handleSubmit = async ({ values, errors }) => {
   Modal.info({
     title: '提示',
@@ -214,44 +355,16 @@ const handleSubmit = async ({ values, errors }) => {
       console.log('form data', form.value)
       let data = integrateData(form.value)
       console.log('integrate data', data)
-      orderApi.handleCreateOrder(data)
-      columns.value = []
+      // orderApi.handleCreateOrder(data)
       selectStore.storeIds.clear()
       done(true)
+      columns.value = []
       form.value = {}
+      tool.local.remove('currentForm')
       Notification.success('订单提交成功')
     },
   })
 
-}
-
-const integrateData = (data) => {
-  const result = []
-  // 遍历 JSON 对象的键
-  for (const key in data) {
-    if (data.hasOwnProperty(key)) {
-      // 获取 ID（例如："order-list-1" 中的 "1"）
-      const idMatch = key.match(/(\d+)$/)
-      if (idMatch) {
-        const id = idMatch[0]
-        // 查找或创建对应 ID 的集成对象
-        let orderGroup = result.find(item => item.id === id)
-        if (!orderGroup) {
-          orderGroup = { id: id, orderList: [], consignee: null }
-          result.push(orderGroup)
-        }
-        // 根据键名决定如何处理数据
-        if (key.startsWith('order-list')) {
-          // 将 "order-list-x" 的数组合并到 orderList
-          orderGroup.orderList.push(...data[key])
-        } else if (key.startsWith('consignee')) {
-          // 将 "consignee-x" 的值设置为 consignee
-          orderGroup.consignee = data[key]
-        }
-      }
-    }
-  }
-  return result
 }
 
 const storeForm = ref({})
@@ -355,7 +468,9 @@ const storeColumns = reactive([
   },
 ])
 
-const orderTemplate = (title, storeId) => {
+const orderTemplate = (title, storeId, consigneeId = null, orderGoods = null) => {
+  //当前添加的门店
+  selectStore.storeIds.add(storeId)
   const data = {
     formType: 'card',
     title: title,
@@ -369,31 +484,52 @@ const orderTemplate = (title, storeId) => {
         title: '收货地址',
         formType: 'select',
         data: warehouses,
-        rules: [{ required: true, message: '请选择收货地址' }]
+        valueKey: 'id',
+        defaultValue: consigneeId,
+        rules: [{ required: true, message: '请选择收货地址' }],
+        control: (val, itemObj) => {
+          tool.local.set('currentForm', form.value)
+          itemObj['order-list-' + storeId].map(item => {
+            if (item['product_id']) {
+              let product = selectProduct(item['product_id'])
+              // console.log('product', product)
+              console.log('itemObj', itemObj)
+              item['product_grade'] = product.grade_id
+              item['product_picture_type'] = product.picture_type_id
+              item['pricing_type_id'] = product.pricing_type_id
+              item['pricing_unit_id'] = product.pricing_unit_id
+              item['unit_price'] = product.price
+              disableSiblings([1])
+              // item['craft'] = craftGroup
+              //组装工艺选项
+              // let craftIdArr = product.craft_group_ids.split(',').map(id => parseInt(id))
+              // let matchedCraftGroup = craftGroup.value.filter(item => craftIdArr.includes(item.value))
+              // console.log('matchedCraftGroup', matchedCraftGroup)
+              // item['craft'].value = matchedCraftGroup
+            }
+          })
+        }
       },
-      // {
-      //   title: '下单产品', formType: 'divider', orientation: 'left', margin: '30px',
-      // },
       {
-        title: '订单列表', dataIndex: 'order-list-' + storeId, formType: 'children-form', type: 'table', emptyRow: 1, hideLabel: true, showBtn: true,
+        title: '', formType: 'divider', orientation: 'left', margin: '20px',
+      },
+      {
+        title: '订单列表',
+        dataIndex: 'order-list-' + storeId,
+        formType: 'children-form',
+        type: 'table',
+        emptyRow: 1,
+        hideLabel: true,
+        showBtn: true,
+        dataList: orderGoods,
         formList: [
           {
             dataIndex: 'product_id',
+            labelWidth: '20px',
             title: '产品名称',
             formType: 'select',
             placeholder: '请选择',
             data: productSelect,
-            control: (val, maFormObject) => {
-              console.log(val)
-              console.log(maFormObject)
-              // if (val) {
-              //   productApi.read(val)
-              //     .then(res => {
-              //       maFormObject.product_type_id = res.data.type_id
-              //       maFormObject.product_grade_id = res.data.grade_id
-              //     })
-              // }
-            },
             rules: [{ required: true, message: '请选择产品' }]
           },
           {
@@ -408,14 +544,16 @@ const orderTemplate = (title, storeId) => {
             dataIndex: 'product_grade',
             title: '产品级别',
             placeholder: '',
-            addDefaultValue: 'add',
-            editDefaultValue: 'edit',
+            formType: 'select',
+            data: grade,
             disabled: true,
           },
           {
             dataIndex: 'product_picture_type',
             title: '画面类型',
             placeholder: '',
+            formType: 'select',
+            data: pictureType,
             disabled: true,
           },
           {
@@ -439,22 +577,15 @@ const orderTemplate = (title, storeId) => {
           {
             dataIndex: 'craft',
             title: '制作选项',
-            formType: 'select',
+            formType: 'tree-select',
             placeholder: '请选择',
-            data: [
-              {
-                label: '党员',
-                value: 1,
-              },
-              {
-                label: '团员',
-                value: 2,
-              },
-              {
-                label: '群众',
-                value: 3,
-              },
-            ],
+            data: craftGroup,
+            size: 'small',
+            multiple: true,
+            onChange: (val) => {
+              console.log(val)
+              disableSiblings(craftGroup, val)
+            }
           },
           {
             dataIndex: 'remark',
@@ -465,12 +596,16 @@ const orderTemplate = (title, storeId) => {
             dataIndex: 'pricing_type_id',
             title: '计价方式',
             placeholder: '',
+            formType: 'select',
+            data: pricingType,
             disabled: true,
           },
           {
             dataIndex: 'pricing_unit_id',
             title: '计量单位',
             placeholder: '',
+            formType: 'select',
+            data: pricingUnit,
             disabled: true,
           },
           {
