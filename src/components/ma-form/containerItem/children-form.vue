@@ -255,7 +255,6 @@ maEvent.handleCommonEvent(props.component, 'onCreated')
 onMounted(async () => {
   if (props.component.dataList) {
     for (let i = 0; i < (props.component.dataList.length); i++) {
-      // console.log('data-list-item', props.component.dataList[i])
       await addItem(props.component.dataList[i])
     }
   } else if (formModel.value[props.component.dataIndex].length === 0) {

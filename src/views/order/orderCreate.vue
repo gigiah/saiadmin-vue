@@ -469,8 +469,14 @@ const storeColumns = reactive([
 ])
 
 const orderTemplate = (title, storeId, consigneeId = null, orderGoods = null) => {
+
   //当前添加的门店
   selectStore.storeIds.add(storeId)
+
+  const viewCrart = (row) => {
+    console.log('button clicked:', row)
+  };
+
   const data = {
     formType: 'card',
     title: title,
@@ -586,6 +592,13 @@ const orderTemplate = (title, storeId, consigneeId = null, orderGoods = null) =>
               console.log(val)
               disableSiblings(craftGroup, val)
             }
+          },
+          {
+            dataIndex: 'view_craft',
+            title: '工艺计费',
+            defaultValue: '数据数据',
+            formType: 'button',
+            onClick: (row) => viewCrart(row),
           },
           {
             dataIndex: 'remark',
