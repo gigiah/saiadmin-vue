@@ -2,21 +2,12 @@
 	<div class="justify-between p-4 ma-content-block lg:flex">
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef">
-			<!-- 图标列 -->
-			<template #icon="{ record }">
-				<component :is="record.icon" v-if="record.icon" />
-			</template>
-			<!-- 状态列 -->
-			<template #status="{ record }">
-				<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)"
-					:default-checked="record.status == 1" />
-			</template>
 			<!-- 操作前置扩展 -->
 			<template #operationBeforeExtend="{ record }">
-				<a-link @click="openAddProduct(record)" v-if="record.row_type === 'order'" v-auth="[]"><icon-plus />
-					产品</a-link>
-				<a-link @click="openAddCraft(record)" v-if="record.row_type === 'goods'" v-auth="[]"><icon-plus />
-					工艺</a-link>
+				<a-link v-if="record.row_type === 'order' || record.row_type == 'goods'" @click="openAdd(record)"
+					v-auth="[]">
+					<icon-plus /> {{ record.row_type === 'order' ? '产品' : '工艺' }}
+				</a-link>
 			</template>
 		</ma-crud>
 	</div>
@@ -30,62 +21,134 @@ import craftApi from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
-const currentParentId = ref()
+const deleteForms = ref([])
 
-//添加产品操作
-const openAddProduct = (record) => {
-	console.log('record', record)
-	console.log('openAddProduct', columns)
-	resetColumnsDisplay()
-	columns[1].addDefaultValue = record.order_id
-	columns[2].addDefaultValue = 'goods'
-	columns[3].addDefaultValue = record.store_id
-	columns[3].disabled = true
-	// columns[2].addDisplay = false
-	columns[4].addDisplay = false
-	columns[7].addDisplay = false
-	crudRef.value.crudFormRef.add()
+const orderShowIndex = {
+	'store_id': { 'addDisabled': false, 'editDisabled': true },
+	'consignee_id': { 'addDisabled': false, 'editDisabled': false },
 }
 
-//添加工艺操作
-const openAddCraft = (record) => {
-	console.log('record', record)
-	console.log('openAddCraft', columns)
-	resetColumnsDisplay()
-	columns[1].addDefaultValue = record.id;//goods_id
-	columns[2].addDefaultValue = 'craft';
-	columns[3].disabled = true;
-	columns[3].addDisplay = false;
-	columns[4].addDisplay = false;
-	columns[5].addDefaultValue = record.product_id;
-	columns[5].disabled = true;
-	columns[6].addDisplay = false;
-	columns[8].addDisplay = false;
-	columns[9].addDisplay = false;
-	columns[10].addDefaultValue = record.width;
-	columns[10].disabled = true;
-	columns[11].addDefaultValue = record.height;
-	columns[11].disabled = true;
-	columns[12].addDefaultValue = record.nums;
-	columns[12].disabled = true;
-	crudRef.value.crudFormRef.add()
+const goodsShowIndex = {
+	// 'store_id': { 'addDisabled': true, 'editDisabled': true },
+	'product_id': { 'addDisabled': false, 'editDisabled': true },
+	'associated_file': { 'addDisabled': false, 'editDisabled': false },
+	'product_grade_id': { 'addDisabled': true, 'editDisabled': true },
+	'product_picture_type_id': { 'addDisabled': true, 'editDisabled': true },
+	'width': { 'addDisabled': false, 'editDisabled': false },
+	'height': { 'addDisabled': false, 'editDisabled': false },
+	'nums': { 'addDisabled': false, 'editDisabled': false },
+	'remark': { 'addDisabled': false, 'editDisabled': false },
+	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
+	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
+	'unit_price': { 'addDisabled': true, 'editDisabled': true },
+	'amount': { 'addDisabled': true, 'editDisabled': true },
 }
 
-//重置表格
-const resetColumnsDisplay = () => {
-	for (let i = 0; i < columns.length; i++) {
-		if (columns[i].dataIndex == 'parent_id') {
-			columns[i].addDisplay = false
-			columns[i].editDisplay = false
-		} else {
-			columns[i].addDiPsplay = true
-			columns[i].editDisplay = true
-		}
+const craftShowIndex = {
+	// 'product_id': { 'addDisabled': true, 'editDisabled': true },
+	'craft_id': { 'addDisabled': false, 'editDisabled': true },
+	'width': { 'addDisabled': true, 'editDisabled': true },
+	'height': { 'addDisabled': true, 'editDisabled': true },
+	'nums': { 'addDisabled': true, 'editDisabled': true },
+	'remark': { 'addDisabled': false, 'editDisabled': false },
+	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
+	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
+	'unit_price': { 'addDisabled': true, 'editDisabled': true },
+	'amount': { 'addDisabled': true, 'editDisabled': true },
+}
 
+//产品/工艺添加操作
+const openAdd = (record) => {
+	console.log('openAddRecord', record)
+	console.log('openAdd', columns)
+	if (record.row_type == 'order') {
+		resetAddColumnsDisplay('goods')
+		columns[1].addDefaultValue = record.id;//order_id
+		columns[2].addDefaultValue = 'goods'
+		columns[3].addDefaultValue = record.store_id
 	}
-	window.setTimeout(() => {
-		console.log('resetColumnsDisplay load!')
-	}, 1500)
+	else if (record.row_type == 'goods') {
+		resetAddColumnsDisplay('craft')
+		columns[1].addDefaultValue = record.id;//goods_id
+		columns[2].addDefaultValue = 'craft';
+		columns[5].addDefaultValue = record.product_id;
+		columns[10].addDefaultValue = record.width;
+		columns[11].addDefaultValue = record.height;
+		columns[12].addDefaultValue = record.nums;
+		columns[14].addDefaultValue = undefined
+		columns[15].addDefaultValue = undefined
+	}
+	crudRef.value.crudFormRef.add()
+}
+
+//重置添加
+const resetAddColumnsDisplay = (type) => {
+	console.log('type', type)
+	for (let i = 0; i < columns.length; i++) {
+		columns[i].addDefaultValue = undefined
+		let showIndex = {}
+		if (type == 'order') {
+			showIndex = orderShowIndex
+		}
+		else if (type == 'goods') {
+			showIndex = goodsShowIndex
+		}
+		else if (type == 'craft') {
+			showIndex = craftShowIndex
+		}
+		if (showIndex[columns[i].dataIndex]) {
+			columns[i].addDisplay = true
+			if (showIndex[columns[i].dataIndex].addDisabled == true) {
+				columns[i].addDisabled = true
+			} else {
+				columns[i].addDisabled = false
+			}
+		} else {
+			columns[i].addDisplay = false
+		}
+	}
+}
+
+//重置编辑
+const resetEditColumnsDisplay = (type) => {
+	console.log('type', type)
+	for (let i = 0; i < columns.length; i++) {
+		columns[i].editDefaultValue = undefined
+		let showIndex = {}
+		if (type == 'order') {
+			showIndex = orderShowIndex
+		}
+		else if (type == 'goods') {
+			showIndex = goodsShowIndex
+		}
+		else if (type == 'craft') {
+			showIndex = craftShowIndex
+		}
+		if (showIndex[columns[i].dataIndex]) {
+			columns[i].editDisplay = true
+			if (showIndex[columns[i].dataIndex].editDisabled == true) {
+				columns[i].editDisabled = true
+			} else {
+				columns[i].editDisabled = false
+			}
+		} else {
+			columns[i].editDisplay = false
+		}
+	}
+}
+
+const deleteByForm = (id, table) => {
+	table.forEach(function (item) {
+		if (item.id == id) {
+			deleteForms.value.push({
+				type: item.row_type,
+				id: item.id
+			})
+		}
+		if (item.children) {
+			deleteByForm(id, item.children)
+		}
+	})
 }
 
 const crud = reactive({
@@ -112,61 +175,43 @@ const crud = reactive({
 	},
 	//添加门店前操作
 	beforeOpenAdd: () => {
-		console.log('beforeOpenAdd', columns)
-		resetColumnsDisplay()
+		console.log('beforeOpenAddColumns', columns)
+		resetAddColumnsDisplay('order')
+		columns[1].addDefaultValue = 0
 		columns[2].addDefaultValue = 'order';
-		columns[5].addDisplay = false;
-		columns[6].addDisplay = false;
-		columns[7].addDisplay = false;
-		columns[8].addDisplay = false;
-		columns[9].addDisplay = false;
-		columns[10].addDisplay = false;
-		columns[11].addDisplay = false;
-		columns[12].addDisplay = false;
-		columns[13].addDisplay = false;
-		columns[14].addDisplay = false;
-		columns[15].addDisplay = false;
-		columns[16].addDisplay = false;
-		columns[17].addDisplay = false;
-
-
 		return true
 	},
-	//编辑前操作
-	beforeOpenEdit: (formData) => {
-		console.log('beforeOpenEdit', columns)
-		console.log('beforeOpenEdit Form', formData)
-		resetColumnsDisplay()
-		if (formData.row_type == 'order') {
-			columns[3].disabled = true;
-			columns[5].editDisplay = false;
-			columns[6].editDisplay = false;
-			columns[7].editDisplay = false;
-			columns[8].editDisplay = false;
-			columns[9].editDisplay = false;
-			columns[10].editDisplay = false;
-			columns[11].editDisplay = false;
-			columns[12].editDisplay = false;
-			columns[13].editDisplay = false;
-			columns[14].editDisplay = false;
-			columns[15].editDisplay = false;
-			columns[16].editDisplay = false;
-			columns[17].editDisplay = false;
-		}
-		else if (formData.row_type == 'goods') {
-			// columns[2].editDefaultValue = formData.store_id
-			// columns[2].disabled = true
-			resetColumnsDisplay()
-			columns[3].editDisplay = false
-			columns[4].editDisplay = false
-			columns[7].editDisplay = false
-		}
-		else if (formData.row_type == 'craft') {
-			resetColumnsDisplay()
-			columns[3].editDisplay = false
-			columns[4].editDisplay = false
-			columns[7].editDisplay = false
-		}
+	//编辑门店/产品/工艺前操作
+	beforeOpenEdit: async (formData) => {
+		console.log('beforeOpenEditColumns', columns)
+		console.log('beforeOpenEditForm', formData)
+		resetEditColumnsDisplay(formData.row_type)
+		// if (formData.row_type == 'order') {
+		// 	//nothing
+		// }
+		// else if (formData.row_type == 'goods') {
+		// 	const resp = await api.getByParentId({ parentId: formData.parent_id, type: 'order' })
+		// 	if(resp){
+		// 		columns[3].editDefaultValue = resp.data
+		// 	}
+		// }
+		// else if (formData.row_type == 'craft') {
+		// 	const resp = await api.getByParentId({ parentId: formData.parent_id, type: 'goods' })
+		// 	if(resp){
+		// 		columns[5].editDefaultValue = resp.data
+		// 	}
+		// }
+		return true
+	},
+	//删除门店/产品/工艺前操作
+	beforeDelete: (ids) => {
+		console.log('beforeDeleteIds', ids)
+		console.log('beforeDeleteTableData', crudRef.value.getTableData())
+		deleteForms.value = []
+		ids.forEach(id => {
+			deleteByForm(id, crudRef.value.getTableData())
+		})
+		api.handleDelete(deleteForms.value)
 		return true
 	},
 })
@@ -186,7 +231,10 @@ const columns = reactive([
 		addDisplay: false,
 		editDisplay: false,
 		width: 50,
-		hide: true
+		hide: true,
+		editDefaultValue: (record) => {
+			return record.parent_id == 0 ? undefined : record.parent_id
+		},
 	},
 	{
 		title: '行类型',
@@ -207,6 +255,9 @@ const columns = reactive([
 		},
 		commonRules: [{ required: true, message: '门店必填' }],
 		width: 120,
+		editDefaultValue: (record) => {
+			return record.store_id == 0 ? undefined : record.store_id
+		},
 	},
 	// {
 	// 	title: '订单号',
@@ -304,11 +355,18 @@ const columns = reactive([
 		onChange: async (val, maFormObj) => {
 			console.log('val', val)
 			console.log('maFormObj', maFormObj)
+			const columnService = crudRef.value.getColumnService()
+			console.log('columnService', columnService)
 			if (val) {
 				const resp = await craftApi.read(val)
 				console.log('resp', resp)
 				let item = resp.data
-				maFormObj.unit_price = item.price
+				// columnService.get('pricing_type_id').setAttr('addDefaultValue', item.pricing_type_id)
+				// columnService.get('pricing_unit_id').setAttr('addDefaultValue', item.pricing_unit_id)
+				// columnService.get('unit_price').setAttr('inputValue', item.price)
+				// maFormObj.pricing_type_id = item.pricing_type_id
+				// maFormObj.pricing_unit_id = item.pricing_unit_id
+				// maFormObj.unit_price = item.price
 			}
 		},
 	},
@@ -321,7 +379,6 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 			translation: true,
 		},
-		readonly: true,
 		disabled: true,
 	},
 	{
@@ -333,7 +390,6 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 			translation: true,
 		},
-		readonly: true,
 		disabled: true,
 	},
 	{
@@ -363,7 +419,6 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 			translation: true,
 		},
-		readonly: true,
 		disabled: true,
 	},
 	{
@@ -375,21 +430,18 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 			translation: true,
 		},
-		readonly: true,
 		disabled: true,
 	},
 	{
 		title: '单价',
 		dataIndex: 'unit_price',
 		defaultValue: '',
-		readonly: true,
 		disabled: true,
 	},
 	{
 		title: '金额',
 		dataIndex: 'amount',
 		defaultValue: '',
-		readonly: true,
 		disabled: true,
 	},
 ])

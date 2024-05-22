@@ -606,7 +606,7 @@ const exportAction = () => {
 		})
 }
 
-const deletesMultipleAction = async () => {
+const deletesMultipleAction = async (record) => {
 	if (selecteds.value && selecteds.value.length > 0) {
 		const api = isRecovery.value ? options.value.delete.realApi : options.value.delete.api
 		let data = {}

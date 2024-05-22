@@ -62,6 +62,18 @@ export default {
   },
 
   /**
+	 * 真实删除数据
+	 * @returns
+	 */
+	realDestroy(data) {
+		return request({
+			url: '/order/realDestroy',
+			method: 'delete',
+			data,
+		})
+	},
+
+  /**
    * 软删除数据
    * @returns
    */
@@ -72,6 +84,18 @@ export default {
       data
     })
   },
+
+  /**
+	 * 真实删除数据
+	 * @returns
+	 */
+	handleDelete(data) {
+		return request({
+			url: '/order/handleDelete',
+			method: 'post',
+			data,
+		})
+	},
 
   /**
    * 恢复回收站数据
@@ -106,6 +130,18 @@ export default {
       url: '/order/changeStatus',
       method: 'post',
       data
+    })
+  },
+
+  /**
+   * 根据parentId获得原ID
+   * @returns
+   */
+  getByParentId (params = {}) {
+    return request({
+      url: '/order/getByParentId',
+      method: 'get',
+      params,
     })
   },
 
