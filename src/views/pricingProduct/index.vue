@@ -40,7 +40,7 @@ const getProducts = () => {
 }
 getProducts()
 
-const selectProduct = (id) => {
+const selectItem = (id) => {
   let product = {}
   products.value.forEach(function (item) {
     if (item.id == id) {
@@ -82,12 +82,13 @@ const columns = reactive([
     title: '人员',
     dataIndex: 'sys_user_id',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: true,
-    editDisplay: true,
+    editDisplay: false,
     hide: false,
     dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
     formType: 'select',
+    defaultActiveFirstOption: true,
     commonRules: [{ required: false, message: '人员必填' }],
   },
   {
@@ -98,6 +99,7 @@ const columns = reactive([
     addDisplay: false,
     editDisplay: false,
     hide: true,
+
     formType: 'select',
     commonRules: [{ required: false, message: '客方必填' }],
   },
@@ -105,21 +107,21 @@ const columns = reactive([
     title: '产品',
     dataIndex: 'product_id',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    // dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    data: products4Select,
+    dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    // data: products4Select,
     formType: 'select',
     commonRules: [{ required: false, message: '产品必填' }],
     control: (val, maFormObject) => {
-      let product = selectProduct(val)
-      currentRule.value.min = product.price_min
-      currentRule.value.max = product.price_max
-      currentRule.value.msg = '范围在' + product.price_min + '-' + product.price_max
-      maFormObject.price_min = product.price_min
-      maFormObject.price_max = product.price_max
+      let item = selectItem(val)
+      // currentRule.value.min = item.price_min
+      // currentRule.value.max = item.price_max
+      // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
+      maFormObject.price_min = item.price_min
+      maFormObject.price_max = item.price_max
     },
     commonRules: [
       { required: true, message: '必填' },
@@ -141,13 +143,26 @@ const columns = reactive([
     ],
   },
   {
+    title: '自动推送',
+    dataIndex: 'is_auto_push',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    addDefaultValue: 1,
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    commonRules: [{ required: true, message: '启用状态必填' }],
+  },
+  {
     title: '最低限价',
     dataIndex: 'price_min',
     width: 180,
     search: false,
     addDisplay: true,
     addDefaultValue: 0.00,
-    editDisplay: false,
+    editDisplay: true,
     hide: false,
     formType: 'input',
     disabled: true,
@@ -160,8 +175,8 @@ const columns = reactive([
     search: false,
     addDisplay: true,
     addDefaultValue: 0.00,
-    editDisplay: false,
-    hide: true,
+    editDisplay: true,
+    hide: false,
     formType: 'input',
     disabled: true,
     commonRules: [{ required: false, message: '最高限价必填' }],
@@ -192,10 +207,10 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: false,
     editDisplay: false,
-    hide: true,
+    hide: false,
     searchFormType: 'range',
     showTime: true,
     formType: 'date',

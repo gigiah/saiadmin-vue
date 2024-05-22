@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -85,28 +85,6 @@
       hide: false,
       formType: 'input',
       commonRules: [{ required: true, message: '产品名称必填' }],
-    },
-    {
-      title: '选项组集合',
-      dataIndex: 'craft_group_ids',
-      width: 180,
-      search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      formType: 'input',
-      commonRules: [{ required: false, message: '选项组集合必填' }],
-    },
-    {
-      title: '制作选项名称',
-      dataIndex: 'craft_name',
-      width: 180,
-      search: true,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
-      formType: 'input',
-      commonRules: [{ required: true, message: '制作选项名称必填' }],
     },
     {
       title: '计价方式',

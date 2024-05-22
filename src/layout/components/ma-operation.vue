@@ -9,7 +9,6 @@
           <a-link @click="viewDetail(record)">{{ record.title }}</a-link>
         </div>
       </div>
-
       <a-modal v-model:visible="detailVisible" fullscreen :footer="true">
         <template #title>公告详情</template>
         <a-typography :style="{ marginTop: '-30px' }">
@@ -26,6 +25,7 @@
           </a-typography-paragraph>
         </a-typography>
       </a-modal>
+      <!--轮播图-->
 
       <a-tooltip :content="$t('sys.search')">
         <a-button :shape="'circle'" @click="() => appStore.searchOpen = true" class="hidden lg:inline">
@@ -52,7 +52,7 @@
         </a-button>
       </a-tooltip>
 
-      <a-trigger trigger="click">
+      <!-- <a-trigger trigger="click">
         <a-button :shape="'circle'">
           <template #icon>
             <a-badge :count="5" dot :dotStyle="{ width: '5px', height: '5px' }"
@@ -66,7 +66,7 @@
         <template #content>
           <message-notification />
         </template>
-      </a-trigger>
+      </a-trigger> -->
 
       <a-tooltip :content="$t('sys.pageSetting')">
         <a-button :shape="'circle'" @click="() => appStore.settingOpen = true" class="hidden lg:inline">
@@ -124,6 +124,25 @@ const isFullScreen = ref(false)
 const showLogoutModal = ref(false)
 const isDev = ref(import.meta.env.DEV)
 
+const announcements = ref([])
+
+const current = ref([])
+let timer = null
+
+const row = ref({})
+const detailVisible = ref(false)
+
+const viewDetail = async (record) => {
+  row.value = record
+  detailVisible.value = true
+}
+
+onMounted(async () => {
+  const res = await noticeApi.getPageList({ limit: 5, orderBy: 'id', orderType: 'desc' })
+  announcements.value = res.data.data
+  startMarquee()
+})
+
 const handleSelect = async (name) => {
   if (name === 'userCenter') {
     router.push({ name: 'userCenter' })
@@ -137,15 +156,6 @@ const handleSelect = async (name) => {
     showLogoutModal.value = true
     document.querySelector('#app').style.filter = 'grayscale(1)'
   }
-}
-if (name === 'clearCache') {
-  const res = await commonApi.clearAllCache()
-  tool.local.remove('dictData')
-  res.success && Message.success(res.message)
-}
-if (name === 'logout') {
-  showLogoutModal.value = true
-  document.querySelector('#app').style.filter = 'grayscale(1)'
 }
 
 const handleLogout = async () => {
@@ -204,13 +214,10 @@ const stopMarquee = () => {
   overflow: hidden;
   position: relative;
   height: 24px;
-  /* 定义公告栏的高度 */
 }
 
 .marquee-item {
-  /* display: none; */
   line-height: 24px;
-  /* 保证公告栏单行显示 */
   white-space: nowrap;
   transition: transform 1s ease, opacity 1s ease;
 }

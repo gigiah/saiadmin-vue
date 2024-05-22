@@ -20,16 +20,16 @@ const homePageRoutes = [
 		},
 		component: () => import('@/views/userCenter/index.vue'),
 	},
-	{
-		name: 'formDemo',
-		path: '/formDemo',
-		meta: {
-			title: '简历示例',
-			icon: 'icon-menu',
-			type: 'M',
-		},
-		component: () => import('@/views/demo/formDemo.vue'),
-	},
+	// {
+	// 	name: 'formDemo',
+	// 	path: '/formDemo',
+	// 	meta: {
+	// 		title: '表单示例',
+	// 		icon: 'icon-menu',
+	// 		type: 'M',
+	// 	},
+	// 	component: () => import('@/views/demo/formDemo.vue'),
+	// },
 ]
 
 export const homePage = {

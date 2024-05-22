@@ -100,16 +100,4 @@ export default {
     })
   },
 
-  /**
-   * 获取树形数据
-   * @returns
-   */
-  getTree(data = {}) {
-    return request({
-      url: '/craftGroup/getTree',
-      method: 'get',
-      data
-    })
-  },
-
 }

@@ -1,9 +1,12 @@
 <template>
-  <div class="justify-between p-4 ma-content-block lg:flex">
-    <!-- CRUD 组件 -->
-    <ma-crud :options="crud" :columns="columns" ref="crudRef">
-    </ma-crud>
-  </div>
+  <a-modal v-model:visible="visible" :width="1400" :footer="false">
+    <template #title>工艺内容</template>
+    <div class="justify-between p-4 ma-content-block lg:flex">
+      <!-- CRUD 组件 -->
+      <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      </ma-crud>
+    </div>
+  </a-modal>
 </template>
 
 <script setup>
@@ -11,11 +14,22 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
 
+const visible = ref(false)
 const crudRef = ref()
+const parentId = ref()
+
+const open = (row) => {
+  parentId.value = row.id
+  visible.value = true
+  crudRef.value.requestData()
+}
 
 
 const crud = reactive({
   api: api.getPageList,
+  beforeRequest: params => {
+    params.group_id = parentId
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -27,6 +41,10 @@ const crud = reactive({
   edit: { show: true, api: api.update, auth: ['/craft/update'] },
   delete: { show: true, api: api.delete, auth: ['/craft/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/craft/recovery'] },
+  beforeOpenAdd: () => {
+    columns[1].addDefaultValue = Number.parseInt(parentId.value)
+    return true
+  },
   formOption: { width: 800 },
 })
 
@@ -43,52 +61,65 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
+    title: '所属组',
+    dataIndex: 'group_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { url: '/craftGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
+    commonRules: [{ required: false, message: '组必填' }],
+  },
+  {
     title: '名称',
     dataIndex: 'name',
     width: 180,
     search: true,
     addDisplay: true,
+    addDefaultValue: '',
     editDisplay: true,
     hide: false,
     formType: 'input',
     commonRules: [{ required: true, message: '名称必填' }],
   },
-  {
-    title: '产品类别',
-    dataIndex: 'type_id',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'select',
-    dict: { url: '/productType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    commonRules: [{ required: true, message: '产品类别必填' }],
-  },
-  {
-    title: '产品级别',
-    dataIndex: 'grade_id',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'select',
-    dict: { url: '/productGrade/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    commonRules: [{ required: true, message: '产品级别必填' }],
-  },
-  {
-    title: '画面类型',
-    dataIndex: 'picture_type_id',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'select',
-    dict: { url: '/productPictureType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    commonRules: [{ required: true, message: '画面类型必填' }],
-  },
+  // {
+  //   title: '产品类别',
+  //   dataIndex: 'type_id',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: false,
+  //   editDisplay: false,
+  //   hide: true,
+  //   formType: 'select',
+  //   dict: { url: '/productType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+  //   // commonRules: [{ required: true, message: '产品类别必填' }],
+  // },
+  // {
+  //   title: '产品级别',
+  //   dataIndex: 'grade_id',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: false,
+  //   editDisplay: false,
+  //   hide: true,
+  //   formType: 'select',
+  //   dict: { url: '/productGrade/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+  //   // commonRules: [{ required: true, message: '产品级别必填' }],
+  // },
+  // {
+  //   title: '画面类型',
+  //   dataIndex: 'picture_type_id',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: false,
+  //   editDisplay: false,
+  //   hide: true,
+  //   formType: 'select',
+  //   dict: { url: '/productPictureType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+  //   // commonRules: [{ required: true, message: '画面类型必填' }],
+  // },
   {
     title: '计价方式',
     dataIndex: 'pricing_type_id',
@@ -118,9 +149,10 @@ const columns = reactive([
     dataIndex: 'price',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 0.00,
-    editDisplay: true,
-    hide: false,
+    addDisplay: false, 
+    addDefaultValue: 0.00,
+    editDisplay: false,
+    hide: true,
     formType: 'input',
     // commonRules: [{ required: false, message: '宽度最小必填' }],
   },
@@ -129,7 +161,8 @@ const columns = reactive([
     dataIndex: 'price_min',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 0.00,
+    addDisplay: true, 
+    addDefaultValue: 0.00,
     editDisplay: true,
     hide: false,
     formType: 'input',
@@ -140,23 +173,12 @@ const columns = reactive([
     dataIndex: 'price_max',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 0.00,
+    addDisplay: true, 
+    addDefaultValue: 0.00,
     editDisplay: true,
     hide: false,
     formType: 'input',
     commonRules: [{ required: false, message: '最高限价必填' }],
-  },
-  {
-    title: '自动报价',
-    dataIndex: 'is_auto_price',
-    width: 100,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'radio',
-    commonRules: [{ required: true, message: '启用状态必填' }],
   },
   {
     title: '自动推送',
@@ -165,6 +187,7 @@ const columns = reactive([
     search: true,
     addDisplay: true,
     editDisplay: true,
+    addDefaultValue: 1,
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
@@ -177,6 +200,7 @@ const columns = reactive([
     search: true,
     addDisplay: true,
     editDisplay: true,
+    addDefaultValue: 1,
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
@@ -253,4 +277,6 @@ const columns = reactive([
     commonRules: [{ required: false, message: '修改时间必填' }],
   },
 ])
+
+defineExpose({ open })
 </script>

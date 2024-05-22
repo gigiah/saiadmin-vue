@@ -1,5 +1,5 @@
 <template>
-	<div class="ma-content-block lg:flex justify-between p-4">
+	<div class="justify-between p-4 ma-content-block lg:flex">
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef">
 			<!-- 状态列 -->
@@ -34,7 +34,7 @@ const crud = reactive({
 	operationColumnWidth: 200,
 	add: { show: true, api: api.save, auth: ['/core/post/save'] },
 	edit: { show: true, api: api.update, auth: ['/core/post/update'] },
-	delete: { show: true, api: api.deletes, auth: ['/core/post/destroy'], realApi: api.realDestroy, realAuth: ['/core/menu/realDestroy'] },
+	delete: { show: true, api: api.deletes, auth: ['/core/post/destroy'], realApi: api.realDestroy, realAuth: ['/core/post/realDestroy'] },
 	recovery: { show: true, api: api.recoverys, auth: ['/core/post/recovery'] },
 	import: { show: true, url: '/core/post/import', templateUrl: '/core/post/downloadTemplate', auth: ['/core/post/import'] },
 	export: { show: true, url: '/core/post/export', auth: ['/core/post/export'] },

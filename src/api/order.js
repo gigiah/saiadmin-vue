@@ -5,6 +5,15 @@ import { request } from '@/utils/request.js'
  */
 export default {
 
+  //树形数据
+  orderCreateTree (params = {}) {
+    return request({
+      url: '/order/orderCreateTree',
+      method: 'get',
+      params
+    })
+  },
+
   /**
    * 数据列表
    * @returns

@@ -2,16 +2,28 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <template #operationBeforeExtend="{ record }">
+        <a-space size="mini">
+          <a-link @click="viewItems(record)"><icon-menu /> 查看内容</a-link>
+        </a-space>
+      </template>
     </ma-crud>
+    <craft ref="itemRef" @success="() => crudRef.refresh()" />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/craftGroup'
+import craft from '@/views/craft/index.vue'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
+const itemRef = ref()
+
+const viewItems = (record) => {
+  itemRef.value.open(record)
+}
 
 
 const crud = reactive({
@@ -63,23 +75,6 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     commonRules: [{ required: true, message: '编组编号必填' }],
-  },
-  {
-    title: '编组ID集合',
-    dataIndex: 'craft_ids',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'select',
-    multiple: true,
-    dict: { url: '/craft/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    commonRules: [{ required: false, message: '编组ID集合必填' }],
-    editDefaultValue: async (record) => {
-      const response = await api.read(record.id)
-      return response.data.craft_list.map((item) => item.id)
-    },
   },
   {
     title: '创建者',
