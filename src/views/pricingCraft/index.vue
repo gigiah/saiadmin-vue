@@ -13,13 +13,12 @@ import craftApi from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
-const craft = ref([])
-const craft4Select = ref([])
 const currentRule = ref({
   max: 0,
   min: 0,
   msg: '请先选择产品',
 })
+const craft = ref([])
 
 //加载工艺库
 const getcraft = () => {
@@ -27,15 +26,10 @@ const getcraft = () => {
     .then(res => {
       res.data.forEach(function (item) {
         craft.value.push(item)
-        craft4Select.value.push({
-          label: item.name,
-          value: item.id,
-          disabled: true,
-        })
       })
     })
     .catch(error => {
-      console.error("获取产品库失败", error)
+      console.error("获取工艺库失败", error)
     })
 }
 getcraft()
@@ -80,29 +74,29 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '人员ID',
-    dataIndex: 'sys_user_id',
+    title: '团队',
+    dataIndex: 'dept_id',
     width: 100,
     search: true,
     addDisplay: true,
-    editDisplay: false,
+    editDisplay: true,
     hide: false,
-    dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
+    dict: { url: '/core/dept/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: false, message: '人员ID必填' }],
+    defaultActiveFirstOption: true,
+    commonRules: [{ required: false, message: '团队必填' }],
   },
-  {
-    title: '客方',
-    dataIndex: 'client_id',
-    width: 100,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-
-    formType: 'select',
-    commonRules: [{ required: false, message: '客方必填' }],
-  },
+  // {
+  //   title: '客方',
+  //   dataIndex: 'client_id',
+  //   width: 100,
+  //   search: false,
+  //   addDisplay: false,
+  //   editDisplay: false,
+  //   hide: true,
+  //   formType: 'select',
+  //   commonRules: [{ required: false, message: '客方必填' }],
+  // },
   {
     title: '工艺',
     dataIndex: 'craft_id',
@@ -111,7 +105,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/craft/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/pricingCraft/index4Search?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
     // data: craft4selects,
     formType: 'select',
     control: (val, maFormObject) => {

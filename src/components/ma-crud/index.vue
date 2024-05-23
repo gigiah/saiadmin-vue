@@ -100,9 +100,9 @@
 				</a-space>
 				<a-space class="mt-2 lg:mt-0" v-if="options.showTools">
 					<slot name="tools"></slot>
-					<a-tooltip :content="isRecovery ? '显示正常数据' : '显示回收站数据'" v-if="options.recycleApi && isFunction(options.recycleApi)">
+					<!-- <a-tooltip :content="isRecovery ? '显示正常数据' : '显示回收站数据'" v-if="options.recycleApi && isFunction(options.recycleApi)">
 						<a-button shape="circle" @click="switchDataType"><icon-swap /></a-button>
-					</a-tooltip>
+					</a-tooltip> -->
 					<a-tooltip content="刷新表格"
 						><a-button shape="circle" @click="refresh"><icon-refresh /></a-button
 					></a-tooltip>

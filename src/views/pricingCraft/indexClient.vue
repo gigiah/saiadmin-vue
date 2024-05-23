@@ -8,14 +8,51 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import api from '@/api/pricingProduct'
+import api from '@/api/pricingCraft'
+import craftApi from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
+const craft = ref([])
+const currentRule = ref({
+  max: 0,
+  min: 0,
+  msg: '请先选择工艺',
+})
 
+//加载库
+const get = () => {
+  craftApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        craft.value.push(item)
+      })
+    })
+    .catch(error => {
+      console.error("获取工艺库失败", error)
+    })
+}
+get()
+
+const selectItem = (id) => {
+  let obj = {}
+  craft.value.forEach(function (item) {
+    if (item.id == id) {
+      obj = item
+    }
+  })
+  return obj
+}
 
 const crud = reactive({
   api: api.getPageList,
+  beforeRequest: params => {
+    params.type = 'client'
+  },
+  beforeAdd: (form) => {
+    form.type = 'client'
+    return true
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -23,11 +60,14 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/pricingProduct/save'] },
-  edit: { show: true, api: api.update, auth: ['/pricingProduct/update'] },
-  delete: { show: true, api: api.delete, auth: ['/pricingProduct/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/pricingProduct/recovery'] },
+  add: { show: true, api: api.save, auth: ['/pricingCraft/save'] },
+  edit: { show: true, api: api.update, auth: ['/pricingCraft/update'] },
+  delete: { show: true, api: api.delete, auth: ['/pricingCraft/destroy'] },
+  recovery: { show: true, api: api.recovery, auth: ['/pricingCraft/recovery'] },
   formOption: { width: 800 },
+  beforeRequest: params => {
+    params.type = 'client'
+  },
 })
 
 const columns = reactive([
@@ -43,41 +83,36 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '人员',
-    dataIndex: 'sys_user_id',
-    width: 100,
-    search: true,
-    addDisplay: true,
-    editDisplay: false,
-    hide: false,
-    dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
-    formType: 'select',
-    defaultActiveFirstOption: true,
-    commonRules: [{ required: false, message: '人员必填' }],
-  },
-  {
-    title: '客方',
+    title: '客方人员',
     dataIndex: 'client_id',
-    width: 100,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-
-    formType: 'select',
-    commonRules: [{ required: false, message: '客方必填' }],
-  },
-  {
-    title: '产品',
-    dataIndex: 'product_id',
     width: 100,
     search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: false, message: '产品必填' }],
+    commonRules: [{ required: false, message: '客方必填' }],
+  },
+  {
+    title: '工艺',
+    dataIndex: 'craft_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { url: '/pricingCraft/index?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
+    formType: 'select',
+    control: (val, maFormObject) => {
+      let item = selectItem(val)
+      // currentRule.value.min = item.price_min
+      // currentRule.value.max = item.price_max
+      // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
+      maFormObject.price_min = item.price_min
+      maFormObject.price_max = item.price_max
+    },
+    commonRules: [{ required: false, message: '工艺必填' }],
   },
   {
     title: '标准单价',
@@ -95,7 +130,7 @@ const columns = reactive([
     dataIndex: 'price_min',
     width: 180,
     search: false,
-    addDisplay: false, 
+    addDisplay: false,
     addDefaultValue: 0.00,
     editDisplay: false,
     hide: true,
@@ -107,7 +142,7 @@ const columns = reactive([
     dataIndex: 'price_max',
     width: 180,
     search: false,
-    addDisplay: false, 
+    addDisplay: false,
     addDefaultValue: 0.00,
     editDisplay: false,
     hide: true,
@@ -140,10 +175,10 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: false,
     editDisplay: false,
-    hide: true,
+    hide: false,
     searchFormType: 'range',
     showTime: true,
     formType: 'date',

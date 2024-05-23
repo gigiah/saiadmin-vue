@@ -9,42 +9,45 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingProduct'
+import productApi from '@/api/product'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
-const currentRule = ref({
-  max: 0,
-  min: 0,
-  msg: '请先选择产品',
-})
-const products = ref([])
+const product = ref([])
 
-//加载产品库
-const getProducts = () => {
-  api.getPageList({ type: 'all' })
+//加载库
+const get = () => {
+  productApi.getPageList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
-        products.value.push(item)
+        product.value.push(item)
       })
     })
     .catch(error => {
-      console.error("获取产品库失败", error)
+      console.error("获取工艺库失败", error)
     })
 }
-getProducts()
+get()
 
 const selectItem = (id) => {
-  let product = {}
-  products.value.forEach(function (item) {
+  let obj = {}
+  product.value.forEach(function (item) {
     if (item.id == id) {
-      product = item
+      obj = item
     }
   })
-  return product
+  return obj
 }
 
 const crud = reactive({
   api: api.getPageList,
+  beforeRequest: params => {
+    params.type = 'client'
+  },
+  beforeAdd: (form) => {
+    form.type = 'client'
+    return true
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -72,29 +75,17 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '团队',
-    dataIndex: 'dept_id',
+    title: '客方人员',
+    dataIndex: 'client_id',
     width: 100,
     search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/core/dept/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
     formType: 'select',
-    defaultActiveFirstOption: true,
-    commonRules: [{ required: false, message: '团队必填' }],
+    commonRules: [{ required: false, message: '客方必填' }],
   },
-  // {
-  //   title: '客方',
-  //   dataIndex: 'client_id',
-  //   width: 100,
-  //   search: false,
-  //   addDisplay: false,
-  //   editDisplay: false,
-  //   hide: true,
-  //   formType: 'select',
-  //   commonRules: [{ required: false, message: '客方必填' }],
-  // },
   {
     title: '产品',
     dataIndex: 'product_id',
@@ -103,9 +94,8 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/pricingProduct/index4Search?type=all', props: { label: 'name', value: 'product_id' }, translation: true },
+    dict: { url: '/pricingProduct/index?type=all', props: { label: 'name', value: 'product_id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: false, message: '产品必填' }],
     control: (val, maFormObject) => {
       let item = selectItem(val)
       // currentRule.value.min = item.price_min
@@ -114,49 +104,29 @@ const columns = reactive([
       maFormObject.price_min = item.price_min
       maFormObject.price_max = item.price_max
     },
-    commonRules: [
-      { required: true, message: '必填' },
-    ],
+    commonRules: [{ required: false, message: '产品必填' }],
   },
   {
     title: '标准单价',
     dataIndex: 'price',
     width: 180,
     search: false,
-    addDisplay: true,
-    addDefaultValue: 0.00,
+    addDisplay: true, addDefaultValue: 0.00,
     editDisplay: true,
     hide: false,
     formType: 'input',
-    commonRules: [
-      { required: true, message: '必填' },
-      // { type: 'number', min: currentRule.min, max: currentRule.max, message: currentRule.msg },
-    ],
-  },
-  {
-    title: '自动推送',
-    dataIndex: 'is_auto_push',
-    width: 100,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    addDefaultValue: 1,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'radio',
-    commonRules: [{ required: true, message: '启用状态必填' }],
+    commonRules: [{ required: false, message: '标准单价必填' }],
   },
   {
     title: '最低限价',
     dataIndex: 'price_min',
     width: 180,
     search: false,
-    addDisplay: true,
+    addDisplay: false,
     addDefaultValue: 0.00,
-    editDisplay: true,
-    hide: false,
+    editDisplay: false,
+    hide: true,
     formType: 'input',
-    disabled: true,
     commonRules: [{ required: false, message: '最低限价必填' }],
   },
   {
@@ -164,12 +134,11 @@ const columns = reactive([
     dataIndex: 'price_max',
     width: 180,
     search: false,
-    addDisplay: true,
+    addDisplay: false,
     addDefaultValue: 0.00,
-    editDisplay: true,
-    hide: false,
+    editDisplay: false,
+    hide: true,
     formType: 'input',
-    disabled: true,
     commonRules: [{ required: false, message: '最高限价必填' }],
   },
   {
@@ -198,7 +167,7 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: false,
+    search: true,
     addDisplay: false,
     editDisplay: false,
     hide: false,

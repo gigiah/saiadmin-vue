@@ -14,7 +14,7 @@
 			<template #operationBeforeExtend="{ record }" v-if="!isRecovery">
 				<a-space size="mini" v-if="record.code !== 'superAdmin'">
 					<a-link @click="openMenuList(record)"><icon-menu /> 菜单权限</a-link>
-					<a-link @click="openDataScopeList(record)"><icon-layers /> 数据权限</a-link>
+					<!-- <a-link @click="openDataScopeList(record)"><icon-layers /> 数据权限</a-link> -->
 				</a-space>
 			</template>
 		</ma-crud>

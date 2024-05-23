@@ -246,7 +246,7 @@ const columns = reactive([
 		type: 'password',
 		addRules: [{ required: true, message: '密码必填' }],
 	},
-	{ title: '昵称', dataIndex: 'nickname', width: 120 },
+	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }],},
 	{
 		title: '角色',
 		dataIndex: 'role_ids',
