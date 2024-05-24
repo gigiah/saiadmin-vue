@@ -1,6 +1,18 @@
 import { request } from '@/utils/request.js'
 
 export default {
+
+	/**
+	 * 获取系统人员信息
+	 * @returns
+	 */
+	sysUserInfo() {
+		return request({
+			url: '/core/system/sysUserInfo',
+			method: 'get',
+		})
+	},
+
 	/**
 	 * 获取用户
 	 * @returns

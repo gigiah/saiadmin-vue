@@ -354,23 +354,23 @@ const columns = reactive([
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,
 		},
-		onChange: async (val, maFormObj) => {
-			console.log('val', val)
-			console.log('maFormObj', maFormObj)
-			const columnService = crudRef.value.getColumnService()
-			console.log('columnService', columnService)
-			if (val) {
-				// const resp = await craftApi.read(val)
-				// console.log('resp', resp)
-				// let item = resp.data
-				// columnService.get('pricing_type_id').setAttr('addDefaultValue', item.pricing_type_id)
-				// columnService.get('pricing_unit_id').setAttr('addDefaultValue', item.pricing_unit_id)
-				// columnService.get('unit_price').setAttr('inputValue', item.price)
-				// maFormObj.pricing_type_id = item.pricing_type_id
-				// maFormObj.pricing_unit_id = item.pricing_unit_id
-				// maFormObj.unit_price = item.price
-			}
-		},
+		// control: async (val, maFormObj) => {
+		// 	console.log('val', val)
+		// 	console.log('maFormObj', maFormObj)
+		// 	const columnService = crudRef.value.getColumnService()
+		// 	console.log('columnService', columnService)
+		// 	if (val) {
+		// 		const resp = await craftApi.read(val)
+		// 		console.log('resp', resp)
+		// 		let item = resp.data
+		// 		columnService.get('pricing_type_id').setAttr('addDefaultValue', item.pricing_type_id)
+		// 		columnService.get('pricing_unit_id').setAttr('addDefaultValue', item.pricing_unit_id)
+		// 		columnService.get('unit_price').setAttr('inputValue', item.price)
+		// 		maFormObj.pricing_type_id = item.pricing_type_id
+		// 		maFormObj.pricing_unit_id = item.pricing_unit_id
+		// 		maFormObj.unit_price = item.price
+		// 	}
+		// },
 	},
 	{
 		title: '产品级别',

@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -61,7 +61,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientBrandType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '品牌权属必填' }],
     },
@@ -73,7 +73,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientBusinessType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '经营类型必填' }],
     },
@@ -85,7 +85,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientCreditType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '信用级别必填' }],
     },
@@ -97,7 +97,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientLevelType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '客户级别必填' }],
     },
@@ -109,7 +109,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientLogisticsType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '物流费用方式必填' }],
     },
@@ -121,7 +121,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientProfessionType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '行业类别必填' }],
     },
@@ -133,7 +133,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientSalesType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '销售类型必填' }],
     },
@@ -145,7 +145,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/clientTaxpayerType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '纳税人资格必填' }],
     },

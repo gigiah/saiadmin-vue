@@ -7,6 +7,7 @@ import useIframeStore from './modules/iframe'
 import useConfigStore from './modules/config'
 import useMessageStore from './modules/message'
 import useFormStore from './modules/form'
+import useSysInfoStore from './modules/sysInfo'
 
 const pinia = createPinia()
 
@@ -19,5 +20,6 @@ export {
   useConfigStore,
   useMessageStore,
   useFormStore,
+  useSysInfoStore,
 }
 export default pinia

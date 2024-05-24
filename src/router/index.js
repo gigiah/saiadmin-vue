@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/store'
+import { useUserStore, useSysInfoStore } from '@/store'
 import NProgress from 'nprogress'
 import tool from '@/utils/tool'
 import 'nprogress/nprogress.css'
@@ -18,6 +18,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
 	NProgress.start()
 	const userStore = useUserStore()
+	const sysInfoStore = useSysInfoStore()
 	let toTitle = to.meta.title ? to.meta.title : to.name
 	document.title = `${toTitle} - ${title}`
 	const token = tool.local.get(import.meta.env.VITE_APP_TOKEN_PREFIX)
@@ -32,6 +33,7 @@ router.beforeEach(async (to, from, next) => {
 		if (!userStore.user && userStore.user == undefined) {
 			const data = await userStore.requestUserInfo()
 			data && next({ path: to.path, query: to.query })
+			await sysInfoStore.requestInfo()
 		} else {
 			next()
 		}

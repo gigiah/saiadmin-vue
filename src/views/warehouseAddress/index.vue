@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -123,7 +123,7 @@
       title: '创建时间',
       dataIndex: 'create_time',
       width: 180,
-      search: true,
+      search: false,
       addDisplay: false, 
       editDisplay: false,
       hide: false,
