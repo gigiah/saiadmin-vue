@@ -72,9 +72,9 @@ const openAdd = (record) => {
 		columns[1].addDefaultValue = record.id;//goods_id
 		columns[2].addDefaultValue = 'craft';
 		columns[5].addDefaultValue = record.product_id;
-		columns[10].addDefaultValue = record.width;
-		columns[11].addDefaultValue = record.height;
-		columns[12].addDefaultValue = record.nums;
+		columns[10].addDefaultValue = String(record.width);
+		columns[11].addDefaultValue = String(record.height);
+		columns[12].addDefaultValue = String(record.nums);
 		columns[14].addDefaultValue = undefined
 		columns[15].addDefaultValue = undefined
 	}
@@ -320,19 +320,22 @@ const columns = reactive([
 			props: { label: 'name', value: 'product_id' },
 			translation: true,
 		},
-		control: async (val, maFormObj) => {
-			console.log(val)
-			if (val) {
-				const resp = await productApi.read(val)
-				let item = resp.data
-				
-				maFormObj.product_grade_id = item.grade_id
-				maFormObj.product_picture_type_id = item.picture_type_id
-				maFormObj.pricing_type_id = item.pricing_type_id
-				maFormObj.pricing_unit_id = item.pricing_unit_id
-				maFormObj.unit_price = item.price
-			}
-		},
+    onChange: async (val) => {
+      if (val) {
+        const modalForm = crudRef.value.getFormData();
+        if (!modalForm) {
+          Message.error('未找到表单对象');
+          return;
+        }
+        const resp = await productApi.read(val)
+        let item = resp.data
+        modalForm.product_grade_id = item.grade_id
+        modalForm.product_picture_type_id = item.picture_type_id
+        modalForm.pricing_type_id = item.pricing_type_id
+        modalForm.pricing_unit_id = item.pricing_unit_id
+        modalForm.unit_price = item.price
+      }
+    },
 		commonRules: [{ required: true, message: '产品必填' }],
 	},
 	{
@@ -354,21 +357,19 @@ const columns = reactive([
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,
 		},
-		onChange: async (val, maFormObj) => {
-			console.log('val', val)
-			console.log('maFormObj', maFormObj)
-			const columnService = crudRef.value.getColumnService()
-			console.log('columnService', columnService)
+		onChange: async (val) => {
+			console.log('val', val)  // ----2
 			if (val) {
-				// const resp = await craftApi.read(val)
-				// console.log('resp', resp)
-				// let item = resp.data
-				// columnService.get('pricing_type_id').setAttr('addDefaultValue', item.pricing_type_id)
-				// columnService.get('pricing_unit_id').setAttr('addDefaultValue', item.pricing_unit_id)
-				// columnService.get('unit_price').setAttr('inputValue', item.price)
-				// maFormObj.pricing_type_id = item.pricing_type_id
-				// maFormObj.pricing_unit_id = item.pricing_unit_id
-				// maFormObj.unit_price = item.price
+        const modalForm = crudRef.value.getFormData();
+        if (!modalForm) {
+          Message.error('未找到表单对象');
+          return;
+        }
+				const resp = await craftApi.read(val)
+        let item = resp.data
+        modalForm.pricing_type_id = item.pricing_type_id
+        modalForm.pricing_unit_id = item.pricing_unit_id
+        modalForm.unit_price = item.price
 			}
 		},
 	},
