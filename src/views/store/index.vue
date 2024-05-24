@@ -147,7 +147,7 @@
     },
     {
       title: '结算方式',
-      dataIndex: 'settle_method_id',
+      dataIndex: 'settle_method',
       width: 100,
       search: false,
       addDisplay: true, 

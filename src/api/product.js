@@ -53,6 +53,17 @@ export default {
   },
 
   /**
+   * 读取数据
+   * @returns
+   */
+  read4Order (id) {
+    return request({
+      url: '/product/read/' + id,
+      method: 'get'
+    })
+  },
+
+  /**
    * 软删除数据
    * @returns
    */

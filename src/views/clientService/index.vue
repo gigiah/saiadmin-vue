@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -47,22 +47,23 @@
       dataIndex: 'sys_user_id',
       width: 180,
       search: false,
-      addDisplay: true, 
-      editDisplay: true,
-      hide: false,
+      addDisplay: false, 
+      editDisplay: false,
+      hide: true,
       formType: 'input',
       commonRules: [{ required: false, message: '人员ID必填' }],
     },
     {
-      title: '客户ID',
+      title: '客户',
       dataIndex: 'client',
       width: 180,
       search: true,
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      formType: 'input',
-      commonRules: [{ required: false, message: '客户ID必填' }],
+      formType: 'select',
+      dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+      commonRules: [{ required: false, message: '客户必填' }],
     },
     {
       title: '状态',
@@ -84,7 +85,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/core/user/index?type=all&code=financial', props: { label: 'nickname', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '财务专员必填' }],
     },
@@ -96,7 +97,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/core/user/index?type=all&code=customerService', props: { label: 'nickname', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '客服专员必填' }],
     },
@@ -108,7 +109,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/core/user/index?type=all&code=prePrint', props: { label: 'nickname', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '印前专员必填' }],
     },
@@ -120,7 +121,7 @@
       addDisplay: true, 
       editDisplay: true,
       hide: false,
-      
+      dict: { url: '/core/user/index?type=all&code=marketing', props: { label: 'nickname', value: 'id' }, translation: true },
       formType: 'select',
       commonRules: [{ required: false, message: '营销专员必填' }],
     },
@@ -131,7 +132,7 @@
       search: false,
       addDisplay: false, 
       editDisplay: false,
-      hide: false,
+      hide: true,
       formType: 'input',
       commonRules: [{ required: false, message: '创建者必填' }],
     },

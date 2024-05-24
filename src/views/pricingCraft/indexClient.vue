@@ -65,9 +65,6 @@ const crud = reactive({
   delete: { show: true, api: api.delete, auth: ['/pricingCraft/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingCraft/recovery'] },
   formOption: { width: 800 },
-  beforeRequest: params => {
-    params.type = 'client'
-  },
 })
 
 const columns = reactive([
@@ -102,7 +99,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/pricingCraft/index?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
+    dict: { url: '/pricingCraft/index4Search?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
     formType: 'select',
     control: (val, maFormObject) => {
       let item = selectItem(val)

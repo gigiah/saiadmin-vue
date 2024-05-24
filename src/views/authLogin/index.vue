@@ -70,7 +70,7 @@
       width: 180,
       search: true,
       addDisplay: true, 
-      addDefaultValue: '0000-00-00 00:00:00',
+      // addDefaultValue: '0000-00-00 00:00:00',
       editDisplay: true,
       hide: false,
       searchFormType: 'range',
