@@ -47,6 +47,13 @@ const selectItem = (id) => {
 
 const crud = reactive({
   api: api.getPageList,
+  beforeRequest: params => {
+    params.type = 'team'
+  },
+  beforeAdd: (form) => {
+    form.type = 'team'
+    return true
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
