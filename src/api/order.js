@@ -6,9 +6,9 @@ import { request } from '@/utils/request.js'
 export default {
 
   //树形数据
-  orderCreateTree (params = {}) {
+  orderTree (params = {}) {
     return request({
-      url: '/order/orderCreateTree',
+      url: '/order/orderTree',
       method: 'get',
       params
     })
@@ -142,6 +142,18 @@ export default {
       url: '/order/getByParentId',
       method: 'get',
       params,
+    })
+  },
+
+  /**
+   * 处理订单改变
+   * @returns
+   */
+  handleOrderChange(data = {}) {
+    return request({
+      url: '/order/handleOrderChange',
+      method: 'post',
+      data
     })
   },
 

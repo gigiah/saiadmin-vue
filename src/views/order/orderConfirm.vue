@@ -3,16 +3,16 @@
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
-			<template #tableBeforeButtons>
+			<!-- <template #tableBeforeButtons>
 				<a-button @click="submitOrders()" type="primary" status="success">发起审订</a-button>
-			</template>
+			</template> -->
 			<!-- 操作前置扩展 -->
-			<template #operationBeforeExtend="{ record }">
+			<!-- <template #operationBeforeExtend="{ record }">
 				<a-link v-if="record.row_type === 'order' || record.row_type == 'goods'" @click="openAdd(record)"
 					v-auth="[]">
 					<icon-plus /> {{ record.row_type === 'order' ? '产品' : '工艺' }}
 				</a-link>
-			</template>
+			</template> -->
 		</ma-crud>
 	</div>
 </template>
@@ -30,24 +30,29 @@ import { Message, Modal } from '@arco-design/web-vue'
 const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
-const nextStage = ref('审订中')
-const currentStatus = ref(0)
+const nextStage = ref('')
+const currentStatus = ref([40, 50, 60, 70, 90])
 
 const orderShowIndex = {
 	'store_id': { 'addDisabled': false, 'editDisabled': true },
-	'consignee_id': { 'addDisabled': false, 'editDisabled': false },
+	'consignee_id': { 'addDisabled': false, 'editDisabled': true },
+	'delivery_status': { 'addDisabled': false, 'editDisabled': false },
+	'delivery_time': { 'addDisabled': false, 'editDisabled': false },
+	'freight': { 'addDisabled': false, 'editDisabled': false },
 }
 
 const goodsShowIndex = {
 	// 'store_id': { 'addDisabled': true, 'editDisabled': true },
 	'product_id': { 'addDisabled': false, 'editDisabled': true },
-	'associated_file': { 'addDisabled': false, 'editDisabled': false },
+	'associated_file': { 'addDisabled': false, 'editDisabled': true },
+	'correct_file': { 'addDisabled': false, 'editDisabled': false },
+	'identify': { 'addDisabled': false, 'editDisabled': false },
 	'product_grade_id': { 'addDisabled': true, 'editDisabled': true },
 	'product_picture_type_id': { 'addDisabled': true, 'editDisabled': true },
-	'width': { 'addDisabled': false, 'editDisabled': false },
-	'height': { 'addDisabled': false, 'editDisabled': false },
+	'width': { 'addDisabled': false, 'editDisabled': true },
+	'height': { 'addDisabled': false, 'editDisabled': true },
 	'nums': { 'addDisabled': false, 'editDisabled': false },
-	'remark': { 'addDisabled': false, 'editDisabled': false },
+	'remark': { 'addDisabled': false, 'editDisabled': true },
 	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
 	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
 	'unit_price': { 'addDisabled': true, 'editDisabled': true },
@@ -60,7 +65,7 @@ const craftShowIndex = {
 	'width': { 'addDisabled': true, 'editDisabled': true },
 	'height': { 'addDisabled': true, 'editDisabled': true },
 	'nums': { 'addDisabled': true, 'editDisabled': true },
-	'remark': { 'addDisabled': false, 'editDisabled': false },
+	'remark': { 'addDisabled': false, 'editDisabled': true },
 	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
 	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
 	'unit_price': { 'addDisabled': true, 'editDisabled': true },
@@ -238,11 +243,11 @@ const crud = reactive({
 	pageLayout: 'fixed',
 	rowSelection: { showCheckedAll: true },
 	operationColumn: true,
-	operationColumnWidth: 200,
-	add: { show: true, text: '门店订单', title: '添加', api: api.save, auth: [] },
+	operationColumnWidth: 85,
+	add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
 	edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
-	delete: { show: true, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
-	recovery: { show: true, api: api.recovery, auth: [] },
+	delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
+	recovery: { show: false, api: api.recovery, auth: [] },
 	formOption: { viewType: 'drawer', width: 600 },
 	isExpand: true,
 	size: 'mini',
@@ -266,21 +271,6 @@ const crud = reactive({
 		console.log('beforeOpenEditColumns', columns)
 		console.log('beforeOpenEditForm', formData)
 		resetEditColumnsDisplay(formData.row_type)
-		// if (formData.row_type == 'order') {
-		// 	//nothing
-		// }
-		// else if (formData.row_type == 'goods') {
-		// 	const resp = await api.getByParentId({ parentId: formData.parent_id, type: 'order' })
-		// 	if(resp){
-		// 		columns[3].editDefaultValue = resp.data
-		// 	}
-		// }
-		// else if (formData.row_type == 'craft') {
-		// 	const resp = await api.getByParentId({ parentId: formData.parent_id, type: 'goods' })
-		// 	if(resp){
-		// 		columns[5].editDefaultValue = resp.data
-		// 	}
-		// }
 		return true
 	},
 	//删除门店/产品/工艺前操作
@@ -324,6 +314,18 @@ const columns = reactive([
 		hide: true,
 	},
 	{
+		title: '客方人员',
+		dataIndex: 'client_id',
+		width: 100,
+		search: true,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+		formType: 'select',
+		commonRules: [{ required: false, message: '客方必填' }],
+	},
+	{
 		title: '门店',
 		dataIndex: 'store_id',
 		search: true,
@@ -334,27 +336,35 @@ const columns = reactive([
 			translation: true,
 		},
 		commonRules: [{ required: true, message: '门店必填' }],
-		width: 120,
+		width: 100,
 		editDefaultValue: (record) => {
 			return record.store_id == 0 ? undefined : record.store_id
 		},
 	},
-	// {
-	// 	title: '订单号',
-	// 	dataIndex: 'code',
-	// },
-	// {
-	// 	title: '运费',
-	// 	dataIndex: 'freight',
-	// },
-	// {
-	// 	title: '订单金额',
-	// 	dataIndex: 'total_amount',
-	// },
-	// {
-	// 	title: '结算类型',
-	// 	dataIndex: 'settle_method',
-	// },
+	{
+		title: '提交人',
+		dataIndex: 'order_submiter',
+	},
+	{
+		title: '订单号',
+		dataIndex: 'code',
+		search: true,
+		width: 200,
+	},
+	{
+		title: '运费',
+		dataIndex: 'freight',
+	},
+	{
+		title: '订单金额',
+		dataIndex: 'total_amount',
+	},
+	{
+		title: '结算类型',
+		dataIndex: 'settle_method',
+		formType: 'select',
+		dict: { name: 'bizSettleMethod', props: { label: 'label', value: 'value' }, translation: true },
+	},
 	// {
 	// 	title: '支付状态',
 	// 	dataIndex: 'pay_status',
@@ -370,15 +380,21 @@ const columns = reactive([
 		},
 		commonRules: [{ required: true, message: '收货地址必填' }],
 		width: 150,
+
 	},
-	// {
-	// 	title: '发货日期',
-	// 	dataIndex: 'delivery_time',
-	// },
-	// {
-	// 	title: '发货状态',
-	// 	dataIndex: 'delivery_status',
-	// },
+	{
+		title: '发货日期',
+		dataIndex: 'delivery_time',
+		searchFormType: 'range',
+		showTime: true,
+		formType: 'date',
+	},
+	{
+		title: '发货状态',
+		dataIndex: 'delivery_status',
+		formType: 'select',
+		dict: { name: 'bizDeliveryStatus', props: { label: 'label', value: 'value' }, translation: true },
+	},
 	// {
 	// 	title: '录单人',
 	// 	dataIndex: 'order_creater',
@@ -386,10 +402,6 @@ const columns = reactive([
 	// {
 	// 	title: '审订人',
 	// 	dataIndex: 'order_checker',
-	// },
-	// {
-	// 	title: '提交人',
-	// 	dataIndex: 'order_submiter',
 	// },
 	{
 		title: '产品名',
@@ -427,6 +439,22 @@ const columns = reactive([
 			props: { label: 'title', value: 'id' },
 			translation: true,
 		},
+		width: 150,
+	},
+	{
+		title: '修正文件名',
+		dataIndex: 'correct_file',
+		formType: 'select',
+		dict: {
+			url: '/uploadBatch/index?type=all',
+			props: { label: 'title', value: 'id' },
+			translation: true,
+		},
+		width: 150,
+	},
+	{
+		title: '识别符',
+		dataIndex: 'identify',
 	},
 	{
 		title: '工艺',

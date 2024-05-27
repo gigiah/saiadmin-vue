@@ -47,8 +47,6 @@ const crud = reactive({
   formOption: { width: 800 },
 })
 
-watch(() => crud.showIndex, () => console.log('fuck'))
-
 const columns = reactive([
   {
     title: '主键',
