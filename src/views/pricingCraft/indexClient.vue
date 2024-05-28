@@ -11,6 +11,7 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingCraft'
 import craftApi from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const craft = ref([])
@@ -19,6 +20,7 @@ const currentRule = ref({
   min: 0,
   msg: '请先选择工艺',
 })
+const sysInfoStore = useSysInfoStore()
 
 //加载库
 const get = () => {
@@ -58,7 +60,7 @@ const crud = reactive({
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: true,
+  operationColumn: !sysInfoStore.info.is_client,
   operationColumnWidth: 160,
   add: { show: true, api: api.save, auth: ['/pricingCraft/save'] },
   edit: { show: true, api: api.update, auth: ['/pricingCraft/update'] },
@@ -83,7 +85,7 @@ const columns = reactive([
     title: '客方人员',
     dataIndex: 'client_id',
     width: 100,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -95,7 +97,7 @@ const columns = reactive([
     title: '工艺',
     dataIndex: 'craft_id',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -172,7 +174,7 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: false,
+    search: true,
     addDisplay: false,
     editDisplay: false,
     hide: false,

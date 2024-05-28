@@ -1,41 +1,37 @@
 <template>
 	<div class="justify-between p-4 ma-content-block lg:flex">
-		<div class="w-full h-full p-2 shadow lg:w-2/12">
-			<ma-tree-slider v-model="depts" searchPlaceholder="搜索部门" :field-names="{ title: 'label', key: 'value' }" :selectedKeys="defaultKey" @click="switchDept" />
-		</div>
-
-		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
-			<!-- CRUD 组件 -->
-			<ma-crud :options="crud" :columns="columns" ref="crudRef">
-				<!-- 状态列 -->
-				<template #status="{ record }">
-					<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)" :default-checked="record.status == 1" />
-				</template>
-				<!-- 头像列 -->
-				<template #avatar="{ record }">
-					<a-avatar>
-						<img :src="record.avatar ? $tool.showFile(record.avatar) : $url + 'avatar.jpg'" style="object-fit: cover" />
-					</a-avatar>
-				</template>
-				<!-- 操作列 -->
-				<template #operationCell="{ record }">
-					<div v-if="record.id == 1">
-						<a-link @click="updateCache(record.id)"><icon-refresh /> 更新缓存</a-link>
-					</div>
-				</template>
-				<!-- 操作列扩展 -->
-				<template #operationAfterExtend="{ record }">
-					<a-dropdown trigger="hover" v-if="record.id != 1" @select="selectOperation($event, record)">
-						<a-link><icon-double-right /> 更多</a-link>
-						<template #content>
-							<a-doption value="updateCache" v-auth="['/core/user/cache']">更新缓存</a-doption>
-							<a-doption value="setHomePage" v-auth="['/core/user/setHomePage']">设置首页</a-doption>
-							<a-doption value="resetPassword" v-auth="['/core/user/initUserPassword']">重置密码</a-doption>
-						</template>
-					</a-dropdown>
-				</template>
-			</ma-crud>
-		</div>
+		<!-- CRUD 组件 -->
+		<ma-crud :options="crud" :columns="columns" ref="crudRef">
+			<!-- 状态列 -->
+			<template #status="{ record }">
+				<a-switch :disabled="!sysInfoStore.info.is_team_leader" :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)"
+					:default-checked="record.status == 1" />
+			</template>
+			<!-- 头像列 -->
+			<template #avatar="{ record }">
+				<a-avatar>
+					<img :src="record.avatar ? $tool.showFile(record.avatar) : $url + 'avatar.jpg'"
+						style="object-fit: cover" />
+				</a-avatar>
+			</template>
+			<!-- 操作列 -->
+			<!-- <template #operationCell="{ record }">
+				<div v-if="record.id == 1">
+					<a-link @click="updateCache(record.id)"><icon-refresh /> 更新缓存</a-link>
+				</div>
+			</template> -->
+			<!-- 操作列扩展 -->
+			<template #operationAfterExtend="{ record }">
+				<a-dropdown trigger="hover" @select="selectOperation($event, record)">
+					<a-link><icon-double-right /> 更多</a-link>
+					<template #content>
+						<!-- <a-doption value="updateCache" v-auth="['/core/user/cache']">更新缓存</a-doption>
+						<a-doption value="setHomePage" v-auth="['/core/user/setHomePage']">设置首页</a-doption> -->
+						<a-doption value="resetPassword">重置密码</a-doption>
+					</template>
+				</a-dropdown>
+			</template>
+		</ma-crud>
 
 		<a-modal v-model:visible="setHomeVisible" @before-ok="saveHomePage">
 			<template #title>设置用户后台首页</template>
@@ -57,6 +53,7 @@ import dept from '@/api/system/dept'
 import user from '@/api/system/user'
 import commonApi from '@/api/common'
 import { Message, Modal } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const depts = ref([])
 const homePageList = ref([])
@@ -66,6 +63,8 @@ const setHomeVisible = ref(false)
 const userid = ref()
 const homePage = ref('')
 const defaultKey = ref(['all'])
+
+const sysInfoStore = useSysInfoStore()
 
 onMounted(() => {
 	dept.tree().then((res) => {
@@ -139,12 +138,12 @@ const crud = reactive({
 	showIndex: false,
 	pageLayout: 'fixed',
 	rowSelection: { showCheckedAll: true },
-	operationColumn: true,
+	operationColumn: sysInfoStore.info.is_team_leader,
 	operationColumnWidth: 200,
-	add: { show: true, api: user.save, auth: ['/core/user/save'] },
-	edit: { show: true, api: user.update, auth: ['/core/user/update'] },
-	delete: { show: true, api: user.deletes, auth: ['/core/user/destroy'], realApi: user.realDestroy, realAuth: ['/core/user/realDestroy'] },
-	recovery: { show: true, api: user.recoverys, auth: ['/core/user/recovery'] },
+	add: { show: false, api: user.save, },
+	edit: { show: sysInfoStore.info.is_team_leader, api: user.update, },
+	delete: { show: false, api: user.deletes, realApi: user.realDestroy, },
+	recovery: { show: true, api: user.recoverys, },
 	formOption: {
 		width: 800,
 		layout: [
@@ -227,6 +226,7 @@ const columns = reactive([
 		multiple: false,
 		treeCheckable: false,
 		treeCheckStrictly: true,
+		disabled: true,
 		dict: { url: '/core/dept/index?tree=true' },
 		// commonRules: [{ required: true, message: '所属部门必选' }],
 		validateTrigger: 'focus',
@@ -234,6 +234,15 @@ const columns = reactive([
 			return record.dept_id == 0 ? undefined : record.dept_id
 		},
 	},
+	// {
+	// 	title: '级别',
+	// 	dataIndex: 'user_type',
+	// 	width: 100,
+	// 	search: true,
+	// 	formType: 'radio',
+	// 	dict: { name: 'userType', props: { label: 'label', value: 'value' }, translate: true },
+	// 	addDefaultValue: '200',
+	// },
 	{
 		title: '密码',
 		dataIndex: 'password',
@@ -246,7 +255,7 @@ const columns = reactive([
 		type: 'password',
 		addRules: [{ required: true, message: '密码必填' }],
 	},
-	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }],},
+	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }], },
 	{
 		title: '角色',
 		dataIndex: 'role_ids',
@@ -255,6 +264,7 @@ const columns = reactive([
 		multiple: true,
 		dict: { url: '/core/role/index?saiType=all', props: { label: 'name', value: 'id' } },
 		hide: true,
+		disabled: true,
 		commonRules: [{ required: true, message: '角色必选' }],
 		editDefaultValue: async (record) => {
 			const response = await user.read(record.id)
@@ -276,6 +286,7 @@ const columns = reactive([
 		multiple: false,
 		dict: { url: '/core/post/index?saiType=all', props: { label: 'name', value: 'id' } },
 		hide: true,
+		disabled: true,
 		editDefaultValue: async (record) => {
 			const response = await user.read(record.id)
 			const ids = response.data.postList.map((item) => item.id)

@@ -1,10 +1,11 @@
 <template>
-	<div class="ma-content-block lg:flex justify-between p-4">
+	<div class="justify-between p-4 ma-content-block lg:flex">
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef">
 			<!-- 状态列 -->
 			<template #status="{ record }">
-				<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)" :default-checked="record.status == 1" />
+				<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)"
+					:default-checked="record.status == 1" />
 			</template>
 
 			<template #operationBeforeExtend="{ record }" v-if="!isRecovery">
@@ -71,6 +72,14 @@ const columns = reactive([
 		search: true,
 		width: 150,
 		commonRules: [{ required: true, message: '部门名称必填' }],
+	},
+	{
+		title: '部门类型',
+		dataIndex: 'role_code',
+		search: true,
+		formType: 'select',
+		dict: { name: 'bizRoleCode', props: { label: 'label', value: 'value' }, translation: true },
+		width: 120,
 	},
 	{ title: '负责人', dataIndex: 'leader', search: true, width: 120 },
 	{

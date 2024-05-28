@@ -11,6 +11,7 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingCraft'
 import craftApi from '@/api/craft'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const currentRule = ref({
@@ -19,10 +20,18 @@ const currentRule = ref({
   msg: '请先选择产品',
 })
 const craft = ref([])
+const sysInfoStore = useSysInfoStore()
+
 
 //加载工艺库
-const getcraft = () => {
-  craftApi.getPageList({ type: 'all' })
+const getCraft = () => {
+  let requestApi = null
+  if (sysInfoStore.info.is_admin) {
+    requestApi = craftApi
+  } else {
+    requestApi = api
+  }
+  requestApi.getPageList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
         craft.value.push(item)
@@ -32,7 +41,7 @@ const getcraft = () => {
       console.error("获取工艺库失败", error)
     })
 }
-getcraft()
+getCraft()
 
 const selectItem = (id) => {
   let product = {}
@@ -61,7 +70,7 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/pricingCraft/save'] },
+  add: { show: sysInfoStore.info.is_admin, api: api.save, auth: ['/pricingCraft/save'] },
   edit: { show: true, api: api.update, auth: ['/pricingCraft/update'] },
   delete: { show: true, api: api.delete, auth: ['/pricingCraft/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingCraft/recovery'] },
@@ -84,7 +93,7 @@ const columns = reactive([
     title: '团队',
     dataIndex: 'dept_id',
     width: 100,
-    search: true,
+    search: sysInfoStore.info.is_admin,
     addDisplay: true,
     editDisplay: true,
     hide: false,

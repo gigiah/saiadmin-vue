@@ -9,7 +9,9 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingProduct'
+import productApi from '@/api/product'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const currentRule = ref({
@@ -18,10 +20,17 @@ const currentRule = ref({
   msg: '请先选择产品',
 })
 const products = ref([])
+const sysInfoStore = useSysInfoStore()
 
 //加载产品库
 const getProducts = () => {
-  api.getPageList({ type: 'all' })
+  let requestApi = null
+  if (sysInfoStore.info.is_admin) {
+    requestApi = productApi
+  } else {
+    requestApi = api
+  }
+  requestApi.getPageList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
         products.value.push(item)
@@ -59,7 +68,7 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/pricingProduct/save'] },
+  add: { show: sysInfoStore.info.is_admin, api: api.save, auth: ['/pricingProduct/save'] },
   edit: { show: true, api: api.update, auth: ['/pricingProduct/update'] },
   delete: { show: true, api: api.delete, auth: ['/pricingProduct/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingProduct/recovery'] },
@@ -82,7 +91,7 @@ const columns = reactive([
     title: '团队',
     dataIndex: 'dept_id',
     width: 100,
-    search: true,
+    search: sysInfoStore.info.is_admin,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -113,13 +122,16 @@ const columns = reactive([
     dict: { url: '/pricingProduct/index4Search?type=all', props: { label: 'name', value: 'product_id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '产品必填' }],
-    control: (val, maFormObject) => {
+    onChange: (val) => {
       let item = selectItem(val)
-      // currentRule.value.min = item.price_min
-      // currentRule.value.max = item.price_max
-      // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
-      maFormObject.price_min = item.price_min
-      maFormObject.price_max = item.price_max
+      console.log(item)
+      const modalForm = crudRef.value.getFormData();
+      if (!modalForm) {
+        Message.error('未找到表单对象');
+        return;
+      }
+      modalForm.price_min = item.price_min
+      modalForm.price_max = item.price_max
     },
     commonRules: [
       { required: true, message: '必填' },

@@ -10,10 +10,12 @@
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/couponItem'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const visible = ref(false)
 const crudRef = ref()
 const couponId = ref()
+const sysInfoStore = useSysInfoStore()
 
 const open = (row) => {
   couponId.value = row.id
@@ -60,7 +62,7 @@ const columns = reactive([
     title: '持有人',
     dataIndex: 'client_id',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -128,14 +130,15 @@ const columns = reactive([
     commonRules: [{ required: false, message: '备注必填' }],
   },
   {
-    title: '产品ID',
+    title: '产品',
     dataIndex: 'product_id',
     width: 180,
     search: false,
     addDisplay: false,
     editDisplay: true,
     hide: false,
-    formType: 'input',
+    formType: 'select',
+    dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     commonRules: [{ required: true, message: '产品ID必填' }],
   },
   {

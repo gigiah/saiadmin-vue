@@ -11,9 +11,11 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingProduct'
 import productApi from '@/api/product'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const product = ref([])
+const sysInfoStore = useSysInfoStore()
 
 //加载库
 const get = () => {
@@ -53,7 +55,7 @@ const crud = reactive({
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: true,
+  operationColumn: !sysInfoStore.info.is_client,
   operationColumnWidth: 160,
   add: { show: true, api: api.save, auth: ['/pricingProduct/save'] },
   edit: { show: true, api: api.update, auth: ['/pricingProduct/update'] },
@@ -78,7 +80,7 @@ const columns = reactive([
     title: '客方人员',
     dataIndex: 'client_id',
     width: 100,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,

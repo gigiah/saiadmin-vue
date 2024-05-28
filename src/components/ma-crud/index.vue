@@ -1,21 +1,17 @@
 <template>
 	<a-layout-content class="relative flex flex-col w-full lg:h-full">
 		<div class="flex flex-col mb-2 _crud-header" ref="crudHeaderRef">
-			<a-tabs
-				v-if="isArray(options.tabs.data) && options.tabs.data.length > 0"
-				v-model:active-key="options.tabs.defaultKey"
-				:trigger="options.tabs.trigger"
-				:type="options.tabs.type"
-				:hide-content="true"
-				@change="tabChange"
-				@tab-click="maEvent.customeEvent(options.tabs, $event, 'onClick')"
-				class="mb-5 ma-tabs"
-			>
-				<template #extra><slot name="tabExtra"></slot></template>
+			<a-tabs v-if="isArray(options.tabs.data) && options.tabs.data.length > 0"
+				v-model:active-key="options.tabs.defaultKey" :trigger="options.tabs.trigger" :type="options.tabs.type"
+				:hide-content="true" @change="tabChange"
+				@tab-click="maEvent.customeEvent(options.tabs, $event, 'onClick')" class="mb-5 ma-tabs">
+				<template #extra>
+					<slot name="tabExtra"></slot>
+				</template>
 				<a-tab-pane :key="item.value" :title="item.label" v-for="item in options.tabs.data">
-					<template #title
-						><slot :name="'tabTitle-' + item.label">{{ item.label }}</slot></template
-					>
+					<template #title>
+						<slot :name="'tabTitle-' + item.label">{{ item.label }}</slot>
+					</template>
 				</a-tab-pane>
 			</a-tabs>
 			<ma-search @search="searchSubmitHandler" class="__search-panel" ref="crudSearchRef">
@@ -33,62 +29,57 @@
 				</template>
 			</ma-search>
 		</div>
-		<div class="mb-2"><slot name="middleContent"></slot></div>
+		<div class="mb-2">
+			<slot name="middleContent"></slot>
+		</div>
 		<div class="_crud-content">
 			<div class="justify-between mb-3 operation-tools lg:flex" ref="crudOperationRef">
 				<a-space class="block lg:flex lg:inline-block">
 					<slot name="tableBeforeButtons"></slot>
 					<slot name="tableButtons">
-						<a-button
-							v-if="options.add.show"
-							v-auth="options.add.auth || []"
-							v-role="options.add.role || []"
-							@click="addAction"
-							type="primary"
-							class="w-full mt-2 lg:w-auto lg:mt-0"
-						>
+						<a-button v-if="options.add.show" v-auth="options.add.auth || []"
+							v-role="options.add.role || []" @click="addAction" type="primary"
+							class="w-full mt-2 lg:w-auto lg:mt-0">
 							<template #icon><icon-plus /></template>{{ options.add.text || '新增' }}
 						</a-button>
 
-						<a-popconfirm
-							content="确定要删除数据吗?"
-							position="bottom"
-							@ok="deletesMultipleAction"
-							v-if="options.delete.show && isBatch(options.delete) && options.rowSelection && !isRecovery"
-						>
-							<a-button v-auth="options.delete.auth || []" v-role="options.delete.role || []" type="primary" status="danger" class="w-full mt-2 lg:w-auto lg:mt-0">
+						<a-popconfirm content="确定要删除数据吗?" position="bottom" @ok="deletesMultipleAction"
+							v-if="options.delete.show && isBatch(options.delete) && options.rowSelection && !isRecovery">
+							<a-button v-auth="options.delete.auth || []" v-role="options.delete.role || []"
+								type="primary" status="danger" class="w-full mt-2 lg:w-auto lg:mt-0">
 								<template #icon><icon-delete /></template>
 								{{ options.delete.text || '删除' }}
 							</a-button>
 						</a-popconfirm>
 
-						<a-popconfirm
-							content="确定要销毁数据吗?"
-							position="bottom"
-							@ok="deletesMultipleAction"
-							v-if="options.delete.show && isBatch(options.delete) && options.rowSelection && isRecovery"
-						>
-							<a-button v-auth="options.delete.realAuth || []" type="primary" status="danger" class="w-full mt-2 lg:w-auto lg:mt-0">
+						<a-popconfirm content="确定要销毁数据吗?" position="bottom" @ok="deletesMultipleAction"
+							v-if="options.delete.show && isBatch(options.delete) && options.rowSelection && isRecovery">
+							<a-button v-auth="options.delete.realAuth || []" type="primary" status="danger"
+								class="w-full mt-2 lg:w-auto lg:mt-0">
 								<template #icon><icon-delete /></template>
 								{{ options.delete.realText || '销毁' }}
 							</a-button>
 						</a-popconfirm>
 
-						<a-popconfirm content="确定要恢复数据吗?" position="bottom" @ok="recoverysMultipleAction" v-if="options.recovery.show && isRecovery && isBatch(options.delete)">
-							<a-button v-auth="options.recovery.auth || []" v-role="options.recovery.role || []" type="primary" status="success" class="w-full mt-2 lg:w-auto lg:mt-0">
-								<template #icon><icon-undo /></template>{{ options.recovery.text || '恢复' }}</a-button
-							>
+						<a-popconfirm content="确定要恢复数据吗?" position="bottom" @ok="recoverysMultipleAction"
+							v-if="options.recovery.show && isRecovery && isBatch(options.delete)">
+							<a-button v-auth="options.recovery.auth || []" v-role="options.recovery.role || []"
+								type="primary" status="success" class="w-full mt-2 lg:w-auto lg:mt-0">
+								<template #icon><icon-undo /></template>{{ options.recovery.text || '恢复' }}</a-button>
 						</a-popconfirm>
 
-						<a-button v-if="options.import.show" v-auth="options.import.auth || []" v-role="options.import.role || []" @click="importAction" class="w-full mt-2 lg:w-auto lg:mt-0"
-							><template #icon><icon-upload /></template>{{ options.import.text || '导入' }}</a-button
-						>
+						<a-button v-if="options.import.show" v-auth="options.import.auth || []"
+							v-role="options.import.role || []" @click="importAction"
+							class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-upload /></template>{{
+				options.import.text || '导入' }}</a-button>
 
-						<a-button v-if="options.export.show" v-auth="options.export.auth || []" v-role="options.export.role || []" @click="exportAction" class="w-full mt-2 lg:w-auto lg:mt-0"
-							><template #icon><icon-download /></template>{{ options.export.text || '导出' }}</a-button
-						>
+						<a-button v-if="options.export.show" v-auth="options.export.auth || []"
+							v-role="options.export.role || []" @click="exportAction"
+							class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-download /></template>{{
+				options.export.text || '导出' }}</a-button>
 
-						<a-button type="secondary" @click="handlerExpand" v-if="options.isExpand" class="w-full mt-2 lg:w-auto lg:mt-0">
+						<a-button type="secondary" @click="handlerExpand" v-if="options.isExpand"
+							class="w-full mt-2 lg:w-auto lg:mt-0">
 							<template #icon>
 								<icon-expand v-if="!expandState" />
 								<icon-shrink v-else />
@@ -103,67 +94,42 @@
 					<!-- <a-tooltip :content="isRecovery ? '显示正常数据' : '显示回收站数据'" v-if="options.recycleApi && isFunction(options.recycleApi)">
 						<a-button shape="circle" @click="switchDataType"><icon-swap /></a-button>
 					</a-tooltip> -->
-					<a-tooltip content="刷新表格"
-						><a-button shape="circle" @click="refresh"><icon-refresh /></a-button
-					></a-tooltip>
-					<a-tooltip content="显隐搜索"
-						><a-button shape="circle" @click="toggleSearch"><icon-search /></a-button
-					></a-tooltip>
-					<a-tooltip content="打印表格"
-						><a-button shape="circle" @click="printTable"><icon-printer /></a-button
-					></a-tooltip>
-					<a-tooltip content="设置"
-						><a-button shape="circle" @click="tableSetting"><icon-settings /></a-button
-					></a-tooltip>
+					<a-tooltip content="刷新表格"><a-button shape="circle"
+							@click="refresh"><icon-refresh /></a-button></a-tooltip>
+					<a-tooltip content="显隐搜索"><a-button shape="circle"
+							@click="toggleSearch"><icon-search /></a-button></a-tooltip>
+					<a-tooltip content="打印表格"><a-button shape="circle"
+							@click="printTable"><icon-printer /></a-button></a-tooltip>
+					<a-tooltip content="设置"><a-button shape="circle"
+							@click="tableSetting"><icon-settings /></a-button></a-tooltip>
 				</a-space>
 			</div>
 			<div ref="crudContentRef">
 				<slot name="content" v-bind="tableData">
-					<a-table
-						v-if="!options.expandAllRows || tableData.length > 0"
-						v-bind="$attrs"
-						ref="tableRef"
-						:key="options.pk"
-						:data="tableData"
-						:loading="loading"
-						:sticky-header="options.stickyHeader"
-						:pagination="options.tablePagination"
-						:stripe="options.stripe"
-						:bordered="options.bordered"
+					<a-table v-if="!options.expandAllRows || tableData.length > 0" v-bind="$attrs" ref="tableRef"
+						:key="options.pk" :data="tableData" :loading="loading" :sticky-header="options.stickyHeader"
+						:pagination="options.tablePagination" :stripe="options.stripe" :bordered="options.bordered"
 						:rowSelection="options.rowSelection || undefined"
-						:row-key="options?.rowSelection?.key ?? options.pk"
-						:scroll="options.scroll"
-						:column-resizable="options.resizable"
-						:size="options.size"
-						:row-class="options.rowClass"
+						:row-key="options?.rowSelection?.key ?? options.pk" :scroll="options.scroll"
+						:column-resizable="options.resizable" :size="options.size" :row-class="options.rowClass"
 						:hide-expand-button-on-empty="options.hideExpandButtonOnEmpty"
 						:default-expand-all-rows="options.expandAllRows"
 						:summary="options.customerSummary || __summary || options.showSummary"
-						@selection-change="setSelecteds"
-						@sorter-change="handlerSort"
-					>
+						@selection-change="setSelecteds" @sorter-change="handlerSort">
 						<template #tr="{ record }">
-							<tr
-								class="ma-crud-table-tr"
+							<tr class="ma-crud-table-tr"
 								:class="isFunction(options.rowCustomClass) ? options.rowCustomClass(record, rowIndex) ?? [] : options.rowCustomClass"
 								@contextmenu.prevent="openContextMenu($event, record)"
-								@dblclick="dbClickOpenEdit(record)"
-							/>
+								@dblclick="dbClickOpenEdit(record)" />
 						</template>
 
 						<template #expand-row="record" v-if="options.showExpandRow">
 							<slot name="expand-row" v-bind="record"></slot>
 						</template>
 						<template #columns>
-							<ma-column
-								ref="crudColumnRef"
-								v-if="reloadColumn"
-								:columns="props.columns"
-								:isRecovery="isRecovery"
-								:crudFormRef="crudFormRef"
-								@refresh="() => refresh()"
-								@showImage="showImage"
-							>
+							<ma-column ref="crudColumnRef" v-if="reloadColumn" :columns="props.columns"
+								:isRecovery="isRecovery" :crudFormRef="crudFormRef" @refresh="() => refresh()"
+								@showImage="showImage">
 								<template #operationBeforeExtend="{ record, column, rowIndex }">
 									<slot name="operationBeforeExtend" v-bind="{ record, column, rowIndex }"></slot>
 								</template>
@@ -176,31 +142,27 @@
 									<slot name="operationAfterExtend" v-bind="{ record, column, rowIndex }"></slot>
 								</template>
 
-								<template v-for="(slot, slotIndex) in slots" :key="slotIndex" #[slot]="{ record, column, rowIndex }">
+								<template v-for="(slot, slotIndex) in slots" :key="slotIndex"
+									#[slot]="{ record, column, rowIndex }">
 									<slot :name="`${slot}`" v-bind="{ record, column, rowIndex }" />
 								</template>
 							</ma-column>
 						</template>
-						<template #summary-cell="{ column, record, rowIndex }" v-if="options.customerSummary || options.showSummary">
-							<slot name="summaryCell" v-bind="{ record, column, rowIndex }">{{ record[column.dataIndex] }}</slot>
+						<template #summary-cell="{ column, record, rowIndex }"
+							v-if="options.customerSummary || options.showSummary">
+							<slot name="summaryCell" v-bind="{ record, column, rowIndex }">{{ record[column.dataIndex]
+								}}</slot>
 						</template>
 					</a-table>
 				</slot>
 			</div>
 		</div>
-		<div class="mt-3 text-right _crud-footer" ref="crudFooterRef" v-if="total > 0 && openPagination && !options.tablePagination">
-			<a-pagination
-				:total="total"
-				show-total
-				show-jumper
-				show-page-size
-				:page-size-options="options.pageSizeOption"
-				@page-size-change="pageSizeChangeHandler"
-				@change="pageChangeHandler"
-				v-model:current="requestParams[config.request.page]"
-				:page-size="requestParams[config.request.pageSize]"
-				style="display: inline-flex"
-			/>
+		<div class="mt-3 text-right _crud-footer" ref="crudFooterRef"
+			v-if="total > 0 && openPagination && !options.tablePagination">
+			<a-pagination :total="total" show-total show-jumper show-page-size
+				:page-size-options="options.pageSizeOption" @page-size-change="pageSizeChangeHandler"
+				@change="pageChangeHandler" v-model:current="requestParams[config.request.page]"
+				:page-size="requestParams[config.request.pageSize]" style="display: inline-flex" />
 		</div>
 
 		<ma-setting ref="crudSettingRef" />
@@ -215,7 +177,8 @@
 
 		<ma-context-menu ref="crudContextMenuRef" @execCommand="execContextMenuCommand" />
 
-		<a-image-preview-group :srcList="imgUrl" v-model:visible="imgVisible" v-if="typeof imgUrl === 'object' && imgUrl !== null" />
+		<a-image-preview-group :srcList="imgUrl" v-model:visible="imgVisible"
+			v-if="typeof imgUrl === 'object' && imgUrl !== null" />
 		<a-image-preview :src="imgUrl" v-model:visible="imgVisible" v-else />
 	</a-layout-content>
 </template>
@@ -639,7 +602,7 @@ const setSelecteds = (key) => {
 }
 
 const getSelecteds = () => {
-  return selecteds
+	return selecteds
 }
 
 const switchDataType = async () => {
@@ -775,7 +738,7 @@ onMounted(async () => {
 
 	if (options.value.pageLayout === 'fixed') {
 		window.addEventListener('resize', resizeHandler, false)
-		headerHeight.value = crudHeaderRef.value.offsetHeight
+		headerHeight.value = crudHeaderRef.value.offsetHeight ? crudHeaderRef.value.offsetHeight : 0
 		settingFixedPage()
 	}
 })
@@ -836,6 +799,7 @@ defineExpose({
 	overflow: hidden;
 	width: 100%;
 }
+
 ._crud-footer {
 	z-index: 10;
 }

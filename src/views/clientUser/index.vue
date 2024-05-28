@@ -185,7 +185,9 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'input',
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
     // commonRules: [{ required: true, message: '品牌证书必填' }],
   },
   {

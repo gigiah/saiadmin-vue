@@ -40,6 +40,7 @@ const crud = reactive({
   edit: { show: true, api: api.update, auth: ['/couponItem/update'] },
   delete: { show: true, api: api.delete, auth: ['/couponItem/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/couponItem/recovery'] },
+  export: { show: true, url: '/couponItem/export', auth: ['/couponItem/export'] },
   formOption: { width: 800 },
   beforeOpenAdd: () => {
     columns[1].addDefaultValue = Number.parseInt(couponId.value)
@@ -130,14 +131,15 @@ const columns = reactive([
     commonRules: [{ required: false, message: '备注必填' }],
   },
   {
-    title: '产品ID',
+    title: '产品',
     dataIndex: 'product_id',
     width: 180,
     search: true,
     addDisplay: false,
     editDisplay: true,
     hide: false,
-    formType: 'input',
+    formType: 'select',
+    dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     commonRules: [{ required: true, message: '产品ID必填' }],
   },
   {

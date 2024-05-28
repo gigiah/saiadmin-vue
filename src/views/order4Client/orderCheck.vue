@@ -246,7 +246,7 @@ const crud = reactive({
 	formOption: { viewType: 'drawer', width: 600 },
 	isExpand: true,
 	size: 'mini',
-	resizable: false,
+	// resizable: false,
 	stripe: false,
 	columnWidth: 80,
 	beforeSearch: (requestParams) => {
