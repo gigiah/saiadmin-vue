@@ -103,14 +103,19 @@ const columns = reactive([
     hide: false,
     dict: { url: '/pricingCraft/index4Search?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
     formType: 'select',
-    control: (val, maFormObject) => {
-      let item = selectItem(val)
-      // currentRule.value.min = item.price_min
-      // currentRule.value.max = item.price_max
-      // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
-      maFormObject.price_min = item.price_min
-      maFormObject.price_max = item.price_max
-    },
+    onChange: async (val) => {
+			if (val) {
+				const modalForm = crudRef.value.getFormData();
+				if (!modalForm) {
+					Message.error('未找到表单对象');
+					return;
+				}
+				let item = selectItem(val)
+				modalForm.price_min = item.price_min
+				modalForm.price_max = item.price_max
+				modalForm.pricing_type = item.pricing_type
+			}
+		},
     commonRules: [{ required: false, message: '工艺必填' }],
   },
   {
@@ -123,6 +128,24 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     commonRules: [{ required: false, message: '标准单价必填' }],
+  },
+  {
+    title: '计价方式',
+    dataIndex: 'pricing_type',
+    formType: 'select',
+    search: true,
+    dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+    disabled: true,
+  },
+  {
+    title: '非标计价方式',
+    dataIndex: 'non_standrd_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    dict: { url: '/pricingNonStandrd/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
   },
   {
     title: '最低限价',

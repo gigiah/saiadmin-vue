@@ -3,17 +3,23 @@
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
-			<!-- <template #tableBeforeButtons>
-				<a-button @click="submitOrders()" type="primary" status="success">发起审订</a-button>
-			</template> -->
+			<template #tableBeforeButtons>
+				<a-button @click="rejectOrders()" type="primary" status="danger">打回</a-button>
+				<a-button @click="confirmOrders()" type="primary" status="success">通过</a-button>
+			</template>
 			<!-- 操作前置扩展 -->
-			<!-- <template #operationBeforeExtend="{ record }">
-				<a-link v-if="record.row_type === 'order' || record.row_type == 'goods'" @click="openAdd(record)"
+			<template #operationBeforeExtend="{ record }">
+				<a-link v-if="record.row_type === 'goods' && record.associated_file" @click="openFileModal(record)"
 					v-auth="[]">
-					<icon-plus /> {{ record.row_type === 'order' ? '产品' : '工艺' }}
+					<icon-eye /> 查看文件
 				</a-link>
-			</template> -->
+			</template>
 		</ma-crud>
+		<div>
+			<ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800"
+				:column="modalColumn" :submit="() => { }">
+			</ma-form-modal>
+		</div>
 	</div>
 </template>
 
@@ -23,15 +29,22 @@ import { judgeCode } from "@/utils/common";
 import api from '@/api/order'
 import productApi from '@/api/product'
 import craftApi from '@/api/craft'
+import uploadBatchApi from '@/api/uploadBatch'
 import pricingProductApi from '@/api/pricingProduct'
 import pricingCraftApi from '@/api/pricingCraft'
 import { Message, Modal } from '@arco-design/web-vue'
+import MaFormModal from "@/components/ma-form-modal/index.vue"
 
 const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
-const nextStage = ref('')
-const currentStatus = ref([40, 50, 60, 70, 90])
+const nextStage = ref('生产中')
+const prevStage = ref('审订中')
+const currentStatus = ref([40])
+
+const modalRef = ref()
+const visible = ref(false)
+
 
 const orderShowIndex = {
 	'store_id': { 'addDisabled': false, 'editDisabled': true },
@@ -51,7 +64,7 @@ const goodsShowIndex = {
 	'product_picture_type_id': { 'addDisabled': true, 'editDisabled': true },
 	'width': { 'addDisabled': false, 'editDisabled': true },
 	'height': { 'addDisabled': false, 'editDisabled': true },
-	'nums': { 'addDisabled': false, 'editDisabled': false },
+	'nums': { 'addDisabled': false, 'editDisabled': true },
 	'remark': { 'addDisabled': false, 'editDisabled': true },
 	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
 	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
@@ -76,7 +89,7 @@ const selectChange = (val) => {
 	selecteds.value = val
 }
 
-const submitOrders = async () => {
+const confirmOrders = async () => {
 	if (selecteds.value.length === 0) {
 		Message.error('至少要选择一条订单')
 		return
@@ -92,7 +105,7 @@ const submitOrders = async () => {
 	}
 	Modal.info({
 		title: '提示',
-		content: '确定发起吗？',
+		content: '确定通过吗？',
 		simple: false,
 		okText: '确定',
 		cancelText: '取消',
@@ -107,19 +120,58 @@ const submitOrders = async () => {
 	return true
 }
 
+const rejectOrders = async () => {
+	if (selecteds.value.length === 0) {
+		Message.error('至少要选择一条订单')
+		return
+	}
+	let orderIds = []
+	console.log('selecteds', selecteds)
+	selecteds.value.forEach(function (id) {
+		if (judgeCode(id) === 'order') orderIds.push(id)
+	})
+	if (orderIds.length === 0) {
+		Message.error('至少要选择一条订单')
+		return
+	}
+	Modal.info({
+		title: '提示',
+		content: '确定打回吗？',
+		simple: false,
+		okText: '确定',
+		cancelText: '取消',
+		onOk: async () => {
+			await api.handleOrderChange({
+				ids: orderIds,
+				value: prevStage.value,
+			})
+			crudRef.value.refresh()
+		},
+	})
+	return true
+}
+
+const openFileModal = (record) => {
+	console.log(record)
+	uploadBatchApi.read(record.associated_file)
+		.then(res => {
+			Object.keys(res.data).forEach((key) => {
+				modalRef.value.form[key] = res.data[key]
+			})
+			visible.value = true
+		})
+	return
+}
+
 //产品/工艺添加操作
 const openAdd = (record) => {
 	console.log('openAddRecord', record)
 	console.log('openAdd', columns)
-	setColumnsValue()
 	if (record.row_type == 'order') {
 		resetAddColumnsDisplay('goods')
 		setColumnsValue('parent_id', record.id, 'add')
 		setColumnsValue('row_type', 'goods', 'add')
 		setColumnsValue('store_id', record.store_id, 'add')
-		// columns[1].addDefaultValue = record.id;//order_id
-		// columns[2].addDefaultValue = 'goods'
-		// columns[3].addDefaultValue = record.store_id
 	}
 	else if (record.row_type == 'goods') {
 		resetAddColumnsDisplay('craft')
@@ -132,15 +184,6 @@ const openAdd = (record) => {
 		setColumnsValue('pricing_type_id', undefined, 'add')
 		setColumnsValue('pricing_unit_id', undefined, 'add')
 		setColumnsDict('craft_id', { product_id: record.product_id }, 'add')
-		// columns[1].addDefaultValue = record.id;//goods_id
-		// columns[2].addDefaultValue = 'craft';
-		// columns[5].addDefaultValue = record.product_id;
-		// columns[10].addDefaultValue = String(record.width);
-		// columns[11].addDefaultValue = String(record.height);
-		// columns[12].addDefaultValue = String(record.nums);
-		// columns[14].addDefaultValue = undefined
-		// columns[15].addDefaultValue = undefined
-		// columns[7].dict.params = { product_id: record.product_id }
 	}
 	crudRef.value.crudFormRef.add()
 }
@@ -243,7 +286,7 @@ const crud = reactive({
 	pageLayout: 'fixed',
 	rowSelection: { showCheckedAll: true },
 	operationColumn: true,
-	operationColumnWidth: 85,
+	operationColumnWidth: 180,
 	add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
 	edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
 	delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
@@ -271,6 +314,10 @@ const crud = reactive({
 		console.log('beforeOpenEditColumns', columns)
 		console.log('beforeOpenEditForm', formData)
 		resetEditColumnsDisplay(formData.row_type)
+		//人工核定计价类型处理
+		if(formData.pricing_type_id == 9){
+			columns[28].editDisabled = false
+		}
 		return true
 	},
 	//删除门店/产品/工艺前操作
@@ -358,6 +405,14 @@ const columns = reactive([
 	{
 		title: '订单金额',
 		dataIndex: 'total_amount',
+	},
+	{
+		title: '优惠金额',
+		dataIndex: 'coupon_amount',
+	},
+	{
+		title: '支付金额',
+		dataIndex: 'pay_amount',
 	},
 	{
 		title: '结算类型',
@@ -451,6 +506,7 @@ const columns = reactive([
 			translation: true,
 		},
 		width: 150,
+		hide: true,
 	},
 	{
 		title: '识别符',
@@ -556,6 +612,73 @@ const columns = reactive([
 		disabled: true,
 	},
 ])
+
+const modalColumn = reactive([
+	{
+		title: '标题',
+		dataIndex: 'title',
+		width: 180,
+		search: true,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		disabled: true,
+		commonRules: [{ required: true, message: '标题必填' }],
+	},
+	{
+		title: '源文件',
+		dataIndex: 'source_file',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		disabled: true,
+		commonRules: [{ required: true, message: '源文件必填' }],
+	},
+	{
+		title: '预览图',
+		dataIndex: 'preview_image',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'upload',
+		type: 'image',
+		returnType: 'url',
+		multiple: false,
+		disabled: true,
+		commonRules: [{ required: false, message: '预览图必填' }],
+	},
+	{
+		formType: 'card',
+		title: '链接文件',
+		formList: [
+			{
+				title: '',
+				hideLabel: true,
+				formType: 'children-form',
+				dataIndex: 'link_file_list',
+				type: 'table',
+				showBtn: false,
+				disabled: true,
+				formList: [
+					{
+						title: '',
+						hideLabel: true,
+						dataIndex: 'value',
+						disabled: true,
+						formType: 'input',
+					},
+				],
+			},
+		],
+	},
+])
+
 </script>
 
 <style scoped>

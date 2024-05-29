@@ -54,6 +54,18 @@ const columns = reactive([
     commonRules: [{ required: true, message: '名称必填' }],
   },
   {
+    title: '计价类型',
+    dataIndex: 'pricing_type',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'select',
+    commonRules: [{ required: true, message: '计价类型必填' }],
+  },
+  {
     title: '产品类别',
     dataIndex: 'type_id',
     width: 100,

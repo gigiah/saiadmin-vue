@@ -4,7 +4,8 @@
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
 			<template #tableBeforeButtons>
-				<a-button @click="submitOrders()" type="primary" status="success">发起审订</a-button>
+				<a-button @click="selectCoupon()" type="primary" status="warning">选择卡券</a-button>
+				<a-button @click="submitOrders()" type="primary" status="success">提交生产</a-button>
 			</template>
 			<!-- 操作前置扩展 -->
 			<!-- <template #operationBeforeExtend="{ record }">
@@ -14,6 +15,11 @@
 				</a-link>
 			</template> -->
 		</ma-crud>
+		<div>
+			<ma-form-modal ref="modalRef" v-model:visible="visible" title="选择卡券" :width="800" :column="modalColumn"
+				:submit="modalSubmit">
+			</ma-form-modal>
+		</div>
 	</div>
 </template>
 
@@ -23,15 +29,20 @@ import { judgeCode } from "@/utils/common";
 import api from '@/api/order'
 import productApi from '@/api/product'
 import craftApi from '@/api/craft'
+import couponItemApi from '@/api/couponItem'
 import pricingProductApi from '@/api/pricingProduct'
 import pricingCraftApi from '@/api/pricingCraft'
 import { Message, Modal } from '@arco-design/web-vue'
+import MaFormModal from "@/components/ma-form-modal/index.vue"
 
 const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
 const nextStage = ref('审批中')
 const currentStatus = ref(20)
+
+const modalRef = ref()
+const visible = ref(false)
 
 const orderShowIndex = {
 	'store_id': { 'addDisabled': false, 'editDisabled': true },
@@ -102,19 +113,19 @@ const submitOrders = async () => {
 	return true
 }
 
+const selectCoupon = () => {
+	visible.value = true
+}
+
 //产品/工艺添加操作
 const openAdd = (record) => {
 	console.log('openAddRecord', record)
 	console.log('openAdd', columns)
-	setColumnsValue()
 	if (record.row_type == 'order') {
 		resetAddColumnsDisplay('goods')
 		setColumnsValue('parent_id', record.id, 'add')
 		setColumnsValue('row_type', 'goods', 'add')
 		setColumnsValue('store_id', record.store_id, 'add')
-		// columns[1].addDefaultValue = record.id;//order_id
-		// columns[2].addDefaultValue = 'goods'
-		// columns[3].addDefaultValue = record.store_id
 	}
 	else if (record.row_type == 'goods') {
 		resetAddColumnsDisplay('craft')
@@ -127,15 +138,6 @@ const openAdd = (record) => {
 		setColumnsValue('pricing_type_id', undefined, 'add')
 		setColumnsValue('pricing_unit_id', undefined, 'add')
 		setColumnsDict('craft_id', { product_id: record.product_id }, 'add')
-		// columns[1].addDefaultValue = record.id;//goods_id
-		// columns[2].addDefaultValue = 'craft';
-		// columns[5].addDefaultValue = record.product_id;
-		// columns[10].addDefaultValue = String(record.width);
-		// columns[11].addDefaultValue = String(record.height);
-		// columns[12].addDefaultValue = String(record.nums);
-		// columns[14].addDefaultValue = undefined
-		// columns[15].addDefaultValue = undefined
-		// columns[7].dict.params = { product_id: record.product_id }
 	}
 	crudRef.value.crudFormRef.add()
 }
@@ -237,7 +239,7 @@ const crud = reactive({
 	showIndex: false,
 	pageLayout: 'fixed',
 	rowSelection: { showCheckedAll: true },
-	operationColumn: true,
+	operationColumn: false,
 	operationColumnWidth: 130,
 	add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
 	edit: { show: false, text: '编辑', title: '编辑', api: api.update, auth: [] },
@@ -246,6 +248,7 @@ const crud = reactive({
 	formOption: { viewType: 'drawer', width: 600 },
 	isExpand: true,
 	size: 'mini',
+	showTools: false,
 	// resizable: false,
 	stripe: false,
 	columnWidth: 80,
@@ -515,6 +518,25 @@ const columns = reactive([
 		disabled: true,
 	},
 ])
+
+const modalColumn = reactive([
+	{
+		title: '可用卡券',
+		dataIndex: 'title',
+		width: 180,
+		search: true,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'select',
+		dict: {
+			url: '/coupon/getUsableCoupon',
+			props: { label: 'label', value: 'value' },
+			translation: true,
+		}
+	},
+])
+
 </script>
 
 <style scoped>

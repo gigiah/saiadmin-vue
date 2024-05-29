@@ -97,7 +97,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/core/dept/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/core/dept/index?type=all&role_code=marketing', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     defaultActiveFirstOption: true,
     commonRules: [{ required: false, message: '团队必填' }],
@@ -131,6 +131,7 @@ const columns = reactive([
       // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
       maFormObject.price_min = item.price_min
       maFormObject.price_max = item.price_max
+      maFormObject.pricing_type = item.pricing_type
     },
     commonRules: [{ required: false, message: '工艺必填' }],
   },
@@ -183,6 +184,14 @@ const columns = reactive([
     formType: 'input',
     disabled: true,
     commonRules: [{ required: false, message: '最高限价必填' }],
+  },
+  {
+    title: '计价方式',
+    dataIndex: 'pricing_type',
+    formType: 'select',
+    search: true,
+    dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+    disabled: true,
   },
   {
     title: '创建者',

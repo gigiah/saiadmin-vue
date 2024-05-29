@@ -106,15 +106,11 @@ const submitOrders = async () => {
 const openAdd = (record) => {
 	console.log('openAddRecord', record)
 	console.log('openAdd', columns)
-	setColumnsValue()
 	if (record.row_type == 'order') {
 		resetAddColumnsDisplay('goods')
 		setColumnsValue('parent_id', record.id, 'add')
 		setColumnsValue('row_type', 'goods', 'add')
 		setColumnsValue('store_id', record.store_id, 'add')
-		// columns[1].addDefaultValue = record.id;//order_id
-		// columns[2].addDefaultValue = 'goods'
-		// columns[3].addDefaultValue = record.store_id
 	}
 	else if (record.row_type == 'goods') {
 		resetAddColumnsDisplay('craft')
@@ -127,15 +123,6 @@ const openAdd = (record) => {
 		setColumnsValue('pricing_type_id', undefined, 'add')
 		setColumnsValue('pricing_unit_id', undefined, 'add')
 		setColumnsDict('craft_id', { product_id: record.product_id }, 'add')
-		// columns[1].addDefaultValue = record.id;//goods_id
-		// columns[2].addDefaultValue = 'craft';
-		// columns[5].addDefaultValue = record.product_id;
-		// columns[10].addDefaultValue = String(record.width);
-		// columns[11].addDefaultValue = String(record.height);
-		// columns[12].addDefaultValue = String(record.nums);
-		// columns[14].addDefaultValue = undefined
-		// columns[15].addDefaultValue = undefined
-		// columns[7].dict.params = { product_id: record.product_id }
 	}
 	crudRef.value.crudFormRef.add()
 }
@@ -246,6 +233,7 @@ const crud = reactive({
 	formOption: { viewType: 'drawer', width: 600 },
 	isExpand: true,
 	size: 'mini',
+	showTools: false,
 	// resizable: false,
 	stripe: false,
 	columnWidth: 80,
@@ -337,6 +325,14 @@ const columns = reactive([
 	{
 		title: '订单金额',
 		dataIndex: 'total_amount',
+	},
+	{
+		title: '优惠金额',
+		dataIndex: 'coupon_amount',
+	},
+	{
+		title: '支付金额',
+		dataIndex: 'pay_amount',
 	},
 	{
 		title: '结算类型',
@@ -485,17 +481,6 @@ const columns = reactive([
 		formType: 'textarea',
 	},
 	{
-		title: '计价方式',
-		dataIndex: 'pricing_type_id',
-		formType: 'select',
-		dict: {
-			url: '/pricingType/index?type=all',
-			props: { label: 'name', value: 'id' },
-			translation: true,
-		},
-		disabled: true,
-	},
-	{
 		title: '计量单位',
 		dataIndex: 'pricing_unit_id',
 		formType: 'select',
@@ -504,6 +489,18 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 			translation: true,
 		},
+		disabled: true,
+	},
+	{
+		title: '计价类型',
+		dataIndex: 'pricing_type',
+		width: 100,
+		search: true,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+		formType: 'select',
 		disabled: true,
 	},
 	{
