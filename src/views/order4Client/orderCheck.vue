@@ -406,7 +406,7 @@ const columns = reactive([
 		dataIndex: 'craft_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingCraft/index4Search',
+			url: '/pricingCraft/index4Search?type=all',
 			params: { product_id: null },
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,

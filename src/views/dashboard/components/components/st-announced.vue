@@ -1,4 +1,3 @@
-
 <template>
   <div class="w-full p-3 mt-3 rounded-sm lg:w-12/12 ma-content-block">
     <div class="flex justify-between">
@@ -10,6 +9,7 @@
         <a-link @click="viewDetail(record)">{{ record.title }}</a-link>
       </template>
     </a-table>
+
     <a-modal v-model:visible="detailVisible" fullscreen :footer="true">
       <template #title>公告详情</template>
       <a-typography :style="{ marginTop: '-30px' }">
@@ -22,7 +22,7 @@
           </a-space>
         </a-typography-paragraph>
         <a-typography-paragraph>
-          <div v-html="row?.content" ></div>
+          <div v-html="row?.content"></div>
         </a-typography-paragraph>
       </a-typography>
     </a-modal>
@@ -47,10 +47,11 @@ const viewDetail = async (record) => {
   detailVisible.value = true
 }
 
-const getNoticeList = async () => {
-  const res = await noticeApi.getPageList({ limit: 5, orderBy: 'id', orderType: 'desc' })
-  data.value = res.data.data
+const getNoticeList = () => {
+  noticeApi.getPageList({ limit: 10, orderBy: 'id', orderType: 'desc' })
+    .then(res => {
+      data.value = res.data.data
+    })
 }
-
 getNoticeList()
 </script>

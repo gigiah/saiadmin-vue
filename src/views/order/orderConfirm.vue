@@ -58,7 +58,7 @@ const goodsShowIndex = {
 	// 'store_id': { 'addDisabled': true, 'editDisabled': true },
 	'product_id': { 'addDisabled': false, 'editDisabled': true },
 	'associated_file': { 'addDisabled': false, 'editDisabled': true },
-	'correct_file': { 'addDisabled': false, 'editDisabled': false },
+	// 'correct_file': { 'addDisabled': false, 'editDisabled': false },
 	'identify': { 'addDisabled': false, 'editDisabled': false },
 	'product_grade_id': { 'addDisabled': true, 'editDisabled': true },
 	'product_picture_type_id': { 'addDisabled': true, 'editDisabled': true },
@@ -517,7 +517,7 @@ const columns = reactive([
 		dataIndex: 'craft_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingCraft/index4Search',
+			url: '/pricingCraft/index4Search?type=all',
 			params: { product_id: null },
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,

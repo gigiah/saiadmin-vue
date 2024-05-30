@@ -101,7 +101,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/pricingCraft/index4Search?type=all', props: { label: 'name', value: 'craft_id' }, translation: true },
+    dict: { url: '/pricingCraft/index4Search', props: { label: 'name', value: 'craft_id' }, translation: true },
     formType: 'select',
     onChange: async (val) => {
 			if (val) {

@@ -119,7 +119,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/pricingProduct/index4Search?type=all', props: { label: 'name', value: 'product_id' }, translation: true },
+    dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'product_id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '产品必填' }],
     onChange: (val) => {

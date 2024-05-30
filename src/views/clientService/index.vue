@@ -22,12 +22,12 @@ const crud = reactive({
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: sysInfoStore.info.is_client ? false : true,
+  operationColumn: !sysInfoStore.info.is_client,
   operationColumnWidth: 160,
-  add: { show: sysInfoStore.info.is_client ? false : true, api: api.save, auth: ['/clientService/save'] },
-  edit: { show: sysInfoStore.info.is_client ? false : true, api: api.update, auth: ['/clientService/update'] },
-  delete: { show: sysInfoStore.info.is_client ? false : true, api: api.delete, auth: ['/clientService/destroy'] },
-  recovery: { show: sysInfoStore.info.is_client ? false : true, api: api.recovery, auth: ['/clientService/recovery'] },
+  add: { show: sysInfoStore.info.is_admin, api: api.save, auth: ['/clientService/save'] },
+  edit: { show: !sysInfoStore.info.is_client, api: api.update, auth: [] },
+  delete: { show: !sysInfoStore.info.is_client, api: api.delete, auth: [] },
+  recovery: { show: !sysInfoStore.info.is_client, api: api.recovery, auth: [] },
   formOption: { width: 800 },
 })
 
@@ -62,7 +62,7 @@ const columns = reactive([
     addDefaultValue: 'team',
     width: 100,
     dict: {
-      name: 'bizClientServiceType', 
+      name: 'bizClientServiceType',
       props: { label: 'label', value: 'value' },
       translation: true,
     },

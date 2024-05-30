@@ -137,10 +137,12 @@ const viewDetail = async (record) => {
   detailVisible.value = true
 }
 
-onMounted(async () => {
-  const res = await noticeApi.getPageList({ limit: 5, orderBy: 'id', orderType: 'desc' })
-  announcements.value = res.data.data
-  startMarquee()
+onMounted(() => {
+  const res = noticeApi.getPageList({ limit: 5, orderBy: 'id', orderType: 'desc' })
+    .then(res => {
+      announcements.value = res.data.data
+      startMarquee()
+    })
 })
 
 const handleSelect = async (name) => {
