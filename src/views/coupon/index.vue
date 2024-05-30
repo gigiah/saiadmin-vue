@@ -100,7 +100,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '产品必填' }],
+    // commonRules: [{ required: true, message: '产品必填' }],
     control: (val, maFormObject) => {
       if (val) {
         productApi.read(val)

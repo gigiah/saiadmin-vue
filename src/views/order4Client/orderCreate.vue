@@ -466,14 +466,17 @@ const columns = reactive([
 	{
 		title: '宽度',
 		dataIndex: 'width',
+		commonRules: [{ required: true, message: '宽度必填' }],
 	},
 	{
 		title: '高度',
 		dataIndex: 'height',
+		commonRules: [{ required: true, message: '高度必填' }],
 	},
 	{
 		title: '数量',
 		dataIndex: 'nums',
+		commonRules: [{ required: true, message: '数量必填' }],
 	},
 	{
 		title: '备注说明',

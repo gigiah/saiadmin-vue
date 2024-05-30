@@ -105,8 +105,20 @@ export default {
 	 */
 	getMyCoupon() {
 		return request({
-			url: '/coupon/getMyCoupon',
+			url: '/couponItem/getMyCoupon',
 			method: 'get',
+		})
+	},
+
+	/**
+	 * 用券/取消
+	 * @returns
+	 */
+	selectCoupon(data = {}) {
+		return request({
+			url: '/couponItem/selectCoupon',
+			method: 'post',
+			data,
 		})
 	},
 }

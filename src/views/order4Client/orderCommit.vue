@@ -117,6 +117,18 @@ const selectCoupon = () => {
 	visible.value = true
 }
 
+const modalSubmit = (data) => {
+	couponItemApi.selectCoupon({
+		id: data.coupon_item_id,
+		option: 'select',
+	}).then(res => {
+		if (res.code == 200) {
+			crudRef.value.refresh()
+			Message.success('卡券使用成功')
+		}
+	})
+}
+
 //产品/工艺添加操作
 const openAdd = (record) => {
 	console.log('openAddRecord', record)
@@ -335,10 +347,22 @@ const columns = reactive([
 	// 	title: '运费',
 	// 	dataIndex: 'freight',
 	// },
-	// {
-	// 	title: '订单金额',
-	// 	dataIndex: 'total_amount',
-	// },
+	{
+		title: '订单金额',
+		dataIndex: 'total_amount',
+	},
+	{
+		title: '运费',
+		dataIndex: 'freight',
+	},
+	{
+		title: '优惠金额',
+		dataIndex: 'coupon_amount',
+	},
+	{
+		title: '支付金额',
+		dataIndex: 'pay_amount',
+	},
 	{
 		title: '结算类型',
 		dataIndex: 'settle_method',
@@ -522,7 +546,7 @@ const columns = reactive([
 const modalColumn = reactive([
 	{
 		title: '可用卡券',
-		dataIndex: 'title',
+		dataIndex: 'coupon_item_id',
 		width: 180,
 		search: true,
 		addDisplay: true,
@@ -530,7 +554,7 @@ const modalColumn = reactive([
 		hide: false,
 		formType: 'select',
 		dict: {
-			url: '/coupon/getUsableCoupon',
+			url: '/couponItem/getUsableCoupon',
 			props: { label: 'label', value: 'value' },
 			translation: true,
 		}
