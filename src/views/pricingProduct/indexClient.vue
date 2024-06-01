@@ -77,14 +77,14 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '客方人员',
-    dataIndex: 'client_id',
+    title: '客方',
+    dataIndex: 'client_group_id',
     width: 100,
     search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
-    dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+    hide: sysInfoStore.info.is_client,
+    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '客方必填' }],
   },
@@ -96,21 +96,26 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'product_id' }, translation: true },
+    dict: {
+      url: '/pricingProduct/index4Search',
+      params: sysInfoStore.info.is_client ? { type: 'client' } : {},
+      props: { label: 'name', value: 'product_id' },
+      translation: true
+    },
     formType: 'select',
     onChange: async (val) => {
-			if (val) {
-				const modalForm = crudRef.value.getFormData();
-				if (!modalForm) {
-					Message.error('未找到表单对象');
-					return;
-				}
-				let item = selectItem(val)
-				modalForm.price_min = item.price_min
-				modalForm.price_max = item.price_max
-				modalForm.pricing_type = item.pricing_type
-			}
-		},
+      if (val) {
+        const modalForm = crudRef.value.getFormData();
+        if (!modalForm) {
+          Message.error('未找到表单对象');
+          return;
+        }
+        let item = selectItem(val)
+        modalForm.price_min = item.price_min
+        modalForm.price_max = item.price_max
+        modalForm.pricing_type = item.pricing_type
+      }
+    },
     commonRules: [{ required: false, message: '产品必填' }],
   },
   {

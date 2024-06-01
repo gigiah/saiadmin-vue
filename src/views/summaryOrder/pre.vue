@@ -130,7 +130,7 @@
     },
     {
       title: '识别符',
-      dataIndex: 'identity',
+      dataIndex: 'identify',
       width: 180,
       search: false,
       addDisplay: true, 

@@ -104,7 +104,7 @@ const columns = reactive([
   },
   // {
   //   title: '客方',
-  //   dataIndex: 'client_id',
+  //   dataIndex: 'client_group_id',
   //   width: 100,
   //   search: false,
   //   addDisplay: false,

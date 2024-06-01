@@ -69,7 +69,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'select',
-    dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+    dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
     commonRules: [{ required: false, message: '持有人' }],
   },
   {

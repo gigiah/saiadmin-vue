@@ -45,14 +45,14 @@ const columns = reactive([
   },
   {
     title: '客户',
-    dataIndex: 'client_id',
+    dataIndex: 'client_group_id',
     width: 180,
     search: sysInfoStore.info.is_client ? false : true,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: sysInfoStore.info.is_client ? true : false,
     formType: 'select',
-    dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     commonRules: [{ required: false, message: '客户必填' }],
   },
   {

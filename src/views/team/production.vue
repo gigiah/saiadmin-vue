@@ -133,6 +133,9 @@ const selectOperation = (value, record) => {
 
 const crud = reactive({
 	api: user.getPageList,
+	beforeRequest: params => {
+		params.codes = 'prePrint,production,delivery'
+	},
 	recycleApi: user.getRecyclePageList,
 	searchColNumber: 3,
 	showIndex: false,

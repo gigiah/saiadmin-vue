@@ -8,7 +8,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
-import api from '@/api/clientUser'
+import api from '@/api/clientGroup'
 import { Message } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
 
@@ -27,22 +27,22 @@ const crud = reactive({
   add: {
     show: sysInfoStore.info.is_client ? false : true,
     api: api.save,
-    auth: ['/clientUser/save']
+    auth: ['/clientGroup/save']
   },
   edit: {
     show: sysInfoStore.info.is_client ? false : true,
     api: api.update,
-    auth: ['/clientUser/update']
+    auth: ['/clientGroup/update']
   },
   delete: {
     show: sysInfoStore.info.is_client ? false : true,
     api: api.delete,
-    auth: ['/clientUser/destroy']
+    auth: ['/clientGroup/destroy']
   },
   recovery: {
     show: sysInfoStore.info.is_client ? false : true,
     api: api.recovery,
-    auth: ['/clientUser/recovery']
+    auth: ['/clientGroup/recovery']
   },
   formOption: { width: 800 },
 })
@@ -205,7 +205,7 @@ const columns = reactive([
     title: '联系人',
     dataIndex: 'contact',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -216,7 +216,7 @@ const columns = reactive([
     title: '手机号',
     dataIndex: 'mobile',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -227,7 +227,7 @@ const columns = reactive([
     title: '微信号',
     dataIndex: 'wechat',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -316,7 +316,7 @@ const columns = reactive([
     title: '公司名称',
     dataIndex: 'company_name',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -327,7 +327,7 @@ const columns = reactive([
     title: '客户名称',
     dataIndex: 'name',
     width: 180,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -338,7 +338,7 @@ const columns = reactive([
     title: '微信小程序使用权限',
     dataIndex: 'miniapp_usage',
     width: 100,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -350,7 +350,7 @@ const columns = reactive([
     title: '状态',
     dataIndex: 'status',
     width: 100,
-    search: true,
+    search: !sysInfoStore.info.is_client,
     addDisplay: true, addDefaultValue: 1,
     editDisplay: true,
     hide: false,

@@ -3,9 +3,9 @@
 		<!-- CRUD 组件 -->
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
-			<!-- <template #tableBeforeButtons>
-				<a-button @click="submitOrders()" type="primary" status="success">发起审订</a-button>
-			</template> -->
+			<template #tableBeforeButtons>
+				<a-button @click="summaryOrders()" type="primary" status="success">发起汇总</a-button>
+			</template>
 			<!-- 操作前置扩展 -->
 			<template #operationBeforeExtend="{ record }">
 				<a-link v-if="record.row_type === 'goods' && record.associated_file" @click="openFileModal(record)"
@@ -17,6 +17,11 @@
 		<div>
 			<ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800"
 				:column="modalColumn" :submit="() => { }">
+			</ma-form-modal>
+		</div>
+		<div>
+			<ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800"
+				:column="submitModalColumn" :submit="submitSummary">
 			</ma-form-modal>
 		</div>
 	</div>
@@ -42,6 +47,9 @@ const currentStatus = ref([50, 60, 70, 90])
 
 const modalRef = ref()
 const visible = ref(false)
+
+const submitModalRef = ref()
+const submitVisible = ref(false)
 
 const orderShowIndex = {
 	'store_id': { 'addDisabled': false, 'editDisabled': true },
@@ -82,6 +90,41 @@ const craftShowIndex = {
 
 const selectChange = (val) => {
 	selecteds.value = val
+}
+
+const summaryOrders = async () => {
+	if (selecteds.value.length === 0) {
+		Message.error('至少要选择一条订单')
+		return
+	}
+	let orderIds = []
+	console.log('selecteds', selecteds)
+	selecteds.value.forEach(function (id) {
+		if (judgeCode(id) === 'order') orderIds.push(id)
+	})
+	if (orderIds.length === 0) {
+		Message.error('至少要选择一条订单')
+		return
+	}
+	submitVisible.value = true
+	return
+}
+
+const submitSummary = async (formData) => {
+	let orderIds = []
+	selecteds.value.forEach(function (id) {
+		if (judgeCode(id) === 'order') orderIds.push(id)
+	})
+	api.handleOrderSummary({
+		orderIds: orderIds,
+		summaryBatchCode: formData.summary_batch_code
+	}).then(res => {
+		if (res.code == 200) {
+			Message.success('汇总成功')
+			crudRef.value.refresh()
+		}
+	})
+
 }
 
 const submitOrders = async () => {
@@ -321,14 +364,14 @@ const columns = reactive([
 		hide: true,
 	},
 	{
-		title: '客方人员',
-		dataIndex: 'client_id',
+		title: '客方',
+		dataIndex: 'client_group_id',
 		width: 100,
 		search: true,
 		addDisplay: true,
 		editDisplay: true,
 		hide: false,
-		dict: { url: '/clientUser/index?type=all', props: { label: 'name', value: 'client_id' }, translation: true },
+		dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
 		formType: 'select',
 		commonRules: [{ required: false, message: '客方必填' }],
 	},
@@ -357,6 +400,16 @@ const columns = reactive([
 		dataIndex: 'code',
 		search: true,
 		width: 200,
+	},
+	{
+		title: '汇总批次号',
+		dataIndex: 'summary_batch_code',
+	},
+	{
+		title: '汇总状态',
+		dataIndex: 'summary_status',
+		formType: 'select',
+		dict: { name: 'bizSummaryStatus', props: { label: 'label', value: 'value' }, translation: true },
 	},
 	{
 		title: '运费',
@@ -420,7 +473,7 @@ const columns = reactive([
 		dataIndex: 'product_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingProduct/index4Search?type=all',
+			url: '/pricingProduct/index4Search?range=all',
 			props: { label: 'name', value: 'product_id' },
 			translation: true,
 		},
@@ -467,15 +520,15 @@ const columns = reactive([
 	},
 	{
 		title: '识别符',
-		dataIndex: 'identity',
+		dataIndex: 'identify',
 	},
 	{
 		title: '工艺',
 		dataIndex: 'craft_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingCraft/index4Search?type=all',
-			params: { product_id: null },
+			url: '/pricingCraft/index4Search?range=all',
+			// params: { product_id: null },
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,
 		},
@@ -633,6 +686,19 @@ const modalColumn = reactive([
 				],
 			},
 		],
+	},
+])
+
+const submitModalColumn = reactive([
+	{
+		title: '批次号',
+		dataIndex: 'summary_batch_code',
+		width: 180,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		commonRules: [{ required: true, message: '批次号必填' }],
 	},
 ])
 

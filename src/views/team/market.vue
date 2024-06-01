@@ -4,8 +4,8 @@
 		<ma-crud :options="crud" :columns="columns" ref="crudRef">
 			<!-- 状态列 -->
 			<template #status="{ record }">
-				<a-switch :disabled="!sysInfoStore.info.is_team_leader" :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)"
-					:default-checked="record.status == 1" />
+				<a-switch :disabled="!sysInfoStore.info.is_team_leader" :checked-value="1" unchecked-value="2"
+					@change="changeStatus($event, record.id)" :default-checked="record.status == 1" />
 			</template>
 			<!-- 头像列 -->
 			<template #avatar="{ record }">
@@ -133,6 +133,9 @@ const selectOperation = (value, record) => {
 
 const crud = reactive({
 	api: user.getPageList,
+	beforeRequest: params => {
+		params.code = 'marketing'
+	},
 	recycleApi: user.getRecyclePageList,
 	searchColNumber: 3,
 	showIndex: false,

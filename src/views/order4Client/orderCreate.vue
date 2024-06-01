@@ -384,7 +384,7 @@ const columns = reactive([
 		dataIndex: 'product_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingProduct/index4Search?type=all',
+			url: '/pricingProduct/index4Search',
 			props: { label: 'name', value: 'product_id' },
 			translation: true,
 		},
@@ -415,14 +415,15 @@ const columns = reactive([
 			props: { label: 'title', value: 'id' },
 			translation: true,
 		},
+		commonRules: [{ required: true, message: '文件名必填' }],
 	},
 	{
 		title: '工艺',
 		dataIndex: 'craft_id',
 		formType: 'select',
 		dict: {
-			url: '/pricingCraft/index4Search?type=all',
-			params: { product_id: null },
+			url: '/pricingCraft/index4Search',
+			// params: { type: 'client', product_id: null },
 			props: { label: 'name', value: 'craft_id' },
 			translation: true,
 		},

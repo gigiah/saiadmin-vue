@@ -146,12 +146,24 @@ export default {
   },
 
   /**
-   * 处理订单改变
+   * 处理订单变更
    * @returns
    */
   handleOrderChange(data = {}) {
     return request({
       url: '/order/handleOrderChange',
+      method: 'post',
+      data
+    })
+  },
+
+  /**
+   * 处理订单变更
+   * @returns
+   */
+  handleOrderSummary(data = {}) {
+    return request({
+      url: '/order/handleOrderSummary',
       method: 'post',
       data
     })
