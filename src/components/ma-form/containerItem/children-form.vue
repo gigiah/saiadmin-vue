@@ -85,7 +85,7 @@
                 <td v-if="component.showBtn" class="arco-table-td">
                   <span class="arco-table-cell">
                     <a-button type="primary" status="danger" size="small" shape="round"
-                      :disabled="formModel[props.component.dataIndex].length === 1" @click="deleteItem(index)">
+                      :disabled="formModel[props.component.dataIndex].length === 0" @click="deleteItem(index)">
                       <template #icon><icon-minus /></template>
                     </a-button>
                   </span>

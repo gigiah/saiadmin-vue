@@ -315,7 +315,7 @@ const crud = reactive({
 		console.log('beforeOpenEditForm', formData)
 		resetEditColumnsDisplay(formData.row_type)
 		//人工核定计价类型处理
-		if(formData.pricing_type_id == 9){
+		if (formData.pricing_type_id == 9) {
 			columns[28].editDisabled = false
 		}
 		return true
@@ -679,7 +679,15 @@ const modalColumn = reactive([
 				disabled: true,
 				formList: [
 					{
-						title: '',
+						title: '文件名',
+						hideLabel: true,
+						dataIndex: 'label',
+						disabled: true,
+						formType: 'input',
+						width: 150,
+					},
+					{
+						title: '地址',
 						hideLabel: true,
 						dataIndex: 'value',
 						disabled: true,

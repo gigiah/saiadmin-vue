@@ -677,7 +677,15 @@ const modalColumn = reactive([
 				disabled: true,
 				formList: [
 					{
-						title: '',
+						title: '文件名',
+						hideLabel: true,
+						dataIndex: 'label',
+						disabled: true,
+						formType: 'input',
+						width: 150,
+					},
+					{
+						title: '地址',
 						hideLabel: true,
 						dataIndex: 'value',
 						disabled: true,

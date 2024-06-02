@@ -14,8 +14,8 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/couponItem'
 import { Message } from '@arco-design/web-vue'
 
-const visible = ref(false)
 const crudRef = ref()
+const visible = ref(false)
 const couponId = ref()
 
 const open = (row) => {
