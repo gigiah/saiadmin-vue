@@ -1,7 +1,7 @@
 import { request } from '@/utils/request.js'
 
 /**
- * 汇总单 API接口
+ * 汇总受理记录 API接口
  */
 export default {
 
@@ -11,7 +11,7 @@ export default {
    */
   getPageList (params = {}) {
     return request({
-      url: '/summaryOrder/index',
+      url: '/summaryPrintRecord/index',
       method: 'get',
       params
     })
@@ -23,7 +23,7 @@ export default {
    */
   getRecyclePageList (params = {}) {
     return request({
-      url: '/summaryOrder/recycle',
+      url: '/summaryPrintRecord/recycle',
       method: 'get',
       params
     })
@@ -35,7 +35,7 @@ export default {
    */
   save (params = {}) {
     return request({
-      url: '/summaryOrder/save',
+      url: '/summaryPrintRecord/save',
       method: 'post',
       data: params
     })
@@ -47,7 +47,7 @@ export default {
    */
   read (id) {
     return request({
-      url: '/summaryOrder/read/' + id,
+      url: '/summaryPrintRecord/read/' + id,
       method: 'get'
     })
   },
@@ -58,7 +58,7 @@ export default {
    */
   delete (data) {
     return request({
-      url: '/summaryOrder/destroy',
+      url: '/summaryPrintRecord/destroy',
       method: 'delete',
       data
     })
@@ -70,7 +70,7 @@ export default {
    */
   recovery (data) {
     return request({
-      url: '/summaryOrder/recovery',
+      url: '/summaryPrintRecord/recovery',
       method: 'post',
       data
     })
@@ -82,7 +82,7 @@ export default {
    */
   update (id, data = {}) {
     return request({
-      url: '/summaryOrder/update/' + id,
+      url: '/summaryPrintRecord/update/' + id,
       method: 'put',
       data
     })
@@ -94,19 +94,7 @@ export default {
    */
   changeStatus(data = {}) {
     return request({
-      url: '/summaryOrder/changeStatus',
-      method: 'post',
-      data
-    })
-  },
-
-  /**
-   * //发起生产/取消
-   * @returns
-   */
-  handleProduce(data = {}) {
-    return request({
-      url: '/summaryOrder/handleProduce',
+      url: '/summaryPrintRecord/changeStatus',
       method: 'post',
       data
     })

@@ -105,7 +105,6 @@ onMounted(async () => {
   if (props.multiple) {
     selecteds.value = []
   }
-  console.log('modelValue', props.modelValue)
   if(props.modelValue){
     props.modelValue.forEach(function(item){
       console.log('item', item)

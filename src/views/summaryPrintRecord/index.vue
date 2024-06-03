@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="visible" :width="1400" :footer="false">
-    <template #title>反馈内容</template>
+    <template #title>受理记录</template>
     <div class="justify-between p-4 ma-content-block lg:flex">
       <!-- CRUD 组件 -->
       <ma-crud :options="crud" :columns="columns" ref="crudRef">
@@ -11,15 +11,15 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import api from '@/api/orderFeedbackItem'
+import api from '@/api/summaryPrintRecord'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
+const summaryOrderId = ref()
 const visible = ref(false)
-const feedBackId = ref()
 
 const open = (row) => {
-  feedBackId.value = row.id
+  summaryOrderId.value = row.id
   visible.value = true
   crudRef.value.requestData()
 }
@@ -27,19 +27,19 @@ const open = (row) => {
 const crud = reactive({
   api: api.getPageList,
   beforeRequest: params => {
-    params.order_feedback_id = feedBackId
+    params.summary_order_id = summaryOrderId
   },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: true,
+  operationColumn: false,
   operationColumnWidth: 160,
-  add: { show: true, text:'添加回复', api: api.save, auth: ['/orderFeedbackItem/save'] },
-  edit: { show: true, text:'查看内容', api: api.update, auth: ['/orderFeedbackItem/update'] },
-  delete: { show: false, api: api.delete, auth: ['/orderFeedbackItem/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/orderFeedbackItem/recovery'] },
+  add: { show: true, api: api.save, auth: ['/summaryPrintRecord/save'] },
+  edit: { show: true, api: api.update, auth: ['/summaryPrintRecord/update'] },
+  delete: { show: true, api: api.delete, auth: ['/summaryPrintRecord/destroy'] },
+  recovery: { show: true, api: api.recovery, auth: ['/summaryPrintRecord/recovery'] },
   formOption: { width: 800 },
 })
 
@@ -53,45 +53,53 @@ const columns = reactive([
     editDisplay: false,
     hide: true,
     formType: 'input',
-    commonRules: [{ required: true, message: '主键必填' }],
+    commonRules: [{ required: false, message: '主键必填' }],
   },
   {
-    title: '反馈ID',
-    dataIndex: 'order_feedback_id',
+    title: '汇总单ID',
+    dataIndex: 'summary_order_id',
     width: 180,
     search: false,
     addDisplay: false,
     editDisplay: false,
     hide: true,
     formType: 'input',
-    commonRules: [{ required: false, message: '反馈ID必填' }],
-    addDefaultValue: feedBackId,
+    commonRules: [{ required: false, message: '汇总单ID必填' }],
   },
   {
-    title: '反馈内容',
-    dataIndex: 'content',
+    title: '人员',
+    dataIndex: 'sys_id',
     width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'textarea',
-    disabled: false,
-    commonRules: [{ required: false, message: '反馈内容必填' }],
+    formType: 'select',
+    dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
+    commonRules: [{ required: false, message: '人员必填' }],
   },
   {
-    title: '附图',
-    dataIndex: 'picture',
+    title: '处理动作',
+    dataIndex: 'action',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'bizSummaryRecordAction', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'select',
+    commonRules: [{ required: false, message: '处理动作必填' }],
+  },
+  {
+    title: '打印数量',
+    dataIndex: 'nums',
     width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'upload',
-    type: 'image',
-    returnType: 'url',
-    multiple: false,
-    commonRules: [{ required: false, message: '附图必填' }],
+    formType: 'input',
+    commonRules: [{ required: false, message: '打印数量必填' }],
   },
   {
     title: '创建者',
@@ -119,10 +127,10 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: false,
+    search: true,
     addDisplay: false,
     editDisplay: false,
-    hide: true,
+    hide: false,
     searchFormType: 'range',
     showTime: true,
     formType: 'date',
