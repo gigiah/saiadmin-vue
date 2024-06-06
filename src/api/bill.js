@@ -110,4 +110,52 @@ export default {
 			data,
 		})
 	},
+
+	/**
+	 * 生成对账单
+	 * @returns
+	 */
+	handleCreateBill(data = {}) {
+		return request({
+			url: '/bill/handleCreateBill',
+			method: 'post',
+			data,
+		})
+	},
+
+	/**
+	 * 下载对账单
+	 * @returns
+	 */
+	exportBillExcel(data = {}) {
+		return request({
+			url: '/bill/exportBillExcel',
+			method: 'post',
+			data,
+		})
+	},
+
+	/**
+	 * 更改状态
+	 * @returns
+	 */
+	changeFapiaoStatus(data = {}) {
+		return request({
+			url: '/bill/changeFapiaoStatus',
+			method: 'post',
+			data,
+		})
+	},
+
+	/**
+	 * 更改状态
+	 * @returns
+	 */
+	changeCheckoutStatus(data = {}) {
+		return request({
+			url: '/bill/changeCheckoutStatus',
+			method: 'post',
+			data,
+		})
+	},
 }

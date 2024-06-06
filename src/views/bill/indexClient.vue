@@ -3,32 +3,29 @@
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #operationBeforeExtend="{ record }">
-        <a-space size="mini">
-          <a-link @click="exportBill(record)"><icon-to-bottom />下载系统对账单</a-link>
+        <a-space size="mini" v-if="record.fapiao_method != 0">
+          <a-link @click="viewItems(record)"><icon-menu />查看发票</a-link>
         </a-space>
       </template>
     </ma-crud>
+    <bill-fapiao ref="itemRef" @success="() => crudRef.refresh()" />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/bill'
+import billFapiao from '@/views/billFapiao/index.vue'
 import { Message } from '@arco-design/web-vue'
-import tool from '@/utils/tool'
 
 const crudRef = ref()
 
-const exportBill = async (record) => {
-  Message.info('系统对账单下载中，请稍后')
-  const response = await api.exportBillExcel({ id: record.id })
-  if (response) {
-    tool.download(response, record.name + '系统对账单.xlsx')
-    Message.success('开始下载')
-  } else {
-    Message.error('下载失败')
-  }
+const itemRef = ref()
+
+const viewItems = (record) => {
+  itemRef.value.open(record)
 }
+
 
 const crud = reactive({
   api: api.getPageList,
@@ -38,11 +35,11 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 270,
-  add: { show: false, api: api.save, auth: ['/bill/save'] },
-  edit: { show: true, api: api.update, auth: ['/bill/update'] },
-  delete: { show: true, api: api.delete, auth: ['/bill/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/bill/recovery'] },
+  operationColumnWidth: 180,
+  add: { show: false, api: api.save },
+  edit: { show: true, text: '选择开票方式', api: api.update },
+  delete: { show: false, api: api.delete },
+  recovery: { show: false, api: api.recovery },
   formOption: { width: 800 },
 })
 
@@ -56,20 +53,8 @@ const columns = reactive([
     editDisplay: false,
     hide: true,
     formType: 'input',
-    commonRules: [{ required: true, message: '主键必填' }],
-  },
-  {
-    title: '客户',
-    dataIndex: 'client_group_id',
-    width: 100,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'select',
-    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     disabled: true,
-    commonRules: [{ required: false, message: '客户必填' }],
+    commonRules: [{ required: true, message: '主键必填' }],
   },
   {
     title: '结款类型',
@@ -86,16 +71,41 @@ const columns = reactive([
     commonRules: [{ required: true, message: '结款类型必填' }],
   },
   {
-    title: '系统对账单',
-    dataIndex: 'name',
-    width: 180,
+    title: '对账单',
+    dataIndex: 'manual_excel',
+    width: 200,
     search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
+    formType: 'upload',
+    type: 'file',
+    disabled: true,
+    commonRules: [{ required: true, message: '结算对账单必填' }],
+  },
+  // {
+  //   title: '汇总金额',
+  //   dataIndex: 'total',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true, addDefaultValue: 0.00,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'input',
+  //   commonRules: [{ required: true, message: '汇总金额必填' }],
+  // },
+  {
+    title: '结算金额',
+    dataIndex: 'bill_total',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    addDefaultValue: 0.00,
+    editDisplay: true,
+    hide: false,
     formType: 'input',
     disabled: true,
-    commonRules: [{ required: true, message: '系统对账单必填' }],
+    commonRules: [{ required: true, message: '结算金额必填' }],
   },
   {
     title: '对账人员',
@@ -115,7 +125,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '对账人员必填' }],
   },
   {
-    title: '生成日期',
+    title: '生成时间',
     dataIndex: 'create_time',
     width: 180,
     search: true,
@@ -129,44 +139,41 @@ const columns = reactive([
     commonRules: [{ required: false, message: '创建时间必填' }],
   },
   {
-    title: '汇总金额',
-    dataIndex: 'bill_total',
-    width: 180,
-    search: false,
-    addDisplay: true, 
-    addDefaultValue: 0.00,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    disabled: true,
-    commonRules: [{ required: true, message: '汇总金额必填' }],
-  },
-  {
-    title: '对账单金额',
-    dataIndex: 'final_total',
-    width: 180,
-    search: false,
-    addDisplay: true, 
-    addDefaultValue: 0.00,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '对账单金额必填' }],
-  },
-  {
-    title: '结算对账单',
-    dataIndex: 'manual_excel',
-    width: 180,
+    title: '发票方式',
+    dataIndex: 'fapiao_method',
+    width: 100,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'upload',
-    type: 'file',
-    commonRules: [{ required: false, message: '提交对账单必填' }],
+    dict: { name: 'bizFapiaoMethod', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    control: (val) => {
+      if (val > 0) {
+        return {
+          fapiao_method: { disabled: true }
+        }
+      } else {
+        return {
+          fapiao_method: { disabled: false }
+        }
+      }
+    },
+    commonRules: [{ required: false, message: '发票方式必填' }],
   },
   // {
-  //   title: '状态',
+  //   title: '提交对账单',
+  //   dataIndex: 'manual_excel',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'input',
+  //   commonRules: [{ required: false, message: '提交对账单必填' }],
+  // },
+  // {
+  //   title: '发票状态',
   //   dataIndex: 'fapiao_status',
   //   width: 100,
   //   search: false,
@@ -177,50 +184,38 @@ const columns = reactive([
   //   formType: 'select',
   //   commonRules: [{ required: false, message: '状态必填' }],
   // },
-  {
-    title: '财务人员',
-    dataIndex: 'finance_sys_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: {
-      url: '/core/user/index?type=all&code=financial',
-      props: { label: 'nickname', value: 'id' },
-      translation: true,
-    },
-    formType: 'select',
-    commonRules: [{ required: false, message: '财务人员必填' }],
-  },
-  {
-    title: '客方人员',
-    dataIndex: 'client_sys_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: {
-      url: '/core/user/index?type=all&isClient=1',
-      props: { label: 'nickname', value: 'id' },
-      translation: true,
-    },
-    formType: 'select',
-    commonRules: [{ required: false, message: '客方人员必填' }],
-  },
-  {
-    title: '备注',
-    dataIndex: 'remark',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    addDefaultValue: '',
-    editDisplay: true,
-    hide: false,
-    disabled: true,
-    formType: 'textarea',
-  },
+  // {
+  //   title: '财务人员',
+  //   dataIndex: 'finance_sys_id',
+  //   width: 100,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   dict: {
+  //     url: '/core/user/index?type=all',
+  //     props: { label: 'nickname', value: 'id' },
+  //     translation: true,
+  //   },
+  //   formType: 'select',
+  //   commonRules: [{ required: false, message: '财务人员必填' }],
+  // },
+  // {
+  //   title: '客方人员',
+  //   dataIndex: 'client_sys_id',
+  //   width: 100,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   dict: {
+  //     url: '/core/user/index?type=all',
+  //     props: { label: 'nickname', value: 'id' },
+  //     translation: true,
+  //   },
+  //   formType: 'select',
+  //   commonRules: [{ required: false, message: '客方人员必填' }],
+  // },
   {
     title: '创建者',
     dataIndex: 'created_by',

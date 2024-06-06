@@ -121,4 +121,16 @@ export default {
 			data,
 		})
 	},
+
+	/**
+	 * 导出
+	 * @returns
+	 */
+	export(data = {}) {
+		return request({
+			url: '/couponItem/export',
+			method: 'post',
+			data,
+		})
+	},
 }

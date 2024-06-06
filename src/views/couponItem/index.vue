@@ -40,7 +40,7 @@ const crud = reactive({
   edit: { show: true, api: api.update, auth: ['/couponItem/update'] },
   delete: { show: true, api: api.delete, auth: ['/couponItem/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/couponItem/recovery'] },
-  export: { show: true, url: '/couponItem/export', auth: ['/couponItem/export'] },
+  export: { show: true, url: '/couponItem/export' },
   formOption: { width: 800 },
   beforeOpenAdd: () => {
     columns[1].addDefaultValue = Number.parseInt(couponId.value)

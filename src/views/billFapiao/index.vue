@@ -14,13 +14,22 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/billFapiao'
 import billApi from '@/api/bill'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
+
 
 const crudRef = ref()
 const visible = ref(false)
 const billId = ref()
+const showAdd = ref(true)
+const sysInfoStore = useSysInfoStore()
 
 const open = (row) => {
   billId.value = row.id
+  if (row.fapiao_method == 2) {
+    showAdd.value = false
+  } else {
+    showAdd.value = true
+  }
   visible.value = true
   crudRef.value.requestData()
 }
@@ -37,10 +46,10 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/billFapiao/save'] },
-  edit: { show: true, api: api.update, auth: ['/billFapiao/update'] },
-  delete: { show: true, api: api.delete, auth: ['/billFapiao/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/billFapiao/recovery'] },
+  add: { show: showAdd, api: api.save },
+  edit: { show: !sysInfoStore.info.is_client, api: api.update },
+  delete: { show: true, api: api.delete },
+  recovery: { show: true, api: api.recovery },
   formOption: { width: 800 },
 })
 
@@ -61,21 +70,22 @@ const columns = reactive([
     dataIndex: 'bill_id',
     width: 180,
     search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
+    addDisplay: false,
+    editDisplay: false,
+    hide: true,
     formType: 'input',
+    addDefaultValue: billId,
     commonRules: [{ required: false, message: '对账单ID必填' }],
     addDefaultValue: billId
   },
   {
     title: '对账单号',
-    dataIndex: 'bill_id',
+    dataIndex: 'bill_code',
     width: 180,
     search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
+    addDisplay: false,
+    editDisplay: false,
+    hide: true,
     formType: 'input',
     commonRules: [{ required: false, message: '对账单号必填' }],
     addDefaultValue: async () => {
@@ -92,7 +102,19 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    disabled: true,
     commonRules: [{ required: false, message: '发票抬头必填' }],
+  },
+  {
+    title: '发票税号',
+    dataIndex: 'company_code',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    formType: 'input',
   },
   {
     title: '发票金额',
@@ -103,19 +125,20 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    disabled: true,
     commonRules: [{ required: false, message: '发票金额必填' }],
   },
-  {
-    title: '支付凭证',
-    dataIndex: 'payment_credit_url',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: false, message: '支付凭证必填' }],
-  },
+  // {
+  //   title: '支付凭证',
+  //   dataIndex: 'payment_credit_url',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'input',
+  //   commonRules: [{ required: false, message: '支付凭证必填' }],
+  // },
   {
     title: '发票下载',
     dataIndex: 'fapiao_url',
@@ -124,7 +147,9 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'input',
+    formType: 'upload',
+    type: 'file',
+    disabled: sysInfoStore.info.is_client,
     commonRules: [{ required: false, message: '发票下载必填' }],
   },
   {

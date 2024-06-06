@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -8,7 +8,7 @@
 
 <script setup>
   import { ref, reactive, computed } from 'vue'
-  import api from '@/api/orderDelivery'
+  import orderApi from '@/api/order'
   import { Message } from '@arco-design/web-vue'
 
   const crudRef = ref()
@@ -23,10 +23,10 @@
     rowSelection: { showCheckedAll: true },
     operationColumn: true,
     operationColumnWidth: 160,
-    add: { show: true, api: api.save, auth: ['/orderDelivery/save'] },
-    edit: { show: true, api: api.update, auth: ['/orderDelivery/update'] },
-    delete: { show: true, api: api.delete, auth: ['/orderDelivery/destroy'] },
-    recovery: { show: true, api: api.recovery, auth: ['/orderDelivery/recovery']},
+    add: { show: false, api: api.save, auth: ['/orderDelivery/save'] },
+    edit: { show: false, api: api.update, auth: ['/orderDelivery/update'] },
+    delete: { show: false, api: api.delete, auth: ['/orderDelivery/destroy'] },
+    recovery: { show: false, api: api.recovery, auth: ['/orderDelivery/recovery']},
     formOption: { width: 800 },
   })
 

@@ -4,7 +4,7 @@
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
 			<template #tableBeforeButtons>
-				<a-button @click="summaryOrders()" type="primary" status="success">汇总</a-button>
+				<a-button @click="submitBills()" type="primary" status="warning">生成对账单</a-button>
 			</template>
 			<!-- 操作前置扩展 -->
 			<template #operationBeforeExtend="{ record }">
@@ -346,6 +346,7 @@ const crud = reactive({
 	beforeSearch: (requestParams) => {
 		requestParams.orderBy = 'id'
 		requestParams.orderType = 'desc'
+		requestParams.menu = 'order4Bill'
 	},
 	afterSearch: (requestParams) => {
 		console.log('requestParams', requestParams)
@@ -437,6 +438,28 @@ const columns = reactive([
 	{
 		title: '提交人',
 		dataIndex: 'order_submiter',
+	},
+	{
+		title: '销售区域',
+		dataIndex: 'area_type',
+		formType: 'select',
+		search: true,
+		dict: {
+			url: '/storeAreaType/index?type=all',
+			props: { label: 'name', value: 'id' },
+			translation: true,
+		},
+	},
+	{
+		title: '经营模式',
+		dataIndex: 'business_type',
+		formType: 'select',
+		search: true,
+		dict: {
+			url: '/storeBusinessType/index?type=all',
+			props: { label: 'name', value: 'id' },
+			translation: true,
+		},
 	},
 	{
 		title: '订单号',
