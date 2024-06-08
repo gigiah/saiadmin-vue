@@ -1,97 +1,91 @@
-
 <template>
-    <a-cascader
-            v-if="props.type === 'cascader'"
-            v-model="val"
-            :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
-            :options="jsonData"
-            allow-search
-            check-strictly
-            expand-trigger="hover"
-            path-mode
-            placeholder="请选择省市区"
-    />
+    <a-cascader v-if="props.type === 'cascader'" v-model="val"
+        :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
+        :options="jsonData" allow-search check-strictly expand-trigger="hover" path-mode placeholder="请选择省市区" />
     <a-space v-else>
-        <a-select
-                v-model="selectData.province"
-                :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
-                :options="province"
-                :style="{width:'220px'}"
-                allow-clear
-                allow-search
-                placeholder="请选择省/直辖市/自治区"
-                @change="provinceChange"
-                @clear="() => {
+        <a-select v-model="selectData.province"
+            :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
+            :options="province" :style="{ width: '220px' }" allow-clear allow-search placeholder="请选择省/直辖市/自治区"
+            @change="provinceChange" @clear="() => {
         selectData.city = []
         selectData.area = []
         selectData.province = []
         selectData.city = []
         selectData.area = []
         province.value = []
-      }"
-        />
+    }" />
         <a-select v-model="selectData.city"
-                  :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
-                  :options="city"
-                  :style="{width:'220px'}"
-                  allow-clear
-                  allow-search
-                  placeholder="请选择地级市/市辖区"
-                  @change="cityChange"
-                  @clear="() => {
+            :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
+            :options="city" :style="{ width: '220px' }" allow-clear allow-search placeholder="请选择地级市/市辖区"
+            @change="cityChange" @clear="() => {
         selectData.city = []
         selectData.area = []
         selectData.city = []
         selectData.area = []
-      }"
-        />
+    }" />
         <a-select v-model="selectData.area"
-                  :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
-                  :options="area"
-                  :style="{width:'220px'}"
-                  allow-clear
-                  allow-search
-                  placeholder="请选择区县"
-                  @clear="() => {
+            :field-names="props.mode == 'name' ? { value: 'name', label: 'name' } : { value: 'code', label: 'name' }"
+            :options="area" :style="{ width: '220px' }" allow-clear allow-search placeholder="请选择区县" @clear="() => {
         selectData.area = []
         selectData.area = []
-      }"
-        />
+    }" />
     </a-space>
 </template>
 
 <script setup>
-import jsonData from './lib/city.json'
-import {ref, watch} from 'vue'
-import {isObject} from 'lodash'
+import regionApi from '@/api/area'
+// import jsonData from './lib/city.json'
+import { ref, watch, onMounted } from 'vue'
+import { isObject } from 'lodash'
 
 const val = ref()
-const selectData = ref({province: [], city: [], area: []})
+const selectData = ref({ province: [], city: [], area: [] })
 const province = ref([])
 const city = ref([])
 const area = ref([])
+const regionData = ref([])
+
+const fetchRegionData = async () => {
+    try {
+        const response = await regionApi.regionTree()
+        regionData.value = response.data
+    } catch (error) {
+        console.error('获取区域数据失败', error)
+    }
+}
+
+onMounted(async () => {
+    await fetchRegionData()
+    if (props.type === 'select') {
+        province.value = regionData.value.map(item => {
+            return { code: item.code, name: item.name }
+        })
+    }
+})
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
     modelValue: [Number, String, Object],
-    type: {type: String, default: 'select'},
-    mode: {type: String, default: 'name'},
+    type: { type: String, default: 'select' },
+    mode: { type: String, default: 'name' },
 })
 
-if (props.type === 'select') {
-    province.value = jsonData.map(item => {
-        return {code: item.code, name: item.name}
-    })
-}
+// if (props.type === 'select') {    
+//     province.value = regionData.value.map(item => {
+//         return { code: item.code, name: item.name }
+//     })
+// }
 
-const provinceChange = (val,clear=true) => {
+console.log('modelValue', props.modelValue)
+
+const provinceChange = (val, clear = true) => {
     if (clear) {
         selectData.value.city = []
         selectData.value.area = []
         area.value = []
         city.value = []
     }
-    jsonData.map(item => {
+    regionData.value.map(item => {
         if (props.mode == 'name' && val == item.name) {
             city.value = item.children
         }
@@ -101,8 +95,8 @@ const provinceChange = (val,clear=true) => {
     })
 }
 
-const cityChange = (val,clear=true) => {
-    if (clear){
+const cityChange = (val, clear = true) => {
+    if (clear) {
         selectData.value.area = []
         area.value = []
     }
@@ -135,7 +129,7 @@ watch(
     vl => () => {
         val.value = vl
         setSelectData()
-    }, {deep: true}
+    }, { deep: true }
 )
 
 watch(
@@ -146,7 +140,7 @@ watch(
 watch(
     () => selectData.value,
     vl => emit('update:modelValue', vl),
-    {deep: true}
+    { deep: true }
 )
 
 setSelectData()

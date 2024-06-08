@@ -2,24 +2,25 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
-      <template #delivery_status="{ record }">
-        <a-switch v-if="record.row_type == 'order'" :checked-value="1" unchecked-value="2" @change="changeDeliveryStatus($event, record.id)"
-          :default-checked="record.delivery_status == 1" />
-      </template>
       <!-- 表格前置扩展 -->
-      <!-- <template #tableBeforeButtons>
+      <template #tableBeforeButtons>
         <a-button @click="summaryOrders()" type="primary" status="success">打印</a-button>
-      </template> -->
-      <!-- 操作前置扩展 -->
-      <template #operationBeforeExtend="{ record }">
-        <a-link v-if="record.row_type === 'order'" @click="openModal(record)" v-auth="[]">
-          <icon-send />发货
-        </a-link>
       </template>
+      <!-- 操作前置扩展 -->
+      <!-- <template #operationBeforeExtend="{ record }">
+        <a-link v-if="record.row_type === 'goods' && record.associated_file" @click="openFileModal(record)" v-auth="[]">
+          <icon-eye />查看文件
+        </a-link>
+      </template> -->
     </ma-crud>
     <div>
       <ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800" :column="modalColumn"
-        :submit="submitModal">
+        :submit="() => { }">
+      </ma-form-modal>
+    </div>
+    <div>
+      <ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800"
+        :column="submitModalColumn" :submit="submitSummary">
       </ma-form-modal>
     </div>
   </div>
@@ -97,14 +98,6 @@ const selectChange = (val) => {
   selecteds.value = val
 }
 
-const changeDeliveryStatus = async (status, id) => {
-  const response = await api.changeDeliveryStatus({ id, status })
-  if (response.code === 200) {
-    Message.success(response.message)
-    crudRef.value.refresh()
-  }
-}
-
 const summaryOrders = async () => {
   if (selecteds.value.length === 0) {
     Message.error('至少要选择一条订单')
@@ -159,14 +152,21 @@ const submitBills = async () => {
   return true
 }
 
-const submitModal = async (formData) => {
-  api.update(formData.id, formData)
-    .then(res => {
-      if (res.code == 200) {
-        Message.success('保存成功')
-        crudRef.value.refresh()
-      }
-    })
+const submitSummary = async (formData) => {
+  let orderIds = []
+  selecteds.value.forEach(function (id) {
+    if (judgeCode(id) === 'order') orderIds.push(id)
+  })
+  summaryOrderApi.handleOrderSummary({
+    orderIds: orderIds,
+    summaryBatchCode: formData.summary_batch_code
+  }).then(res => {
+    if (res.code == 200) {
+      Message.success('汇总成功')
+      crudRef.value.refresh()
+    }
+  })
+
 }
 
 const submitOrders = async () => {
@@ -200,11 +200,15 @@ const submitOrders = async () => {
   return true
 }
 
-const openModal = (record) => {
-  Object.keys(record).forEach((key) => {
-    modalRef.value.form[key] = record[key]
-  })
-  visible.value = true
+const openFileModal = (record) => {
+  console.log(record)
+  uploadBatchApi.read(record.associated_file)
+    .then(res => {
+      Object.keys(res.data).forEach((key) => {
+        modalRef.value.form[key] = res.data[key]
+      })
+      visible.value = true
+    })
   return
 }
 
@@ -333,7 +337,7 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 100,
   add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
-  edit: { show: false, text: '编辑', title: '编辑', api: api.update, auth: [] },
+  edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
   delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
   recovery: { show: false, api: api.recovery, auth: [] },
   formOption: { viewType: 'drawer', width: 600 },
@@ -422,35 +426,26 @@ const columns = reactive([
     dataIndex: 'delivery_time',
   },
   {
-    title: '收货地址',
-    dataIndex: 'consignee_address',
-    formType: 'input',
-  },
-  {
-    title: '收件人',
-    dataIndex: 'consignee_contact',
-    formType: 'input',
-  },
-  {
-    title: '电话',
-    dataIndex: 'consignee_mobile',
-    formType: 'input',
-  },
-  {
-    title: '物流公司',
-    dataIndex: 'carrier_code',
+    title: '营销区域',
+    dataIndex: 'area_type_id',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    dict: { name: 'bizCarrier', props: { label: 'label', value: 'value' }, translation: true },
   },
   {
-    title: '物流单号',
-    dataIndex: 'delivery_code',
-    formType: 'input',
-  },
-  {
-    title: '运单金额',
-    dataIndex: 'freight_avg',
-    formType: 'input',
+    title: '价格体系',
+    dataIndex: 'pricing_type_id',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
   },
   {
     title: '门店',
@@ -474,53 +469,6 @@ const columns = reactive([
     search: true,
     width: 200,
   },
-  // {
-  //   title: '产品级别',
-  //   dataIndex: 'product_grade_id',
-  //   formType: 'select',
-  //   dict: {
-  //     url: '/productGrade/index?type=all',
-  //     props: { label: 'name', value: 'id' },
-  //     translation: true,
-  //   },
-  //   disabled: true,
-  // },
-  // {
-  //   title: '画面类型',
-  //   dataIndex: 'product_picture_type_id',
-  //   formType: 'select',
-  //   dict: {
-  //     url: '/productPictureType/index?type=all',
-  //     props: { label: 'name', value: 'id' },
-  //     translation: true,
-  //   },
-  //   disabled: true,
-  // },
-  {
-    title: '订单运费',
-    dataIndex: 'freight',
-  },
-  {
-    title: '发货备注',
-    dataIndex: 'delivery_remark',
-  },
-  {
-    title: '发货确认',
-    dataIndex: 'delivery_status',
-    width: 100,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: false,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'select',
-  },
-  {
-    title: '标签号',
-    dataIndex: 'label_no',
-    width: 200,
-    editDisplay: true,
-  },
   {
     title: '产品名',
     dataIndex: 'product_id',
@@ -531,6 +479,28 @@ const columns = reactive([
       translation: true,
     },
     commonRules: [{ required: true, message: '产品必填' }],
+  },
+  {
+    title: '产品级别',
+    dataIndex: 'product_grade_id',
+    formType: 'select',
+    dict: {
+      url: '/productGrade/index?type=all',
+      props: { label: 'name', value: 'id' },
+      translation: true,
+    },
+    disabled: true,
+  },
+  {
+    title: '画面类型',
+    dataIndex: 'product_picture_type_id',
+    formType: 'select',
+    dict: {
+      url: '/productPictureType/index?type=all',
+      props: { label: 'name', value: 'id' },
+      translation: true,
+    },
+    disabled: true,
   },
   {
     title: '宽度',
@@ -544,34 +514,27 @@ const columns = reactive([
     title: '数量',
     dataIndex: 'nums',
   },
-  // {
-  //   title: '制作选项',
-  //   dataIndex: 'craft_desc',
-  // },
-  // {
-  //   title: '标签子号',
-  //   dataIndex: 'label_sub_no',
-  //   editDisplay: true,
-  // }
+  {
+    title: '制作选项',
+    dataIndex: 'craft_desc',
+  },
+  {
+    title: '标签号',
+    dataIndex: 'label_no',
+    width: 200,
+    editDisplay: true,
+  },
+  {
+    title: '标签子号',
+    dataIndex: 'label_sub_no',
+    editDisplay: true,
+  }
 ])
 
 const modalColumn = reactive([
   {
-    title: '客方',
-    dataIndex: 'client_group_id',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    disabled: true,
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '订单号',
-    dataIndex: 'code',
+    title: '标题',
+    dataIndex: 'title',
     width: 180,
     search: true,
     addDisplay: true,
@@ -579,70 +542,79 @@ const modalColumn = reactive([
     hide: false,
     formType: 'input',
     disabled: true,
-    commonRules: [{ required: true, message: '必填' }],
+    commonRules: [{ required: true, message: '标题必填' }],
   },
   {
-    title: '物流公司',
-    dataIndex: 'carrier_code',
+    title: '源文件',
+    dataIndex: 'source_file',
     width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'select',
-    dict: { name: 'bizCarrier', props: { label: 'label', value: 'value' }, translation: true },
-    commonRules: [{ required: true, message: '必填' }],
+    formType: 'input',
+    disabled: true,
+    commonRules: [{ required: true, message: '源文件必填' }],
   },
   {
-    title: '物流单号',
-    dataIndex: 'delivery_code',
+    title: '预览图',
+    dataIndex: 'preview_image',
+    width: 180,
     search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
+    multiple: false,
+    disabled: true,
+    commonRules: [{ required: false, message: '预览图必填' }],
+  },
+  {
+    formType: 'card',
+    title: '链接文件',
+    formList: [
+      {
+        title: '',
+        hideLabel: true,
+        formType: 'children-form',
+        dataIndex: 'link_file_list',
+        type: 'table',
+        showBtn: false,
+        disabled: true,
+        formList: [
+          {
+            title: '文件名',
+            hideLabel: true,
+            dataIndex: 'label',
+            disabled: true,
+            formType: 'input',
+            width: 150,
+          },
+          {
+            title: '地址',
+            hideLabel: true,
+            dataIndex: 'value',
+            disabled: true,
+            formType: 'input',
+          },
+        ],
+      },
+    ],
+  },
+])
+
+const submitModalColumn = reactive([
+  {
+    title: '批次号',
+    dataIndex: 'summary_batch_code',
+    width: 180,
     addDisplay: true,
     editDisplay: true,
     hide: false,
     formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '运费',
-    dataIndex: 'freight',
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '运单金额',
-    dataIndex: 'freight_avg',
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '发货确认',
-    dataIndex: 'delivery_status',
-    width: 100,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: false,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'select',
-  },
-  {
-    title: '发货备注',
-    dataIndex: 'delivery_remark',
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'textarea',
-    commonRules: [{ required: true, message: '必填' }],
+    commonRules: [{ required: true, message: '批次号必填' }],
   },
 ])
 

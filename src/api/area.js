@@ -110,4 +110,15 @@ export default {
 			data,
 		})
 	},
+
+	/**
+	 * 树形数据
+	 * @returns
+	 */
+	regionTree() {
+		return request({
+			url: '/area/regionTree',
+			method: 'get',
+		})
+	},
 }

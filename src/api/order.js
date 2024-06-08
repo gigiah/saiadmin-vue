@@ -14,6 +14,15 @@ export default {
     })
   },
 
+  //树形数据
+  orderTree4Delivery (params = {}) {
+    return request({
+      url: '/order/orderTree4Delivery',
+      method: 'get',
+      params
+    })
+  },
+
   /**
    * 数据列表
    * @returns
@@ -168,5 +177,18 @@ export default {
       data
     })
   },
+
+  /**
+	 * 更改状态
+	 * @returns
+	 */
+	changeDeliveryStatus(data = {}) {
+		return request({
+			url: '/order/changeDeliveryStatus',
+			method: 'post',
+			data,
+		})
+	},
+
 
 }
