@@ -23,6 +23,15 @@ export default {
     })
   },
 
+  //树形数据
+  orderTree4Print (params = {}) {
+    return request({
+      url: '/order/orderTree4Print',
+      method: 'get',
+      params
+    })
+  },
+
   /**
    * 数据列表
    * @returns

@@ -4,7 +4,7 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
       <!-- 表格前置扩展 -->
       <template #tableBeforeButtons>
-        <a-button @click="summaryOrders()" type="primary" status="success">打印</a-button>
+        <a-button @click="printLabel()" type="primary" status="success">打印</a-button>
       </template>
       <!-- 操作前置扩展 -->
       <!-- <template #operationBeforeExtend="{ record }">
@@ -23,6 +23,10 @@
         :column="submitModalColumn" :submit="submitSummary">
       </ma-form-modal>
     </div>
+    <!--打印标签-->
+    <a-modal v-model:visible="labelPrintVisible" :footer="false" :hide-title="true" width="850px">
+      <label-print :orders="orderTreeData"></label-print>
+    </a-modal>
   </div>
 </template>
 
@@ -39,6 +43,7 @@ import pricingCraftApi from '@/api/pricingCraft'
 import billApi from '@/api/bill'
 import { Message, Modal } from '@arco-design/web-vue'
 import MaFormModal from "@/components/ma-form-modal/index.vue"
+import labelPrint from '@/views/orderDelivery/label.vue';
 
 const crudRef = ref()
 const deleteForms = ref([])
@@ -46,12 +51,16 @@ const selecteds = ref([])
 const nextStage = ref('')
 const currentStatus = ref([50, 60, 70, 90])
 const requestParamsData = ref()
+const loading = ref(false)
 
 const modalRef = ref()
 const visible = ref(false)
+const labelPrintVisible = ref(false)
 
 const submitModalRef = ref()
 const submitVisible = ref(false)
+
+const orderTreeData = ref([])
 
 const orderShowIndex = {
   'store_id': { 'addDisabled': false, 'editDisabled': true },
@@ -97,6 +106,66 @@ const craftShowIndex = {
 const selectChange = (val) => {
   selecteds.value = val
 }
+
+const printLabel = () => {
+  if (selecteds.value.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
+  let orderIds = []
+  console.log('selecteds', selecteds)
+  selecteds.value.forEach(function (id) {
+    if (judgeCode(id) === 'order') orderIds.push(id)
+  })
+  if (orderIds.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
+  let timer = null
+  api.orderTree4Print({ order_ids: orderIds })
+    .then(res => {
+      orderTreeData.value = transformData(res.data)
+      console.log('transformData', orderTreeData.value)
+      labelPrintVisible.value = true
+      loading.value = true;
+    })
+  timer = setTimeout(() => {
+    window.print();
+    loading.value = false;
+    // labelPrintVisible.value = false;
+    clearTimeout(timer);
+  }, 3000);
+}
+
+const transformData = (data) => {
+  return data.map(order => {
+    // 处理订单级别数据
+    const transformedOrder = {
+      id: order.id,
+      orderLabelNo: order.label_no,
+      client: order.client_name,
+      store: order.store_name,
+      storeArea: order.store_area_type_name,
+      storePricing: order.store_pricing_type_name,
+      goods: []
+    };
+
+    // 遍历订单下的商品数据
+    order.children.forEach(good => {
+      // 处理商品级别数据
+      const transformedGood = {
+        name: good.product_name,
+        width: parseFloat(good.width),
+        height: parseFloat(good.height),
+        craftDesc: good.craft_desc || ''
+      };
+      // 将处理后的商品添加到订单的商品列表中
+      transformedOrder.goods.push(transformedGood);
+    });
+
+    return transformedOrder;
+  });
+};
 
 const summaryOrders = async () => {
   if (selecteds.value.length === 0) {
