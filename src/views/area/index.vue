@@ -56,7 +56,7 @@ const columns = reactive([
     title: '区域',
     dataIndex: 'region',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     formType: 'cityLinkage',

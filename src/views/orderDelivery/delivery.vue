@@ -2,20 +2,20 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
-      <template #delivery_status="{ record }">
-        <a-switch v-if="record.row_type == 'order'" :checked-value="1" unchecked-value="2" @change="changeDeliveryStatus($event, record.id)"
-          :default-checked="record.delivery_status == 1" />
-      </template>
-      <!-- 表格前置扩展 -->
-      <!-- <template #tableBeforeButtons>
-        <a-button @click="summaryOrders()" type="primary" status="success">打印</a-button>
+      <!-- <template #delivery_status="{ record }">
+        <a-switch v-if="record.row_type == 'order'" :checked-value="1" unchecked-value="2"
+          @change="changeDeliveryStatus($event, record.id)" :default-checked="record.delivery_status == 1" />
       </template> -->
-      <!-- 操作前置扩展 -->
-      <template #operationBeforeExtend="{ record }">
-        <a-link v-if="record.row_type === 'order'" @click="openModal(record)" v-auth="[]">
-          <icon-send />发货
-        </a-link>
+      <!-- 表格前置扩展 -->
+      <template #tableBeforeButtons>
+        <a-button @click="batchDelivery()" type="primary" status="success">批量发货</a-button>
       </template>
+      <!-- 操作前置扩展 -->
+      <!-- <template #operationBeforeExtend="{ record }">
+        <a-link v-if="record.row_type === 'order'" @click="batchDelivery(record)" v-auth="[]">
+          <icon-send />编辑
+        </a-link>
+      </template> -->
     </ma-crud>
     <div>
       <ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800" :column="modalColumn"
@@ -53,11 +53,12 @@ const submitModalRef = ref()
 const submitVisible = ref(false)
 
 const orderShowIndex = {
-  'store_id': { 'addDisabled': false, 'editDisabled': true },
-  'consignee_id': { 'addDisabled': false, 'editDisabled': true },
   'freight': { 'addDisabled': false, 'editDisabled': false },
-  'label_no': { 'addDisabled': false, 'editDisabled': false },
-  'label_sub_no': { 'addDisabled': false, 'editDisabled': false },
+  'freight_avg': { 'addDisabled': false, 'editDisabled': false },
+  'carrier_code': { 'addDisabled': false, 'editDisabled': false },
+  'delivery_code': { 'addDisabled': false, 'editDisabled': false },
+  'delivery_status': { 'addDisabled': false, 'editDisabled': false },
+  'delivery_remark': { 'addDisabled': false, 'editDisabled': false },
 }
 
 const goodsShowIndex = {
@@ -160,13 +161,28 @@ const submitBills = async () => {
 }
 
 const submitModal = async (formData) => {
-  api.update(formData.id, formData)
-    .then(res => {
-      if (res.code == 200) {
-        Message.success('保存成功')
-        crudRef.value.refresh()
-      }
-    })
+  if (selecteds.value.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
+  let orderIds = []
+  console.log('selecteds', selecteds)
+  selecteds.value.forEach(function (id) {
+    if (judgeCode(id) === 'order') orderIds.push(id)
+  })
+  if (orderIds.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
+  api.handleDeliveryBatch({
+    ids: orderIds,
+    data: formData,
+  }).then(res => {
+    if (res.code == 200) {
+      Message.success('处理成功')
+      crudRef.value.refresh()
+    }
+  })
 }
 
 const submitOrders = async () => {
@@ -200,10 +216,20 @@ const submitOrders = async () => {
   return true
 }
 
-const openModal = (record) => {
-  Object.keys(record).forEach((key) => {
-    modalRef.value.form[key] = record[key]
+const batchDelivery = () => {
+  if (selecteds.value.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
+  let orderIds = []
+  console.log('selecteds', selecteds)
+  selecteds.value.forEach(function (id) {
+    if (judgeCode(id) === 'order') orderIds.push(id)
   })
+  if (orderIds.length === 0) {
+    Message.error('至少要选择一条订单')
+    return
+  }
   visible.value = true
   return
 }
@@ -333,11 +359,11 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 100,
   add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
-  edit: { show: false, text: '编辑', title: '编辑', api: api.update, auth: [] },
+  edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
   delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
   recovery: { show: false, api: api.recovery, auth: [] },
   formOption: { viewType: 'drawer', width: 600 },
-  isExpand: true,
+  isExpand: false,
   size: 'mini',
   // resizable: false,
   stripe: false,
@@ -420,6 +446,11 @@ const columns = reactive([
   {
     title: '发货日期',
     dataIndex: 'delivery_time',
+    search: true,
+    searchFormType: 'range',
+    showTime: true,
+    formType: 'date',
+    width: 180,
   },
   {
     title: '收货地址',
@@ -446,6 +477,7 @@ const columns = reactive([
     title: '物流单号',
     dataIndex: 'delivery_code',
     formType: 'input',
+    width: 200,
   },
   {
     title: '运单金额',
@@ -455,7 +487,7 @@ const columns = reactive([
   {
     title: '门店',
     dataIndex: 'store_id',
-    search: true,
+    search: false,
     formType: 'select',
     dict: {
       url: '/store/index?type=all',
@@ -471,31 +503,9 @@ const columns = reactive([
   {
     title: '订单号',
     dataIndex: 'code',
-    search: true,
-    width: 200,
+    search: false,
+    width: 150,
   },
-  // {
-  //   title: '产品级别',
-  //   dataIndex: 'product_grade_id',
-  //   formType: 'select',
-  //   dict: {
-  //     url: '/productGrade/index?type=all',
-  //     props: { label: 'name', value: 'id' },
-  //     translation: true,
-  //   },
-  //   disabled: true,
-  // },
-  // {
-  //   title: '画面类型',
-  //   dataIndex: 'product_picture_type_id',
-  //   formType: 'select',
-  //   dict: {
-  //     url: '/productPictureType/index?type=all',
-  //     props: { label: 'name', value: 'id' },
-  //     translation: true,
-  //   },
-  //   disabled: true,
-  // },
   {
     title: '订单运费',
     dataIndex: 'freight',
@@ -503,84 +513,23 @@ const columns = reactive([
   {
     title: '发货备注',
     dataIndex: 'delivery_remark',
+    editDisplay: true,
+    hide: false,
   },
   {
     title: '发货确认',
     dataIndex: 'delivery_status',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: false,
     editDisplay: false,
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
   },
-  {
-    title: '标签号',
-    dataIndex: 'label_no',
-    width: 200,
-    editDisplay: true,
-  },
-  {
-    title: '产品名',
-    dataIndex: 'product_id',
-    formType: 'select',
-    dict: {
-      url: '/pricingProduct/index4Search?range=all',
-      props: { label: 'name', value: 'product_id' },
-      translation: true,
-    },
-    commonRules: [{ required: true, message: '产品必填' }],
-  },
-  {
-    title: '宽度',
-    dataIndex: 'width',
-  },
-  {
-    title: '高度',
-    dataIndex: 'height',
-  },
-  {
-    title: '数量',
-    dataIndex: 'nums',
-  },
-  // {
-  //   title: '制作选项',
-  //   dataIndex: 'craft_desc',
-  // },
-  // {
-  //   title: '标签子号',
-  //   dataIndex: 'label_sub_no',
-  //   editDisplay: true,
-  // }
 ])
 
 const modalColumn = reactive([
-  {
-    title: '客方',
-    dataIndex: 'client_group_id',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    disabled: true,
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '订单号',
-    dataIndex: 'code',
-    width: 180,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    disabled: true,
-    commonRules: [{ required: true, message: '必填' }],
-  },
   {
     title: '物流公司',
     dataIndex: 'carrier_code',
@@ -592,56 +541,61 @@ const modalColumn = reactive([
     formType: 'select',
     dict: { name: 'bizCarrier', props: { label: 'label', value: 'value' }, translation: true },
     commonRules: [{ required: true, message: '必填' }],
+    control: (value) => {
+      if (value == 'SF') {
+        return {
+          delivery_exp_type_sf: { display: true },
+          delivery_exp_type_dbl: { display: false },
+        }
+      } else if (value == 'DBL') {
+        return {
+          delivery_exp_type_sf: { display: false },
+          delivery_exp_type_dbl: { display: true },
+        }
+      }
+      else {
+        if (value) Message.error('暂不支持该承运商，请勿选择')
+        return {
+          delivery_exp_type_sf: { display: false },
+          delivery_exp_type_dbl: { display: false },
+        }
+      }
+    },
   },
   {
-    title: '物流单号',
-    dataIndex: 'delivery_code',
+    title: '顺丰快递业务',
+    dataIndex: 'delivery_exp_type_sf',
+    width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '运费',
-    dataIndex: 'freight',
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '运单金额',
-    dataIndex: 'freight_avg',
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: true, message: '必填' }],
-  },
-  {
-    title: '发货确认',
-    dataIndex: 'delivery_status',
-    width: 100,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: false,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
+    dict: { name: 'bizKdNiaoSFType', props: { label: 'label', value: 'value' }, translation: true },
+    commonRules: [{ required: true, message: '必填' }],
   },
   {
-    title: '发货备注',
-    dataIndex: 'delivery_remark',
+    title: '德邦快递业务',
+    dataIndex: 'delivery_exp_type_dbl',
+    width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    formType: 'textarea',
+    formType: 'select',
+    dict: { name: 'bizKdNiaoDBLType', props: { label: 'label', value: 'value' }, translation: true },
+    commonRules: [{ required: true, message: '必填' }],
+  },
+  {
+    title: '快递支付方式',
+    dataIndex: 'delivery_pay_type',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'select',
+    dict: { name: 'bizDeliveryPayType', props: { label: 'label', value: 'value' }, translation: true },
     commonRules: [{ required: true, message: '必填' }],
   },
 ])

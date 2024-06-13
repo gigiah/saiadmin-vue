@@ -432,7 +432,7 @@ const applyColumn = reactive([
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
-    commonRules: [{ required: true, message: '微信小程序使用权限必填' }],
+    commonRules: [{ required: true, message: '小程序权限必填' }],
   },
   {
     title: '状态',

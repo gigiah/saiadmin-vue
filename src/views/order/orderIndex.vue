@@ -510,6 +510,10 @@ const columns = reactive([
 	{
 		title: '发货日期',
 		dataIndex: 'delivery_time',
+		searchFormType: 'range',
+		showTime: true,
+		formType: 'date',
+		width: 180,
 	},
 	{
 		title: '发货状态',

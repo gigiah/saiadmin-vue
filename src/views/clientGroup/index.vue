@@ -335,7 +335,7 @@ const columns = reactive([
     // commonRules: [{ required: true, message: '客户名称必填' }],
   },
   {
-    title: '微信小程序使用权限',
+    title: '小程序权限',
     dataIndex: 'miniapp_usage',
     width: 100,
     search: !sysInfoStore.info.is_client,
@@ -344,10 +344,10 @@ const columns = reactive([
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
-    commonRules: [{ required: true, message: '微信小程序使用权限必填' }],
+    commonRules: [{ required: true, message: '小程序权限必填' }],
   },
   {
-    title: '状态',
+    title: '账户可使用',
     dataIndex: 'status',
     width: 100,
     search: !sysInfoStore.info.is_client,

@@ -199,5 +199,17 @@ export default {
 		})
 	},
 
+  /**
+	 * 批量发货
+	 * @returns
+	 */
+	handleDeliveryBatch(data) {
+		return request({
+			url: '/order/handleDeliveryBatch',
+			method: 'post',
+			data,
+		})
+	},
+
 
 }
