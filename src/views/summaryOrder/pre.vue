@@ -11,7 +11,8 @@
     </ma-crud>
     <a-modal v-model:visible="visible" :width="1200" :footer="false" draggable>
       <template #title>资源选择器</template>
-      <ma-resource v-model="emitFiles" :multiple="true" :onlyData="false" />
+      <ma-resource v-model="emitFiles" :multiple="true" :onlyData="false"
+        :extData="{ clientName: currentClientName, folder: currentFolder }" />
     </a-modal>
   </div>
 </template>
@@ -19,6 +20,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import api from '@/api/summaryOrder'
+import clientGrpApi from '@/api/clientGroup'
 import { Message, Modal } from '@arco-design/web-vue'
 import { isArray } from 'lodash'
 
@@ -26,6 +28,8 @@ const crudRef = ref()
 const visible = ref(false)
 const currentFileName = ref()
 const emitFiles = ref([])
+const currentClientName = ref(null)
+const currentFolder = ref(null)
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -67,8 +71,8 @@ const accpetModal = (record) => {
     cancelText: '取消',
     onOk: async () => {
       await api.handleProduce({
-      	id: record.id,
-      	action: 'accept',
+        id: record.id,
+        action: 'accept',
         nums: 0,
       })
       crudRef.value.refresh()
@@ -93,7 +97,15 @@ const crud = reactive({
   recovery: { show: true, api: api.recovery },
   formOption: {
     width: '850px',
-  }
+  },
+  beforeOpenEdit: (params) => {
+    clientGrpApi.getClientGrpNameById({ id: params.client_group_id })
+      .then(res => {
+        console.log(res)
+        currentClientName.value = res.data
+      })
+    return true
+  },
 })
 
 const columns = reactive([
@@ -395,9 +407,10 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'upload',
-    type: 'image',
+    type: 'file',
     returnType: 'url',
     multiple: false,
+    requestData: { clientName: currentClientName, folder: '完稿预览图' },
     commonRules: [{ required: false, message: '完稿预览图必填' }],
   },
   {
@@ -448,6 +461,7 @@ const columns = reactive([
         long: false,
         onClick: async () => {
           currentFileName.value = 'print'
+          currentFolder.value = '打印文件'
           visible.value = true
         },
       },
@@ -494,6 +508,7 @@ const columns = reactive([
         long: false,
         onClick: async () => {
           currentFileName.value = 'later'
+          currentFolder.value = '后期文件'
           visible.value = true
         },
       },

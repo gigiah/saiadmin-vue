@@ -14,10 +14,10 @@
 
       <div class="lg:flex lg:justify-between">
         <div class="flex">
-          <ma-upload v-model="uploadFile" :show-list="false" :multiple="true" type="file" />
-          <a-button class="ml-3" @click="openNetworkModal = true">
+          <ma-upload v-model="uploadFile" :show-list="false" :multiple="true" type="file" :requestData="props.extData" />
+          <!-- <a-button class="ml-3" @click="openNetworkModal = true">
             <icon-image /> {{ $t('maResource.saveNetworkImage') }}
-          </a-button>
+          </a-button> -->
         </div>
         <a-input v-model="filename" class="mt-2 input-search lg:mt-0" :placeholder="$t('maResource.searchFileNotice')"
           @press-enter="searchFile" />
@@ -94,6 +94,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: true },
   onlyData: { type: Boolean, default: true },
   returnType: { type: String, default: 'hash' },
+  extData: { type: Object, default: {} },
 })
 
 onMounted(async () => {
@@ -105,11 +106,12 @@ onMounted(async () => {
   if (props.multiple) {
     selecteds.value = []
   }
-  if(props.modelValue){
-    props.modelValue.forEach(function(item){
+  if (props.modelValue) {
+    props.modelValue.forEach(function (item) {
       console.log('item', item)
     })
   }
+  console.log('extData', props.extData)
 })
 
 const getStoreMode = (mode) => {

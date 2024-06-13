@@ -1,8 +1,8 @@
 <template>
 	<div class="w-full upload-file">
-		<a-upload :custom-request="uploadFileHandler" :show-file-list="false" :multiple="config.multiple"
-			:accept="config.accept" :disabled="config.disabled" :tip="config.tip" :draggable="config.draggable"
-			:limit="config.limit">
+		<a-upload :custom-request="uploadFileHandler" :show-file-list="false"
+			:multiple="config.multiple" :accept="config.accept" :disabled="config.disabled" :tip="config.tip"
+			:draggable="config.draggable" :limit="config.limit">
 			<template #upload-button v-if="config.draggable">
 				<slot name="customer">
 					<div style="background-color: var(--color-fill-2); border: 1px dashed var(--color-fill-4)"

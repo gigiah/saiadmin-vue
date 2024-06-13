@@ -14,7 +14,8 @@
     </ma-crud>
     <a-modal v-model:visible="visible" :width="1200" :footer="false" draggable>
       <template #title>资源选择器</template>
-      <ma-resource v-model="emitFiles" :multiple="true" :onlyData="false" />
+      <ma-resource v-model="emitFiles" :multiple="true" :onlyData="false"
+        :extData="{ clientName: currentClientName, folder: currentFolder }" />
     </a-modal>
     <print-record-item ref="itemRef" @success="() => crudRef.refresh()" />
     <div>
@@ -28,6 +29,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import api from '@/api/summaryOrder'
+import clientGrpApi from '@/api/clientGroup'
 import printRecordItem from '@/views/summaryPrintRecord/index.vue'
 import { Message, Modal } from '@arco-design/web-vue'
 import { isArray } from 'lodash'
@@ -43,6 +45,9 @@ const emitFiles = ref([])
 
 const submitModalRef = ref()
 const submitVisible = ref(false)
+const currentClientName = ref(null)
+const currentFolder = ref(null)
+
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -123,7 +128,14 @@ const crud = reactive({
   recovery: { show: true, api: api.recovery },
   formOption: {
     width: '850px',
-  }
+  },
+  beforeOpenEdit: (params) => {
+    clientGrpApi.getClientGrpNameById({ id: params.client_group_id })
+      .then(res => {
+        currentClientName.value = res.data
+      })
+    return true
+  },
 })
 
 const columns = reactive([
@@ -477,6 +489,7 @@ const columns = reactive([
         long: false,
         onClick: async () => {
           currentFileName.value = 'print'
+          currentFolder.value = '打印文件'
           visible.value = true
         },
       },
@@ -523,6 +536,7 @@ const columns = reactive([
         long: false,
         onClick: async () => {
           currentFileName.value = 'later'
+          currentFolder.value = '后期文件'
           visible.value = true
         },
       },
@@ -627,7 +641,7 @@ const modalColumn = reactive([
     editDisplay: true,
     hide: false,
     formType: 'upload',
-    type: 'image',
+    type: 'file',
     returnType: 'url',
     multiple: false,
     disabled: true,

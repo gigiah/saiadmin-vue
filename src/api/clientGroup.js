@@ -6,6 +6,18 @@ import { request } from '@/utils/request.js'
 export default {
 
   /**
+   * 获取名字
+   * @return string
+   */
+  getClientGrpNameById (params = {}) {
+    return request({
+      url: '/clientGroup/getClientGrpNameById',
+      method: 'get',
+      params
+    })
+  },
+
+  /**
    * 数据列表
    * @returns
    */
