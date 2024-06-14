@@ -465,12 +465,12 @@ const columns = reactive([
 		disabled: true,
 	},
 	{
-		title: '宽度',
+		title: '宽度CM',
 		dataIndex: 'width',
 		commonRules: [{ required: true, message: '宽度必填' }],
 	},
 	{
-		title: '高度',
+		title: '高度CM',
 		dataIndex: 'height',
 		commonRules: [{ required: true, message: '高度必填' }],
 	},

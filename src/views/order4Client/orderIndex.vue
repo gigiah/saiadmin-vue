@@ -463,11 +463,11 @@ const columns = reactive([
 		disabled: true,
 	},
 	{
-		title: '宽度',
+		title: '宽度CM',
 		dataIndex: 'width',
 	},
 	{
-		title: '高度',
+		title: '高度CM',
 		dataIndex: 'height',
 	},
 	{

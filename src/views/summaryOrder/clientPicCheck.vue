@@ -282,7 +282,7 @@ const columns = reactive([
   //   commonRules: [{ required: false, message: '画面类型必填' }],
   // },
   {
-    title: '宽度',
+    title: '宽度CM',
     dataIndex: 'width',
     width: 180,
     search: false,
@@ -294,7 +294,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '宽度必填' }],
   },
   {
-    title: '高度',
+    title: '高度CM',
     dataIndex: 'height',
     width: 180,
     search: false,
