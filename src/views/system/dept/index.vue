@@ -99,7 +99,7 @@ const columns = reactive([
 		max: 1000,
 	},
 	{
-		title: '状态',
+		title: '启用',
 		dataIndex: 'status',
 		search: true,
 		formType: 'radio',

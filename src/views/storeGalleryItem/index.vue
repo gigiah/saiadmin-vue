@@ -155,7 +155,7 @@ const columns = reactive([
     commonRules: [{ required: true, message: '价格体系必填' }],
   },
   {
-    title: '原产品ID',
+    title: '原产品',
     dataIndex: 'product_id',
     width: 100,
     search: false,
@@ -164,10 +164,10 @@ const columns = reactive([
     hide: false,
     dict: { url: '/product/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: false, message: '原产品ID必填' }],
+    commonRules: [{ required: false, message: '原产品必填' }],
   },
   {
-    title: '模板产品ID',
+    title: '模板产品',
     dataIndex: 'product_pricing_id',
     width: 100,
     search: false,
@@ -176,7 +176,7 @@ const columns = reactive([
     hide: false,
 
     formType: 'select',
-    commonRules: [{ required: false, message: '模板产品ID必填' }],
+    commonRules: [{ required: false, message: '模板产品必填' }],
   },
   {
     title: '创建者',

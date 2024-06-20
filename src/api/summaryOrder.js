@@ -105,7 +105,7 @@ export default {
 	 */
 	handleOrderSummary(data = {}) {
 		return request({
-			url: '/order/handleOrderSummary',
+			url: '/summaryOrder/handleOrderSummary',
 			method: 'post',
 			data,
 		})

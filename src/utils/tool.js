@@ -297,14 +297,19 @@ tool.download = (res, downName = '') => {
 	let fileName = downName
 	let blob = res //第三方请求返回blob对象
 
+	console.log('res', res)
+
 	//通过后端接口返回
 	if (res.headers && res.data) {
 		blob = new Blob([res.data], { type: res.headers['content-type'].replace(';charset=utf8', '') })
 		if (!downName) {
 			const contentDisposition = decodeURI(res.headers['content-disposition'])
-			const result = contentDisposition.match(/filename=\"(.+)/gi)
-			fileName = result[0].replace(/filename=\"/gi, '')
-			fileName = fileName.replace('"', '')
+			if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+				const matches = contentDisposition.match(/filename=["']?([^"'\s]+)["']?/)
+				if (matches && matches[1]) {
+					fileName = decodeURIComponent(matches[1])
+				}
+			}
 		}
 	}
 

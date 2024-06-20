@@ -59,10 +59,11 @@ const rejectApply = (record) => {
   return true
 }
 
-const applySubmit = async (formData) => {
+const applySubmit = (formData) => {
   console.log(formData)
   api.passApply(formData)
     .then(res => {
+      console.log('res', res)
       if (res.code == 200) {
         Message.success('审核成功')
         crudRef.value.refresh()
@@ -70,7 +71,7 @@ const applySubmit = async (formData) => {
         Message.error('审核失败')
       }
     })
-  return
+  return true
 }
 
 const applyColumn = reactive([
@@ -288,12 +289,13 @@ const applyColumn = reactive([
     dataIndex: 'cloud_disk_amount',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 5,
+    addDisplay: true, 
+    addDefaultValue: 5,
     editDisplay: true,
     hide: false,
     formType: 'input',
     defaultValue: 5,
-    commonRules: [{ required: true, message: '云盘容量必填' }],
+    // commonRules: [{ required: true, message: '云盘容量必填' }],
   },
   {
     title: '发票抬头',
@@ -435,7 +437,7 @@ const applyColumn = reactive([
     commonRules: [{ required: true, message: '小程序权限必填' }],
   },
   {
-    title: '状态',
+    title: '启用',
     dataIndex: 'status',
     width: 100,
     search: true,
@@ -691,7 +693,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '推荐人手机号必填' }],
   },
   {
-    title: '状态',
+    title: '启用',
     dataIndex: 'status',
     width: 100,
     search: true,

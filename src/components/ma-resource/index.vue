@@ -14,7 +14,8 @@
 
       <div class="lg:flex lg:justify-between">
         <div class="flex">
-          <ma-upload v-model="uploadFile" :show-list="false" :multiple="true" type="file" :requestData="props.extData" />
+          <ma-upload v-model="uploadFile" :show-list="false" :multiple="true" type="file"
+            :requestData="props.extData" />
           <!-- <a-button class="ml-3" @click="openNetworkModal = true">
             <icon-image /> {{ $t('maResource.saveNetworkImage') }}
           </a-button> -->
@@ -194,18 +195,14 @@ const selectDownload = () => {
   const files = props.multiple ? Object.assign([], selecteds.value) : selecteds.value
   files.forEach(function (item) {
     const url = item.url
-    // if (/^(http|https)/g.test(url)) {
-    //   window.open(url)
-    // } else {
-    //   commonApi.download(url).then(res => {
-    //     tool.download(res)
-    //     Message.success('请求成功，文件开始下载')
-    //   })
-    // }
-    commonApi.download(url).then(res => {
-      tool.download(res)
-      Message.success('请求成功，文件开始下载')
-    })
+    if (/^(http|https)/g.test(url)) {
+      window.open(url)
+    } else {
+      commonApi.download(url).then(res => {
+        tool.download(res)
+        Message.success('请求成功，文件开始下载')
+      })
+    }
   })
 }
 

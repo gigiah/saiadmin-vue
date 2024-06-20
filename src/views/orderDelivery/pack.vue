@@ -157,6 +157,7 @@ const transformData = (data) => {
         name: good.product_name,
         width: parseFloat(good.width),
         height: parseFloat(good.height),
+        nums: good.nums,
         craftDesc: good.craft_desc || ''
       };
       // 将处理后的商品添加到订单的商品列表中
