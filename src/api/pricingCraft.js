@@ -54,6 +54,18 @@ export default {
 	},
 
 	/**
+	 * 批量添加数据
+	 * @returns
+	 */
+	saveBatch(params = {}) {
+		return request({
+			url: '/pricingCraft/saveBatch',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
 	 * 读取数据
 	 * @returns
 	 */

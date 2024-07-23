@@ -6,6 +6,18 @@ import { request } from '@/utils/request.js'
 export default {
 
   /**
+   * 选择格式列表
+   * @returns
+   */
+  getSelectList (params = {}) {
+    return request({
+      url: '/product/index4Select',
+      method: 'get',
+      params
+    })
+  },
+
+  /**
    * 数据列表
    * @returns
    */

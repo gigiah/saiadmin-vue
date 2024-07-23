@@ -114,20 +114,20 @@ const columns = reactive([
   },
   {
     title: '授权团队',
-    dataIndex: 'dept_id',
+    dataIndex: 'dept_ids',
     width: 200,
     search: false,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: sysInfoStore.info.is_admin ? false : true,
     formType: 'select',
-    // multiple: true,
+    multiple: true,
     dict: { url: '/core/dept/index?role_code=marketing', props: { label: 'name', value: 'id' }, translation: true },
     // commonRules: [{ required: false, message: '必填' }],
-    // editDefaultValue: async (record) => {
-    //   const response = await api.read(record.id)
-    //   return response.data.dept_list.map((item) => item.id)
-    // },
+    editDefaultValue: async (record) => {
+      const response = await api.read(record.id)
+      return response.data.dept_list.map((item) => item.id)
+    },
   },
   {
     title: '创建者',

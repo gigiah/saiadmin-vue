@@ -2,7 +2,20 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- 表格按钮后置扩展 -->
+      <template #tableAfterButtons>
+        <a-button type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择产品
+        </a-button>
+      </template>
     </ma-crud>
+    <a-modal v-model:visible="visible" @ok="modifySave">
+      <a-transfer :title="['未选择产品', '已选择产品']" show-search :data="items4Transfer" v-model="items4TransferSelected"
+        :source-input-search-props="{
+      placeholder: '搜索未选产品'
+    }" :target-input-search-props="{
+      placeholder: '搜索已选产品'
+    }" />
+    </a-modal>
   </div>
 </template>
 
@@ -20,27 +33,69 @@ const currentRule = ref({
   msg: '请先选择产品',
 })
 const products = ref([])
+const items4Transfer = ref([])
+const items4TransferSelected = ref([])
 const sysInfoStore = useSysInfoStore()
+const visible = ref(false)
 
-//加载产品库
+//加载全部产品库
 const getProducts = () => {
   let requestApi = null
-  if (sysInfoStore.info.is_admin) {
-    requestApi = productApi
-  } else {
-    requestApi = api
-  }
-  requestApi.getPageList({ type: 'all' })
+  requestApi = productApi
+  requestApi.getSelectList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
         products.value.push(item)
+        items4Transfer.value.push({
+          value: item.id,
+          label: item.name
+        })
       })
     })
     .catch(error => {
-      console.error("获取产品库失败", error)
+      console.error("获取全部产品库失败", error)
     })
 }
 getProducts()
+
+//加载已有产品库
+const getProductsSelectd = () => {
+  let requestApi = null
+  requestApi = api
+  requestApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        items4TransferSelected.value.push(item.product_id)
+      })
+    })
+    .catch(error => {
+      console.error("获取已选产品库失败", error)
+    })
+}
+getProductsSelectd()
+
+console.log('items4Transfer', items4Transfer.value)
+console.log('items4TransferSelected', items4TransferSelected.value)
+
+const modifyShow = () => {
+  visible.value = true
+}
+
+const modifySave = () => {
+  console.log(items4TransferSelected.value)
+  api.saveBatch({
+    ids: items4TransferSelected.value,
+    type: 'market',
+  })
+    .then(res => {
+      Message.success('保存成功')
+      crudRef.value.refresh()
+    })
+    .catch(error => {
+      Message.success('保存失败')
+    })
+  visible.value = false
+}
 
 const selectItem = (id) => {
   let product = {}
@@ -92,9 +147,9 @@ const columns = reactive([
     dataIndex: 'dept_id',
     width: 100,
     search: sysInfoStore.info.is_admin,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
+    addDisplay: sysInfoStore.info.is_admin,
+    editDisplay: sysInfoStore.info.is_admin,
+    hide: sysInfoStore.info.is_admin ? false : true,
     dict: { url: '/core/dept/index?type=all&role_code=marketing', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     defaultActiveFirstOption: true,
@@ -114,14 +169,15 @@ const columns = reactive([
   {
     title: '产品',
     dataIndex: 'product_id',
-    width: 100,
-    search: true,
+    width: 200,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
     dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'product_id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '产品必填' }],
+    disabled: true,
     onChange: (val) => {
       let item = selectItem(val)
       console.log(item)
@@ -157,7 +213,7 @@ const columns = reactive([
     title: '自动推送',
     dataIndex: 'is_auto_push',
     width: 100,
-    search: true,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -196,7 +252,7 @@ const columns = reactive([
     title: '计价方式',
     dataIndex: 'pricing_type',
     formType: 'select',
-    search: true,
+    search: false,
     dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
     disabled: true,
   },
@@ -223,7 +279,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '更新者必填' }],
   },
   {
-    title: '创建时间',
+    title: '添加时间',
     dataIndex: 'create_time',
     width: 180,
     search: false,

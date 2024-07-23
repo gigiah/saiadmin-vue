@@ -4,6 +4,19 @@ import { request } from '@/utils/request.js'
  * 营销卡券内容 API接口
  */
 export default {
+
+	/**
+	 * 兑换
+	 * @returns
+	 */
+	exchange(params = {}) {
+		return request({
+			url: '/couponItem/exchange',
+			method: 'post',
+			data: params,
+		})
+	},
+
 	/**
 	 * 数据列表
 	 * @returns

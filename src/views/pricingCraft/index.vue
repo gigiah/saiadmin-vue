@@ -2,7 +2,20 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- 表格按钮后置扩展 -->
+      <template #tableAfterButtons>
+        <a-button type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择工艺
+        </a-button>
+      </template>
     </ma-crud>
+    <a-modal v-model:visible="visible" @ok="modifySave">
+      <a-transfer :title="['未选择工艺', '已选择工艺']" show-search :data="items4Transfer" v-model="items4TransferSelected"
+        :source-input-search-props="{
+      placeholder: '搜索未选工艺'
+    }" :target-input-search-props="{
+      placeholder: '搜索已选工艺'
+    }" />
+    </a-modal>
   </div>
 </template>
 
@@ -17,24 +30,26 @@ const crudRef = ref()
 const currentRule = ref({
   max: 0,
   min: 0,
-  msg: '请先选择产品',
+  msg: '请先选择工艺',
 })
 const craft = ref([])
+const items4Transfer = ref([])
+const items4TransferSelected = ref([])
 const sysInfoStore = useSysInfoStore()
-
+const visible = ref(false)
 
 //加载工艺库
 const getCraft = () => {
   let requestApi = null
-  if (sysInfoStore.info.is_admin) {
-    requestApi = craftApi
-  } else {
-    requestApi = api
-  }
+  requestApi = craftApi
   requestApi.getPageList({ type: 'all' })
     .then(res => {
       res.data.forEach(function (item) {
         craft.value.push(item)
+        items4Transfer.value.push({
+          value: item.id,
+          label: item.name
+        })
       })
     })
     .catch(error => {
@@ -42,6 +57,45 @@ const getCraft = () => {
     })
 }
 getCraft()
+
+//加载已有产品库
+const getProductsSelectd = () => {
+  let requestApi = null
+  requestApi = api
+  requestApi.getPageList({ type: 'all' })
+    .then(res => {
+      res.data.forEach(function (item) {
+        items4TransferSelected.value.push(item.craft_id)
+      })
+    })
+    .catch(error => {
+      console.error("获取已选工艺库失败", error)
+    })
+}
+getProductsSelectd()
+
+console.log('items4Transfer', items4Transfer.value)
+console.log('items4TransferSelected', items4TransferSelected.value)
+
+const modifyShow = () => {
+  visible.value = true
+}
+
+const modifySave = () => {
+  console.log(items4TransferSelected.value)
+  api.saveBatch({
+    ids: items4TransferSelected.value,
+    type: 'market',
+  })
+    .then(res => {
+      Message.success('保存成功')
+      crudRef.value.refresh()
+    })
+    .catch(error => {
+      Message.success('保存失败')
+    })
+  visible.value = false
+}
 
 const selectItem = (id) => {
   let product = {}
@@ -94,9 +148,9 @@ const columns = reactive([
     dataIndex: 'dept_id',
     width: 100,
     search: sysInfoStore.info.is_admin,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
+    addDisplay: sysInfoStore.info.is_admin,
+    editDisplay: sysInfoStore.info.is_admin,
+    hide: sysInfoStore.info.is_admin ? false : true,
     dict: { url: '/core/dept/index?type=all&role_code=marketing', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     defaultActiveFirstOption: true,
@@ -124,6 +178,7 @@ const columns = reactive([
     dict: { url: '/pricingCraft/index4Search', props: { label: 'name', value: 'craft_id' }, translation: true },
     // data: craft4selects,
     formType: 'select',
+    disabled: true,
     control: (val, maFormObject) => {
       let item = selectItem(val)
       // currentRule.value.min = item.price_min
@@ -150,7 +205,7 @@ const columns = reactive([
     title: '自动推送',
     dataIndex: 'is_auto_push',
     width: 100,
-    search: true,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -189,7 +244,7 @@ const columns = reactive([
     title: '计价方式',
     dataIndex: 'pricing_type',
     formType: 'select',
-    search: true,
+    search: false,
     dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
     disabled: true,
   },

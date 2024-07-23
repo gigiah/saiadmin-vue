@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-content-block lg:flex justify-between p-4">
+  <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
     </ma-crud>
@@ -46,7 +46,7 @@
       title: '名称',
       dataIndex: 'name',
       width: 180,
-      search: true,
+      search: false,
       addDisplay: true, 
       editDisplay: true,
       hide: false,

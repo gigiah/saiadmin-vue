@@ -29,6 +29,18 @@ export default {
 	},
 
 	/**
+	 * 批量添加数据
+	 * @returns
+	 */
+	saveBatch(params = {}) {
+		return request({
+			url: '/pricingProduct/saveBatch',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
 	 * 添加数据
 	 * @returns
 	 */

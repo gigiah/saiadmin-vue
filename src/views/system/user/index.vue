@@ -1,7 +1,8 @@
 <template>
 	<div class="justify-between p-4 ma-content-block lg:flex">
 		<div class="w-full h-full p-2 shadow lg:w-2/12">
-			<ma-tree-slider v-model="depts" searchPlaceholder="搜索部门" :field-names="{ title: 'label', key: 'value' }" :selectedKeys="defaultKey" @click="switchDept" />
+			<ma-tree-slider v-model="depts" searchPlaceholder="搜索部门" :field-names="{ title: 'label', key: 'value' }"
+				:selectedKeys="defaultKey" @click="switchDept" />
 		</div>
 
 		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
@@ -9,12 +10,14 @@
 			<ma-crud :options="crud" :columns="columns" ref="crudRef">
 				<!-- 状态列 -->
 				<template #status="{ record }">
-					<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)" :default-checked="record.status == 1" />
+					<a-switch :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)"
+						:default-checked="record.status == 1" />
 				</template>
 				<!-- 头像列 -->
 				<template #avatar="{ record }">
 					<a-avatar>
-						<img :src="record.avatar ? $tool.showFile(record.avatar) : $url + 'avatar.jpg'" style="object-fit: cover" />
+						<img :src="record.avatar ? $tool.showFile(record.avatar) : $url + 'avatar.jpg'"
+							style="object-fit: cover" />
 					</a-avatar>
 				</template>
 				<!-- 操作列 -->
@@ -109,7 +112,7 @@ const selectOperation = (value, record) => {
 	if (value === 'resetPassword') {
 		Modal.info({
 			title: '提示',
-			content: '确定将该用户密码重置为 sai123456 吗？',
+			content: '确定将该用户密码重置为 123456 吗？',
 			simple: false,
 			onBeforeOk: (done) => {
 				resetPassword(record.id)
@@ -174,7 +177,7 @@ const crud = reactive({
 				formType: 'grid',
 				cols: [
 					{ span: 12, formList: [{ dataIndex: 'post_ids' }] },
-					{ span: 12, formList: [{ dataIndex: 'email' }] },
+					// { span: 12, formList: [{ dataIndex: 'email' }] },
 				],
 			},
 			{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'status' }] }] },
@@ -246,7 +249,7 @@ const columns = reactive([
 		type: 'password',
 		addRules: [{ required: true, message: '密码必填' }],
 	},
-	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }],},
+	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }], },
 	{
 		title: '角色',
 		dataIndex: 'role_ids',
@@ -282,12 +285,23 @@ const columns = reactive([
 			return ids
 		},
 	},
+	// {
+	// 	title: '邮箱',
+	// 	dataIndex: 'email',
+	// 	width: 200,
+	// 	search: true,
+	// 	commonRules: [{ type: 'email', message: '请输入正确的邮箱' }],
+	// },
 	{
-		title: '邮箱',
-		dataIndex: 'email',
-		width: 200,
-		search: true,
-		commonRules: [{ type: 'email', message: '请输入正确的邮箱' }],
+		title: '企业微信',
+		dataIndex: 'wechat_business',
+		width: 115,
+		formType: 'upload',
+		returnType: 'url',
+		multiple: false,
+		type: 'image',
+		rounded: true,
+		labelWidth: '166px',
 	},
 	{
 		title: '状态',

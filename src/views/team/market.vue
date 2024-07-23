@@ -108,7 +108,7 @@ const selectOperation = (value, record) => {
 	if (value === 'resetPassword') {
 		Modal.info({
 			title: '提示',
-			content: '确定将该用户密码重置为 sai123456 吗？',
+			content: '确定将该用户密码重置为 123456 吗？',
 			simple: false,
 			onBeforeOk: (done) => {
 				resetPassword(record.id)

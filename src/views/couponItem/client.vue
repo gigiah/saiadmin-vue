@@ -2,7 +2,18 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- 表格按钮后置扩展 -->
+      <template #tableBeforeButtons>
+        <a-button @click="modalShow" @submit="" type="primary" status="normal"
+          class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>兑换卡券
+        </a-button>
+      </template>
     </ma-crud>
+    <div>
+      <ma-form-modal ref="modalRef" :visible="visible" title="兑换卡券" :width="600" :column="modalColumn"
+        :submit="modalSubmit" @cancel="modalClose">
+      </ma-form-modal>
+    </div>
   </div>
 </template>
 
@@ -11,17 +22,52 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/couponItem'
 import { Message } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
+import MaFormModal from "@/components/ma-form-modal/index.vue"
+
 
 const visible = ref(false)
 const crudRef = ref()
 const couponId = ref()
 const sysInfoStore = useSysInfoStore()
 
-const open = (row) => {
-  couponId.value = row.id
+const modalShow = () => {
   visible.value = true
-  crudRef.value.requestData()
 }
+
+const modalClose = () => {
+  visible.value = false
+}
+
+const modalSubmit = (formData) => {
+  console.log(formData)
+  api.exchange(formData)
+    .then(res => {
+      console.log('res', res)
+      if (res.code == 200) {
+        Message.success('兑换成功')
+        crudRef.value.refresh()
+        visible.value = false
+      } else {
+        Message.error('兑换失败')
+        visible.value = false
+      }
+    })
+  return true
+}
+
+const modalColumn = reactive([
+  {
+    title: '兑换码',
+    dataIndex: 'code',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    rules: [{ required: true, message: '兑换码必填' }],
+  },
+]);
 
 const crud = reactive({
   api: api.getPageList,
@@ -65,7 +111,7 @@ const columns = reactive([
     search: !sysInfoStore.info.is_client,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: sysInfoStore.info.is_client,
     formType: 'select',
     dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
     commonRules: [{ required: false, message: '持有人' }],
@@ -74,7 +120,7 @@ const columns = reactive([
     title: '名称',
     dataIndex: 'name',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: false,
     addDefaultValue: '',
     editDisplay: true,
@@ -110,7 +156,7 @@ const columns = reactive([
     title: '减免类型',
     dataIndex: 'discount_type',
     width: 100,
-    search: true,
+    search: false,
     addDisplay: false,
     editDisplay: true,
     hide: false,

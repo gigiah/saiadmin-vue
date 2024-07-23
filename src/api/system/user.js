@@ -17,6 +17,18 @@ export default {
 	 * 获取用户
 	 * @returns
 	 */
+	getPageList4Client(params = {}) {
+		return request({
+			url: '/core/user/index4Client',
+			method: 'get',
+			params,
+		})
+	},
+
+	/**
+	 * 获取用户
+	 * @returns
+	 */
 	getPageList(params = {}) {
 		return request({
 			url: '/core/user/index',

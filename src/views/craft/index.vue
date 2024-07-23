@@ -1,12 +1,9 @@
 <template>
-  <a-modal v-model:visible="visible" :width="1400" :footer="false">
-    <template #title>工艺内容</template>
-    <div class="justify-between p-4 ma-content-block lg:flex">
-      <!-- CRUD 组件 -->
-      <ma-crud :options="crud" :columns="columns" ref="crudRef">
-      </ma-crud>
-    </div>
-  </a-modal>
+  <div class="justify-between p-4 ma-content-block lg:flex">
+    <!-- CRUD 组件 -->
+    <ma-crud :options="crud" :columns="columns" ref="crudRef">
+    </ma-crud>
+  </div>
 </template>
 
 <script setup>
@@ -60,18 +57,18 @@ const columns = reactive([
     formType: 'input',
     commonRules: [{ required: true, message: '主键必填' }],
   },
-  {
-    title: '所属组',
-    dataIndex: 'group_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/craftGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    commonRules: [{ required: false, message: '组必填' }],
-  },
+  // {
+  //   title: '所属组',
+  //   dataIndex: 'group_id',
+  //   width: 100,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   dict: { url: '/craftGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+  //   formType: 'select',
+  //   commonRules: [{ required: false, message: '组必填' }],
+  // },
   {
     title: '名称',
     dataIndex: 'name',
@@ -83,6 +80,17 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     commonRules: [{ required: true, message: '名称必填' }],
+  },
+  {
+    title: '拼音',
+    dataIndex: 'pinyin',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: true,
+    formType: 'input',
+    // commonRules: [{ required: true, message: '名称必填' }],
   },
   {
     title: '计价类型',
@@ -192,19 +200,19 @@ const columns = reactive([
     formType: 'input',
     commonRules: [{ required: false, message: '最高限价必填' }],
   },
-  {
-    title: '自动推送',
-    dataIndex: 'is_auto_push',
-    width: 100,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    addDefaultValue: 1,
-    hide: false,
-    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'radio',
-    commonRules: [{ required: true, message: '启用状态必填' }],
-  },
+  // {
+  //   title: '自动推送',
+  //   dataIndex: 'is_auto_push',
+  //   width: 100,
+  //   search: true,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   addDefaultValue: 1,
+  //   hide: false,
+  //   dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+  //   formType: 'radio',
+  //   commonRules: [{ required: true, message: '启用状态必填' }],
+  // },
   {
     title: '启用状态',
     dataIndex: 'enabled',
@@ -229,16 +237,30 @@ const columns = reactive([
     formType: 'input',
     commonRules: [{ required: false, message: '查同值必填' }],
   },
+  // {
+  //   title: '详情页',
+  //   dataIndex: 'desc_json',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: true,
+  //   formType: 'editor',
+  //   commonRules: [{ required: false, message: '详情页必填' }],
+  // },
   {
-    title: '详情页',
+    title: '详情图',
     dataIndex: 'desc_json',
     width: 180,
     search: false,
     addDisplay: true,
     editDisplay: true,
-    hide: true,
-    formType: 'editor',
-    commonRules: [{ required: false, message: '详情页必填' }],
+    hide: false,
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
+    multiple: false,
+    commonRules: [{ required: false, message: '详情图必填' }],
   },
   {
     title: '创建者',

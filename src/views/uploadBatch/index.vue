@@ -1,6 +1,7 @@
 <template>
   <div class="justify-between p-4 ma-content-block lg:flex">
-    <a-modal :width="800" v-model:visible="visible" title="上传文件" @ok="handleOk" @cancel="handleCancel">
+    <a-modal :hide-title="true" :width="800" v-model:visible="visible" title="上传文件" @ok="handleOk"
+      @cancel="handleCancel">
       <a-form ref="uploadForm" :model="formData">
         <a-form-item label="源文件(必须先上传)">
           <ma-upload v-model="uploadData.sourceFiles" :show-list="true" :multiple="false" type="file"
@@ -21,6 +22,9 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- 表格按钮后置扩展 -->
       <template #tableBeforeButtons>
+        <a-button type="outline">
+          <template #icon><icon-save /></template>云盘容量 {{ diskVol.remain }}/{{ diskVol.total }}G
+        </a-button>
         <a-button @click="showModal" @submit="" type="primary" status="normal"
           class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>上传资源包
         </a-button>
@@ -37,6 +41,7 @@ import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const sysInfoStore = useSysInfoStore()
+const diskVol = ref({})
 
 const uploadData = ref({
   title: null,
@@ -61,11 +66,20 @@ const handleOk = () => {
     previewImages: null,
     linkFiles: [],
   }
-
 }
 const handleCancel = () => {
   visible.value = false;
 }
+
+const getDiskVol = () => {
+  api.diskVol().then(res => {
+    diskVol.value = {
+      total: res.data.total,
+      remain: res.data.remain,
+    }
+  })
+}
+getDiskVol()
 
 const updateUploadNname = (val) => {
   console.log('updateUploadNname', val)
@@ -83,10 +97,11 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 160,
   add: { show: false, api: api.save, auth: ['/uploadBatch/save'] },
-  edit: { show: true, text: '查看', api: api.update, auth: ['/uploadBatch/update'] },
+  edit: { show: true, text: '查看', title: '查看', api: api.update, auth: ['/uploadBatch/update'] },
   delete: { show: true, api: api.delete, auth: ['/uploadBatch/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/uploadBatch/recovery'] },
   formOption: { width: 800 },
+  isDbClickEdit: true,
 })
 
 const columns = reactive([
@@ -102,7 +117,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '编号必填' }],
   },
   {
-    title: '标题',
+    title: '源文件',
     dataIndex: 'title',
     width: 180,
     search: true,
@@ -114,7 +129,7 @@ const columns = reactive([
     commonRules: [{ required: true, message: '标题必填' }],
   },
   {
-    title: '源文件',
+    title: '路径',
     dataIndex: 'source_file',
     width: 180,
     search: false,
@@ -143,6 +158,7 @@ const columns = reactive([
   {
     formType: 'card',
     title: '链接文件',
+    hide: true,
     formList: [
       {
         title: '',

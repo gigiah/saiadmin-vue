@@ -2,13 +2,7 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
-      <template #operationBeforeExtend="{ record }">
-        <a-space size="mini">
-          <a-link @click="viewItems(record)"><icon-menu /> 查看内容</a-link>
-        </a-space>
-      </template>
     </ma-crud>
-    <craft ref="itemRef" @success="() => crudRef.refresh()" />
   </div>
 </template>
 
@@ -77,6 +71,23 @@ const columns = reactive([
     commonRules: [{ required: true, message: '编组编号必填' }],
   },
   {
+    title: '工艺',
+    dataIndex: 'craft_ids',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'select',
+    multiple: true,
+    dict: { url: '/craft/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    // commonRules: [{ required: false, message: '必填' }],
+    editDefaultValue: async (record) => {
+      const response = await api.read(record.id)
+      return response.data.craft_list.map((item) => item.id)
+    },
+  },
+  {
     title: '创建者',
     dataIndex: 'created_by',
     width: 180,
@@ -102,7 +113,7 @@ const columns = reactive([
     title: '创建时间',
     dataIndex: 'create_time',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: false,
     editDisplay: false,
     hide: true,

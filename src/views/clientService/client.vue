@@ -1,61 +1,62 @@
 <template>
-  <a-modal v-model:visible="visible" :width="1400" :footer="false">
-    <template #title>服务人员</template>
-    <div class="justify-between p-4 ma-content-block lg:flex">
-      <!-- CRUD 组件 -->
-      <ma-crud :options="crud" :columns="columns" ref="crudRef">
-      </ma-crud>
-    </div>
+  <div class="justify-between p-4 ma-content-block lg:flex">
+    <!-- CRUD 组件 -->
+    <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <template #operationBeforeExtend="{ record }">
+        <a-space size="mini" v-if="record.type == 'user'">
+          <a-link @click="showBizWechat(record)"><icon-menu />查看企业微信</a-link>
+        </a-space>
+      </template>
+    </ma-crud>
+  </div>
+  <a-modal @cancel="hideBizWechat" :width="240" :footer="false" :visible="visible">
+    <a-image width="200" height="200" :src="wechatImg" />
   </a-modal>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import api from '@/api/clientService'
-import { useSysInfoStore } from '@/store'
+import sysUserApi from '@/api/system/user'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
-const visible = ref(true)
-const clientGroupId = ref()
-
-const open = (row) => {
-  clientGroupId.value = row.id
-  visible.value = true
-  crudRef.value.requestData()
-}
-
-const sysInfoStore = useSysInfoStore()
-let role_code = ''
-let dept_id = 0
-if (!sysInfoStore.info.is_admin) {
-  console.log(sysInfoStore.info)
-  role_code = sysInfoStore.info.role_codes[0]
-  dept_id = sysInfoStore.info.dept_id
-}
+const visible = ref(false)
+const wechatImg = ref()
 
 const crud = reactive({
   api: api.getPageList,
   beforeRequest: params => {
-    params.client_group_id = clientGroupId
+    params.clientReq = 1
   },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: !sysInfoStore.info.is_client,
+  operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/clientService/save'] },
-  edit: { show: true, api: api.update, auth: ['/clientService/update'] },
-  delete: { show: true, api: api.delete, auth: ['/clientService/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/clientService/recovery'] },
+  add: { show: false, api: api.save, auth: ['/clientService/save'] },
+  edit: { show: false, api: api.update, auth: ['/clientService/update'] },
+  delete: { show: false, api: api.delete, auth: ['/clientService/destroy'] },
+  recovery: { show: false, api: api.recovery, auth: ['/clientService/recovery'] },
   formOption: { width: 800 },
-  beforeOpenAdd: () => {
-    columns[1].addDefaultValue = Number.parseInt(clientGroupId.value)
-    return true
-  },
 })
+
+const showBizWechat = (record) => {
+  sysUserApi.read(record.follower_id)
+    .then(res => {
+      wechatImg.value = res.data.wechat_business
+      visible.value = true
+    })
+    .catch(error => {
+      console.error('Error:', error.message)
+    })
+}
+
+const hideBizWechat = () => {
+  visible.value = false
+}
 
 const columns = reactive([
   {
@@ -76,7 +77,7 @@ const columns = reactive([
     search: false,
     addDisplay: true,
     editDisplay: true,
-    hide: sysInfoStore.info.is_client ? true : false,
+    hide: false,
     formType: 'select',
     readonly: true,
     disabled: true,
@@ -116,8 +117,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    addDefaultValue: role_code,
-    disabled: sysInfoStore.info.is_admin ? false : true,
+    disabled: true,
     dict: { name: 'bizClientServiceRole', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进角色必填' }],
@@ -130,7 +130,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/core/dept/index?role_code=' + role_code + '&id=' + dept_id, props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/core/dept/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进团队必填' }],
   },
@@ -142,10 +142,23 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/core/user/index?type=all&dept_id=' + dept_id, props: { label: 'nickname', value: 'id' }, translation: true },
+    dict: { url: '/core/user/index?type=all', props: { label: 'nickname', value: 'id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进人员必填' }],
   },
+  // {
+  //   title: '企业微信',
+  //   dataIndex: 'wechat_business',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'upload',
+  //   type: 'image',
+  //   returnType: 'url',
+  //   multiple: false,
+  // },
   // {
   //   title: '状态',
   //   dataIndex: 'status',

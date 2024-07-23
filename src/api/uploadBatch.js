@@ -6,6 +6,18 @@ import { request } from '@/utils/request.js'
 export default {
 
   /**
+   * 云盘容量
+   * @returns
+   */
+  diskVol (params = {}) {
+    return request({
+      url: '/uploadBatch/diskVol',
+      method: 'get',
+      params
+    })
+  },
+
+  /**
    * 数据列表
    * @returns
    */

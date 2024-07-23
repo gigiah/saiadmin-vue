@@ -9,10 +9,10 @@
           <a-link @click="viewDetail(record)">{{ record.title }}</a-link>
         </div>
       </div>
-      <a-modal v-model:visible="detailVisible" fullscreen :footer="true">
+      <a-modal v-model:visible="detailVisible" :width="800" :footer="false">
         <template #title>公告详情</template>
         <a-typography :style="{ marginTop: '-30px' }">
-          <a-typography-title class="text-center">
+          <a-typography-title :heading="5" class="text-center">
             {{ row?.title }}
           </a-typography-title>
           <a-typography-paragraph class="text-right" style="font-size: 13px; color: var(--color-text-3)">
