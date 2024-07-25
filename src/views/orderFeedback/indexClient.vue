@@ -3,9 +3,9 @@
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #operationBeforeExtend="{ record }">
-        <!-- <a-space size="mini">
+        <a-space size="mini">
           <a-link v-if="record.is_report == 2" @click="reportFeedback(record)"><icon-redo />上报</a-link>
-        </a-space> -->
+        </a-space>
         <a-space size="mini">
           <a-link @click="viewItems(record)"><icon-menu />反馈明细</a-link>
         </a-space>
@@ -51,16 +51,13 @@ const reportFeedback = (record) => {
 
 const crud = reactive({
   api: api.getPageList,
-  beforeRequest: params => {
-    params.is_report = 1
-  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 180,
+  operationColumnWidth: 160,
   add: { show: false, api: api.save, auth: ['/orderFeedback/save'] },
   edit: { show: true, text: '查看内容', api: api.update, auth: ['/orderFeedback/update'] },
   delete: { show: false, api: api.delete, auth: ['/orderFeedback/destroy'] },
@@ -178,20 +175,20 @@ const columns = reactive([
     formType: 'select',
     commonRules: [{ required: false, message: '状态必填' }],
   },
-  // {
-  //   title: '上报',
-  //   dataIndex: 'is_report',
-  //   width: 100,
-  //   search: false,
-  //   addDisplay: true,
-  //   addDefaultValue: 2,
-  //   editDisplay: true,
-  //   hide: false,
-  //   dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
-  //   formType: 'select',
-  //   disabled: false,
-  //   // commonRules: [{ required: true, message: '结款类型必填' }],
-  // },
+  {
+    title: '上报',
+    dataIndex: 'is_report',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    addDefaultValue: 2,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'select',
+    disabled: false,
+    // commonRules: [{ required: true, message: '结款类型必填' }],
+  },
   {
     title: '创建者',
     dataIndex: 'created_by',

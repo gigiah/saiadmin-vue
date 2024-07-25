@@ -296,9 +296,8 @@ tool.download = (res, downName = '') => {
 	const aLink = document.createElement('a')
 	let fileName = downName
 	let blob = res //第三方请求返回blob对象
-
-	console.log('res', res)
-
+	console.log('download res', res)
+	
 	//通过后端接口返回
 	if (res.headers && res.data) {
 		blob = new Blob([res.data], { type: res.headers['content-type'].replace(';charset=utf8', '') })

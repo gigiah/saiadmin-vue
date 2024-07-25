@@ -4,6 +4,11 @@
     <div class="justify-between p-4 ma-content-block lg:flex">
       <!-- CRUD 组件 -->
       <ma-crud :options="crud" :columns="columns" ref="crudRef">
+        <template #operationBeforeExtend="{ record }">
+          <a-space v-if="record.fapiao_url" size="mini">
+            <a-link @click="downloadFile(record)"><icon-to-bottom />下载发票</a-link>
+          </a-space>
+        </template>
       </ma-crud>
     </div>
   </a-modal>
@@ -15,17 +20,24 @@ import api from '@/api/billFapiao'
 import billApi from '@/api/bill'
 import { Message } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
-
+import tool from '@/utils/tool'
 
 const crudRef = ref()
 const visible = ref(false)
 const billId = ref()
+const fapiaoMethod = ref()
 const showAdd = ref(true)
 const sysInfoStore = useSysInfoStore()
 
+const downloadFile = async (record) => {
+  window.location.href = record.fapiao_url
+}
+
 const open = (row) => {
+  console.log(row)
   billId.value = row.id
-  if (row.fapiao_method == 2) {
+  fapiaoMethod.value = row.fapiao_method
+  if (fapiaoMethod.value == 2) {
     showAdd.value = false
   } else {
     showAdd.value = true
@@ -48,7 +60,7 @@ const crud = reactive({
   operationColumnWidth: 160,
   add: { show: showAdd, api: api.save },
   edit: { show: !sysInfoStore.info.is_client, api: api.update },
-  delete: { show: true, api: api.delete },
+  delete: { show: false, api: api.delete },
   recovery: { show: true, api: api.recovery },
   formOption: { width: 800 },
 })
@@ -76,7 +88,6 @@ const columns = reactive([
     formType: 'input',
     addDefaultValue: billId,
     commonRules: [{ required: false, message: '对账单ID必填' }],
-    addDefaultValue: billId
   },
   {
     title: '对账单号',
@@ -102,7 +113,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    disabled: true,
+    disabled: false,
     commonRules: [{ required: false, message: '发票抬头必填' }],
   },
   {
@@ -113,7 +124,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    disabled: true,
+    disabled: false,
     formType: 'input',
   },
   {
@@ -121,11 +132,12 @@ const columns = reactive([
     dataIndex: 'fapiao_total',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 0.00,
+    addDisplay: true,
+    addDefaultValue: 0.00,
     editDisplay: true,
     hide: false,
     formType: 'input',
-    disabled: true,
+    disabled: false,
     commonRules: [{ required: false, message: '发票金额必填' }],
   },
   // {
@@ -140,7 +152,7 @@ const columns = reactive([
   //   commonRules: [{ required: false, message: '支付凭证必填' }],
   // },
   {
-    title: '发票下载',
+    title: '发票上传',
     dataIndex: 'fapiao_url',
     width: 180,
     search: false,
@@ -149,6 +161,7 @@ const columns = reactive([
     hide: false,
     formType: 'upload',
     type: 'file',
+    returnType: 'url',
     disabled: sysInfoStore.info.is_client,
     commonRules: [{ required: false, message: '发票下载必填' }],
   },

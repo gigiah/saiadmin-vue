@@ -3,8 +3,11 @@
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #operationBeforeExtend="{ record }">
+        <a-space v-if="record.manual_excel" size="mini">
+          <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
+        </a-space>
         <a-space size="mini">
-          <a-link @click="exportBill(record)"><icon-to-bottom />下载系统对账单</a-link>
+          <a-link @click="exportBill(record)"><icon-to-bottom />系统对账单</a-link>
         </a-space>
       </template>
     </ma-crud>
@@ -20,7 +23,7 @@ import tool from '@/utils/tool'
 const crudRef = ref()
 
 const exportBill = async (record) => {
-  Message.info('系统对账单下载中，请稍后')
+  Message.info('对账单下载中，请稍后')
   const response = await api.exportBillExcel({ id: record.id })
   if (response) {
     tool.download(response, record.name + '系统对账单.xlsx')
@@ -28,6 +31,10 @@ const exportBill = async (record) => {
   } else {
     Message.error('下载失败')
   }
+}
+
+const downloadManualExcel = async (record) => {
+  window.location.href = record.manual_excel
 }
 
 const crud = reactive({
@@ -38,10 +45,10 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 270,
+  operationColumnWidth: 220,
   add: { show: false, api: api.save, auth: ['/bill/save'] },
-  edit: { show: true, api: api.update, auth: ['/bill/update'] },
-  delete: { show: true, api: api.delete, auth: ['/bill/destroy'] },
+  edit: { show: false, api: api.update, auth: ['/bill/update'] },
+  delete: { show: false, api: api.delete, auth: ['/bill/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/bill/recovery'] },
   formOption: { width: 800 },
 })
@@ -75,7 +82,7 @@ const columns = reactive([
     title: '结款类型',
     dataIndex: 'type',
     width: 100,
-    search: true,
+    search: false,
     addDisplay: true,
     addDefaultValue: 1,
     editDisplay: true,
@@ -89,7 +96,7 @@ const columns = reactive([
     title: '系统对账单',
     dataIndex: 'name',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -160,10 +167,10 @@ const columns = reactive([
     search: false,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: true,
     formType: 'upload',
     type: 'file',
-    requestData: {storageType: 'app'},
+    requestData: { storageType: 'app' },
     commonRules: [{ required: false, message: '提交对账单必填' }],
   },
   // {
@@ -192,7 +199,7 @@ const columns = reactive([
       translation: true,
     },
     formType: 'select',
-    commonRules: [{ required: false, message: '财务人员必填' }],
+    commonRules: [{ required: true, message: '财务人员必填' }],
   },
   {
     title: '客方人员',
@@ -208,7 +215,7 @@ const columns = reactive([
       translation: true,
     },
     formType: 'select',
-    commonRules: [{ required: false, message: '客方人员必填' }],
+    commonRules: [{ required: true, message: '客方人员必填' }],
   },
   {
     title: '备注',
@@ -219,8 +226,8 @@ const columns = reactive([
     addDefaultValue: '',
     editDisplay: true,
     hide: false,
-    disabled: true,
     formType: 'textarea',
+    commonRules: [{ required: true, message: '备注必填' }],
   },
   {
     title: '创建者',

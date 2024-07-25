@@ -163,7 +163,6 @@ const submitSummary = async (formData) => {
 			crudRef.value.refresh()
 		}
 	})
-
 }
 
 const submitOrders = async () => {
@@ -331,15 +330,16 @@ const crud = reactive({
 	showIndex: false,
 	pageLayout: 'fixed',
 	rowSelection: { showCheckedAll: true },
-	operationColumn: true,
-	operationColumnWidth: 180,
+	operationColumn: false,
+	operationColumnWidth: 100,
 	add: { show: false, text: '门店订单', title: '添加', api: api.save, auth: [] },
-	edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
+	edit: { show: false, text: '编辑', title: '编辑', api: api.update, auth: [] },
 	delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
 	recovery: { show: false, api: api.recovery, auth: [] },
 	formOption: { viewType: 'drawer', width: 600 },
-	isExpand: true,
+	isExpand: false,
 	size: 'mini',
+	searchColNumber: 3,
 	// resizable: false,
 	stripe: false,
 	columnWidth: 80,
@@ -422,7 +422,7 @@ const columns = reactive([
 	{
 		title: '门店',
 		dataIndex: 'store_id',
-		search: true,
+		search: false,
 		formType: 'select',
 		dict: {
 			url: '/store/index?type=all',
@@ -464,7 +464,7 @@ const columns = reactive([
 	{
 		title: '订单号',
 		dataIndex: 'code',
-		search: true,
+		search: false,
 		width: 200,
 	},
 	{
@@ -528,11 +528,12 @@ const columns = reactive([
 		},
 		commonRules: [{ required: true, message: '收货地址必填' }],
 		width: 150,
-
+		hide: true,
 	},
 	{
 		title: '发货日期',
 		dataIndex: 'delivery_time',
+		hide: true,
 	},
 	{
 		title: '发货状态',
@@ -575,6 +576,7 @@ const columns = reactive([
 			}
 		},
 		commonRules: [{ required: true, message: '产品必填' }],
+		hide: true,
 	},
 	{
 		title: '文件名',
@@ -586,6 +588,7 @@ const columns = reactive([
 			translation: true,
 		},
 		width: 150,
+		hide: true,
 	},
 	{
 		title: '修正文件名',
@@ -602,11 +605,13 @@ const columns = reactive([
 	{
 		title: '识别符',
 		dataIndex: 'identify',
+		hide: true,
 	},
 	{
 		title: '工艺',
 		dataIndex: 'craft_id',
 		formType: 'select',
+		hide: true,
 		dict: {
 			url: '/pricingCraft/index4Search?range=all',
 			// params: { product_id: null },
@@ -638,6 +643,7 @@ const columns = reactive([
 			translation: true,
 		},
 		disabled: true,
+		hide: true,
 	},
 	{
 		title: '画面类型',
@@ -649,18 +655,22 @@ const columns = reactive([
 			translation: true,
 		},
 		disabled: true,
+		hide: true,
 	},
 	{
 		title: '宽度CM',
 		dataIndex: 'width',
+		hide: true,
 	},
 	{
 		title: '高度CM',
 		dataIndex: 'height',
+		hide: true,
 	},
 	{
 		title: '数量',
 		dataIndex: 'nums',
+		hide: true,
 	},
 	{
 		title: '备注说明',
@@ -678,6 +688,7 @@ const columns = reactive([
 			translation: true,
 		},
 		disabled: true,
+		hide: true,
 	},
 	{
 		title: '计量单位',
@@ -689,18 +700,21 @@ const columns = reactive([
 			translation: true,
 		},
 		disabled: true,
+		hide: true,
 	},
 	{
 		title: '单价',
 		dataIndex: 'unit_price',
 		defaultValue: '',
 		disabled: true,
+		hide: true,
 	},
 	{
 		title: '金额',
 		dataIndex: 'amount',
 		defaultValue: '',
 		disabled: true,
+		hide: true,
 	},
 ])
 

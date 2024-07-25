@@ -3,6 +3,9 @@
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #operationBeforeExtend="{ record }">
+        <a-space v-if="!record.manual_excel" size="mini">
+          <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
+        </a-space>
         <a-space size="mini" v-if="record.fapiao_method != 0">
           <a-link @click="viewItems(record)"><icon-menu />查看发票</a-link>
         </a-space>
@@ -17,6 +20,7 @@ import { ref, reactive, computed } from 'vue'
 import api from '@/api/bill'
 import billFapiao from '@/views/billFapiao/index.vue'
 import { Message } from '@arco-design/web-vue'
+import tool from '@/utils/tool'
 
 const crudRef = ref()
 
@@ -26,6 +30,17 @@ const viewItems = (record) => {
   itemRef.value.open(record)
 }
 
+const downloadManualExcel = async (record) => {
+  console.log(record)
+  Message.info('对账单下载中，请稍后')
+  const response = await api.downloadBillExcel({ id: record.id })
+  if (response) {
+    tool.download(response, record.name + '结算对账单.xlsx')
+    Message.success('开始下载')
+  } else {
+    Message.error('下载失败')
+  }
+}
 
 const crud = reactive({
   api: api.getPageList,
@@ -35,7 +50,7 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 180,
+  operationColumnWidth: 220,
   add: { show: false, api: api.save },
   edit: { show: true, text: '选择开票方式', api: api.update },
   delete: { show: false, api: api.delete },
@@ -56,33 +71,33 @@ const columns = reactive([
     disabled: true,
     commonRules: [{ required: true, message: '主键必填' }],
   },
-  {
-    title: '结款类型',
-    dataIndex: 'type',
-    width: 100,
-    search: true,
-    addDisplay: true, 
-    addDefaultValue: 1,
-    editDisplay: true,
-    hide: false,
-    dict: { name: 'bizBillType', props: { label: 'label', value: 'value' }, translation: true },
-    formType: 'select',
-    disabled: true,
-    commonRules: [{ required: true, message: '结款类型必填' }],
-  },
-  {
-    title: '对账单',
-    dataIndex: 'manual_excel',
-    width: 200,
-    search: true,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'upload',
-    type: 'file',
-    disabled: true,
-    commonRules: [{ required: true, message: '结算对账单必填' }],
-  },
+  // {
+  //   title: '结款类型',
+  //   dataIndex: 'type',
+  //   width: 100,
+  //   search: true,
+  //   addDisplay: true, 
+  //   addDefaultValue: 1,
+  //   editDisplay: true,
+  //   hide: false,
+  //   dict: { name: 'bizBillType', props: { label: 'label', value: 'value' }, translation: true },
+  //   formType: 'select',
+  //   disabled: true,
+  //   commonRules: [{ required: true, message: '结款类型必填' }],
+  // },
+  // {
+  //   title: '对账单',
+  //   dataIndex: 'manual_excel',
+  //   width: 200,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: true,
+  //   formType: 'upload',
+  //   type: 'file',
+  //   disabled: true,
+  //   commonRules: [{ required: true, message: '结算对账单必填' }],
+  // },
   // {
   //   title: '汇总金额',
   //   dataIndex: 'total',

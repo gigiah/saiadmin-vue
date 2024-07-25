@@ -16,7 +16,7 @@ import { useSysInfoStore } from '@/store'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
-const visible = ref(true)
+const visible = ref(false)
 const clientGroupId = ref()
 
 const open = (row) => {

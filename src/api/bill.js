@@ -124,12 +124,24 @@ export default {
 	},
 
 	/**
-	 * 下载对账单
+	 * 导出系统对账单
 	 * @returns
 	 */
 	exportBillExcel(data = {}) {
 		return request({
 			url: '/bill/exportBillExcel',
+			method: 'post',
+			data,
+		})
+	},
+
+	/**
+	 * 下载结算对账单
+	 * @returns
+	 */
+	downloadBillExcel(data = {}) {
+		return request({
+			url: '/bill/downloadBillExcel',
 			method: 'post',
 			data,
 		})

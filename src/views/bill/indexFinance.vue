@@ -4,15 +4,18 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #fapiao_status="{ record }">
         <a-switch :checked-value="1" unchecked-value="2" @change="changeFapiaoStatus($event, record.id)"
-          :default-checked="record.fapiao_status == 1" :disabled="record.fapiao_status === 1" />
+          :default-checked="record.fapiao_status == 1" :disabled="record.fapiao_status == 1" />
       </template>
       <template #checkout_status="{ record }">
         <a-switch :checked-value="1" unchecked-value="2" @change="changeCheckoutStatus($event, record.id)"
-          :default-checked="record.checkout_status == 1" :disabled="record.checkout_status === 1" />
+          :default-checked="record.checkout_status == 1" :disabled="record.checkout_status == 1" />
       </template>
       <template #operationBeforeExtend="{ record }">
+        <a-space v-if="!record.manual_excel" size="mini">
+          <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
+        </a-space>
         <a-space size="mini">
-          <a-link @click="exportBill(record)"><icon-to-bottom />下载系统对账单</a-link>
+          <a-link @click="exportBill(record)"><icon-to-bottom />系统对账单</a-link>
           <a-link v-if="record.fapiao_method != 0" @click="viewItems(record)"><icon-menu />查看发票</a-link>
         </a-space>
       </template>
@@ -47,37 +50,45 @@ const exportBill = async (record) => {
 }
 
 const changeFapiaoStatus = async (status, id) => {
-  // Modal.info({
-  //   title: '提示',
-  //   content: '确认吗？',
-  //   simple: false,
-  //   okText: '确定',
-  //   cancelText: '取消',
-  //   onOk: async () => {
-  //     const response = await api.changeFapiaoStatus({ id, status })
-  //     if (response.code === 200) {
-  //       Message.success(response.message)
-  //       crudRef.value.refresh()
-  //     }
-  //   },
-  //   onCancel: async () => {
-  //     console.log('cancel')
-  //     crudRef.value.refresh()
-  //   }
-  // })
-  const response = await api.changeFapiaoStatus({ id, status })
-  if (response.code === 200) {
-    Message.success(response.message)
-    crudRef.value.refresh()
-  }
+  Modal.info({
+    title: '提示',
+    content: '确认吗？',
+    simple: false,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: async () => {
+      const response = await api.changeFapiaoStatus({ id, status })
+      if (response.code === 200) {
+        Message.success(response.message)
+        crudRef.value.refresh()
+      }
+    },
+    onCancel: async () => {
+      console.log('cancel')
+      crudRef.value.refresh()
+    }
+  })
 }
 
 const changeCheckoutStatus = async (status, id) => {
-  const response = await api.changeCheckoutStatus({ id, status })
-  if (response.code === 200) {
-    Message.success(response.message)
-    crudRef.value.refresh()
-  }
+  Modal.info({
+    title: '提示',
+    content: '确认吗？',
+    simple: false,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: async () => {
+      const response = await api.changeCheckoutStatus({ id, status })
+      if (response.code === 200) {
+        Message.success(response.message)
+        crudRef.value.refresh()
+      }
+    },
+    onCancel: async () => {
+      console.log('cancel')
+      crudRef.value.refresh()
+    }
+  })
 }
 
 const crud = reactive({
@@ -88,9 +99,9 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 300,
+  operationColumnWidth: 310,
   add: { show: false, api: api.save },
-  edit: { show: true, api: api.update },
+  edit: { show: false, api: api.update },
   delete: { show: false, api: api.delete },
   recovery: { show: false, api: api.recovery },
   formOption: { width: 800 },
@@ -109,6 +120,36 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
+    title: '客户',
+    dataIndex: 'client_group_id',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'select',
+    dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    disabled: true,
+    commonRules: [{ required: false, message: '客户必填' }],
+  },
+  {
+    title: '开票人',
+    dataIndex: 'fapiao_create_sys_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: {
+      url: '/core/user/index?type=all&code=financial',
+      props: { label: 'nickname', value: 'id' },
+      translation: true,
+    },
+    formType: 'select',
+    disabled: true,
+    // commonRules: [{ required: false, message: '财务人员必填' }],
+  },
+  {
     title: '结单人',
     dataIndex: 'bill_checkout_sys_id',
     width: 100,
@@ -123,7 +164,7 @@ const columns = reactive([
     },
     formType: 'select',
     disabled: true,
-    commonRules: [{ required: false, message: '财务人员必填' }],
+    // commonRules: [{ required: false, message: '财务人员必填' }],
   },
   {
     title: '结款类型',
@@ -143,7 +184,7 @@ const columns = reactive([
     title: '系统对账单',
     dataIndex: 'name',
     width: 180,
-    search: true,
+    search: false,
     addDisplay: true,
     editDisplay: true,
     hide: false,
@@ -195,18 +236,18 @@ const columns = reactive([
     disabled: true,
     commonRules: [{ required: true, message: '系统金额必填' }],
   },
-  {
-    title: '结算对账单',
-    dataIndex: 'manual_excel',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    disabled: true,
-    commonRules: [{ required: false, message: '结算对账单必填' }],
-  },
+  // {
+  //   title: '结算对账单',
+  //   dataIndex: 'manual_excel',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'input',
+  //   disabled: true,
+  //   commonRules: [{ required: false, message: '结算对账单必填' }],
+  // },
   {
     title: '结算金额',
     dataIndex: 'final_total',
