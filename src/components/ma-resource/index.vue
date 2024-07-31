@@ -112,7 +112,6 @@ onMounted(async () => {
       console.log('item', item)
     })
   }
-  console.log('extData', props.extData)
 })
 
 const getStoreMode = (mode) => {

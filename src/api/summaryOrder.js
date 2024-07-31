@@ -29,6 +29,18 @@ export default {
 	},
 
 	/**
+	 * 修改数据状态
+	 * @returns
+	 */
+	changeDataStatus(params = {}) {
+		return request({
+			url: '/summaryOrder/changeDataStatus',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
 	 * 添加数据
 	 * @returns
 	 */

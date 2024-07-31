@@ -2,14 +2,18 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- switch -->
+      <template #finish_status="{ record }">
+        <a-switch :checked-value="1" unchecked-value="2" @change="changeFinishStatus($event, record.id)" />
+      </template>
       <!-- 操作前置扩展 -->
       <template #operationBeforeExtend="{ record }">
         <a-space size="mini">
-          <a-link @click="viewRecord(record)"><icon-menu />受理记录</a-link>
+          <a-link @click="viewRecord(record)"><icon-menu />印量</a-link>
         </a-space>
-        <a-link v-if="record.produce_status == 1" @click="cancelModal(record)" v-auth="[]">
+        <!-- <a-link v-if="record.produce_status == 1" @click="cancelModal(record)" v-auth="[]">
           <icon-close />取消受理
-        </a-link>
+        </a-link> -->
       </template>
     </ma-crud>
     <a-modal v-model:visible="visible" :width="1200" :footer="false" draggable>
@@ -83,6 +87,34 @@ watch(
   { deep: true }
 )
 
+const changeFinishStatus = async (status, id) => {
+  Modal.info({
+    title: '提示',
+    content: '确认吗？',
+    simple: false,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: async () => {
+      api.changeDataStatus({
+        'id': id,
+        'type': 'finish_status',
+        'value': status,
+      }).then(res => {
+        if (res.code == 200) {
+          Message.success(res.message)
+        } else {
+          Message.error(res.message)
+        }
+        crudRef.value.refresh()
+      })
+    },
+    onCancel: async () => {
+      console.log('cancel')
+      crudRef.value.refresh()
+    }
+  })
+}
+
 const cancelModal = async (record) => {
   console.log(record)
   submitModalRef.value.form['summary_batch_code'] = record['summary_batch_code']
@@ -114,14 +146,14 @@ const submitCancel = async (formData) => {
 
 const crud = reactive({
   api: api.getPageList,
-  requestParams: { produce_status: 1 },
+  requestParams: { check_time: 1, produce_status: 1 },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 250,
+  operationColumnWidth: 140,
   add: { show: false, api: api.save },
   edit: { show: true, api: api.update },
   delete: { show: false, api: api.delete },
@@ -134,6 +166,14 @@ const crud = reactive({
       .then(res => {
         currentClientName.value = res.data
       })
+    if (params.out_source == 1) {
+      Message.error('外发单无法编辑')
+      return false;
+    }
+    return true
+  },
+  beforeEdit: (record) => {
+    record.page = 'accepted'
     return true
   },
 })
@@ -212,20 +252,20 @@ const columns = reactive([
     formType: 'input',
     commonRules: [{ required: false, message: '汇总批次号必填' }],
   },
-  // {
-  //   title: '汇总时间',
-  //   dataIndex: 'create_time',
-  //   width: 180,
-  //   search: true,
-  //   addDisplay: false,
-  //   editDisplay: false,
-  //   hide: false,
-  //   searchFormType: 'range',
-  //   showTime: true,
-  //   disabled: true,
-  //   formType: 'date',
-  //   commonRules: [{ required: false, message: '创建时间必填' }],
-  // },
+  {
+    title: '汇总时间',
+    dataIndex: 'create_time',
+    width: 180,
+    search: true,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    searchFormType: 'range',
+    showTime: true,
+    disabled: true,
+    formType: 'date',
+    commonRules: [{ required: false, message: '创建时间必填' }],
+  },
   // {
   //   title: '受理人',
   //   dataIndex: 'assign_sys_id',
@@ -381,6 +421,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    disabled: true,
     commonRules: [{ required: false, message: '汇总数量必填' }],
   },
   {
@@ -392,6 +433,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    disabled: true,
     commonRules: [{ required: false, message: '加急数量必填' }],
   },
   // {
@@ -474,11 +516,38 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    disabled: true,
     commonRules: [{ required: false, message: '完成印量必填' }],
+  },
+  {
+    title: '当班印量',
+    dataIndex: 'current_nums',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: true,
+    formType: 'input',
+    editDefaultValue: 0,
+    commonRules: [{ required: false, message: '当班印量必填' }],
+  },
+  {
+    title: '完工',
+    dataIndex: 'finish_status',
+    width: 180,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    // commonRules: [{ required: false, message: '必填' }],
   },
   {
     formType: 'card',
     title: '打印文件',
+    hide: true,
     formList: [
       {
         formType: 'button',
@@ -526,6 +595,7 @@ const columns = reactive([
   {
     formType: 'card',
     title: '后期文件',
+    hide: true,
     formList: [
       {
         formType: 'button',

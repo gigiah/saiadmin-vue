@@ -149,50 +149,51 @@ const crud = reactive({
 	recovery: { show: true, api: user.recoverys, },
 	formOption: {
 		width: 800,
-		layout: [
-			{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'avatar' }] }] },
-			{
-				formType: 'grid',
-				cols: [
-					{ span: 12, formList: [{ dataIndex: 'username' }] },
-					{ span: 12, formList: [{ dataIndex: 'dept_id' }] },
-				],
-			},
-			{
-				formType: 'grid',
-				cols: [
-					{ span: 12, formList: [{ dataIndex: 'password' }] },
-					{ span: 12, formList: [{ dataIndex: 'nickname' }] },
-				],
-			},
-			{
-				formType: 'grid',
-				cols: [
-					{ span: 12, formList: [{ dataIndex: 'role_ids' }] },
-					{ span: 12, formList: [{ dataIndex: 'phone' }] },
-				],
-			},
-			{
-				formType: 'grid',
-				cols: [
-					{ span: 12, formList: [{ dataIndex: 'post_ids' }] },
-					{ span: 12, formList: [{ dataIndex: 'email' }] },
-				],
-			},
-			{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'status' }] }] },
-			{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'remark' }] }] },
-		],
+		// layout: [
+		// 	{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'avatar' }] }] },
+		// 	{
+		// 		formType: 'grid',
+		// 		cols: [
+		// 			{ span: 12, formList: [{ dataIndex: 'username' }] },
+		// 			{ span: 12, formList: [{ dataIndex: 'dept_id' }] },
+		// 		],
+		// 	},
+		// 	{
+		// 		formType: 'grid',
+		// 		cols: [
+		// 			{ span: 12, formList: [{ dataIndex: 'password' }] },
+		// 			{ span: 12, formList: [{ dataIndex: 'nickname' }] },
+		// 		],
+		// 	},
+		// 	{
+		// 		formType: 'grid',
+		// 		cols: [
+		// 			{ span: 12, formList: [{ dataIndex: 'role_ids' }] },
+		// 			{ span: 12, formList: [{ dataIndex: 'phone' }] },
+		// 		],
+		// 	},
+		// 	{
+		// 		formType: 'grid',
+		// 		cols: [
+		// 			{ span: 12, formList: [{ dataIndex: 'post_ids' }] },
+		// 			{ span: 12, formList: [{ dataIndex: 'email' }] },
+		// 		],
+		// 	},
+		// 	{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'status' }] }] },
+		// 	{ formType: 'grid', cols: [{ span: 24, formList: [{ dataIndex: 'remark' }] }] },
+		// ],
 	},
 	beforeOpenEdit: (record) => {
-		if (record.id === 1) {
-			Message.error('创始人不可编辑')
+		console.log(sysInfoStore.info)
+		if (record.id === sysInfoStore.info.sys_user_id) {
+			Message.error('不可编辑自己')
 			return false
 		}
 		return true
 	},
 	beforeDelete: (ids) => {
-		if (ids.includes(1)) {
-			Message.error('创始人不可删除')
+		if (ids.includes(sysInfoStore.info.sys_user_id)) {
+			Message.error('不可删除自己')
 			return false
 		}
 		return true
@@ -210,6 +211,7 @@ const columns = reactive([
 		multiple: false,
 		type: 'image',
 		rounded: true,
+		editDisabled: true,
 		labelWidth: '86px',
 	},
 	{
@@ -259,7 +261,7 @@ const columns = reactive([
 		type: 'password',
 		addRules: [{ required: true, message: '密码必填' }],
 	},
-	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }], },
+	{ title: '昵称', search: true, dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }], },
 	{
 		title: '角色',
 		dataIndex: 'role_ids',
@@ -283,6 +285,7 @@ const columns = reactive([
 		dataIndex: 'phone',
 		width: 150,
 		search: true,
+		editDisabled: true,
 		commonRules: [{ match: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码' }],
 	},
 	{
@@ -296,27 +299,29 @@ const columns = reactive([
 			props: { label: 'name', value: 'id' },
 		},
 		hide: true,
+		editDisabled: true,
 		editDefaultValue: async (record) => {
 			const response = await user.read(record.id)
 			const ids = response.data.postList.map((item) => item.id)
 			return ids
 		},
 	},
-	{
-		title: '邮箱',
-		dataIndex: 'email',
-		width: 200,
-		search: true,
-		commonRules: [{ type: 'email', message: '请输入正确的邮箱' }],
-	},
+	// {
+	// 	title: '邮箱',
+	// 	dataIndex: 'email',
+	// 	width: 200,
+	// 	search: true,
+	// 	commonRules: [{ type: 'email', message: '请输入正确的邮箱' }],
+	// },
 	{
 		title: '状态',
 		dataIndex: 'status',
 		width: 100,
-		search: true,
+		search: false,
 		formType: 'radio',
 		dict: { name: 'data_status', props: { label: 'label', value: 'value' } },
 		addDefaultValue: '1',
+		editDisabled: true,
 		labelWidth: '86px',
 	},
 	{
@@ -333,7 +338,7 @@ const columns = reactive([
 		width: 180,
 		addDisplay: false,
 		editDisplay: false,
-		search: true,
+		search: false,
 		formType: 'range',
 	},
 ])

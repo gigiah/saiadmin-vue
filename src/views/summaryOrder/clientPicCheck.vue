@@ -63,7 +63,7 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 160,
   add: { show: false, api: api.save },
-  edit: { show: true, text:'审核稿件', api: api.update },
+  edit: { show: true, text: '审核稿件', api: api.update },
   delete: { show: false, api: api.delete },
   recovery: { show: true, api: api.recovery },
   formOption: {
@@ -384,7 +384,19 @@ const columns = reactive([
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
+    disabled: false,
     commonRules: [{ required: false, message: '必填' }],
+    control: (val) => {
+      if (val == 1) {
+        return {
+          is_client_check: { disabled: true }
+        }
+      } else {
+        return {
+          is_client_check: { disabled: false }
+        }
+      }
+    }
   },
   {
     title: '审图反馈信息',
