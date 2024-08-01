@@ -45,6 +45,7 @@ import { Message, Modal } from '@arco-design/web-vue'
 import MaFormModal from "@/components/ma-form-modal/index.vue"
 import labelPrint from '@/views/orderDelivery/label.vue';
 
+
 const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
@@ -66,7 +67,7 @@ const orderShowIndex = {
   'store_id': { 'addDisabled': false, 'editDisabled': true },
   'consignee_id': { 'addDisabled': false, 'editDisabled': true },
   'freight': { 'addDisabled': false, 'editDisabled': false },
-  'label_no': { 'addDisabled': false, 'editDisabled': false },
+  'label_no': { 'addDisabled': false, 'editDisabled': true },
   'label_sub_no': { 'addDisabled': false, 'editDisabled': false },
 }
 
@@ -410,8 +411,8 @@ const crud = reactive({
   edit: { show: true, text: '编辑', title: '编辑', api: api.update, auth: [] },
   delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
   recovery: { show: false, api: api.recovery, auth: [] },
-  formOption: { viewType: 'drawer', width: 600 },
-  isExpand: true,
+  formOption: { width: 600 },
+  isExpand: false,
   size: 'mini',
   // resizable: false,
   stripe: false,
@@ -423,6 +424,8 @@ const crud = reactive({
   afterSearch: (requestParams) => {
     console.log('requestParams', requestParams)
     requestParamsData.value = requestParams
+    currentClientGrpId.value = requestParamsData.value.client_group_id && requestParamsData.value.client_group_id != undefined ? requestParamsData.value.client_group_id : null
+    areaTypeDict()
   },
   //添加门店前操作
   beforeOpenAdd: () => {
@@ -489,11 +492,17 @@ const columns = reactive([
     hide: false,
     dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
+    cascaderItem: ['area_type_id', 'pricing_type_id', 'store_id'],
     commonRules: [{ required: false, message: '客方必填' }],
   },
   {
-    title: '发货日期',
+    title: '发货计划',
     dataIndex: 'delivery_time',
+    search: true,
+    searchFormType: 'range',
+    showTime: true,
+    formType: 'date',
+    width: 200,
   },
   {
     title: '营销区域',
@@ -503,7 +512,12 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/storeAreaType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
+    // dict: {
+    //   data() {
+    //     return areaType
+    //   },
+    // },
     formType: 'select',
   },
   {
@@ -514,7 +528,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/storePricingType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
   },
   {
@@ -523,7 +537,7 @@ const columns = reactive([
     search: true,
     formType: 'select',
     dict: {
-      url: '/store/index?type=all',
+      url: '/store/index?type=all&client_group_id={{key}}',
       props: { label: 'name', value: 'id' },
       translation: true,
     },
