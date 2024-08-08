@@ -24,14 +24,56 @@
       </ma-form-modal>
     </div>
     <!--打印标签-->
-    <a-modal v-model:visible="labelPrintVisible" :footer="false" :hide-title="true" width="850px">
-      <label-print :orders="orderTreeData"></label-print>
+    <a-modal v-model:visible="labelPrintVisible" :footer="false" :hide-title="true" width="375px">
+      <div id="printArea" ref="printArea">
+        <!-- 这里是要打印的内容 -->
+        <table v-for="item in orderTreeData" :key="item.id" style="margin-bottom: 30px;">
+          <tr>
+            <td colspan="5" class="code">{{ item.orderLabelNo }}</td>
+          </tr>
+          <tr>
+            <td colspan="5" class="title">客户简称：{{ item.client }}</td>
+          </tr>
+          <tr>
+            <td colspan="5" class="title">门店名称：{{ item.store }}</td>
+          </tr>
+          <tr>
+            <td colspan="5" class="title">营销区域：{{ item.storeArea }}</td>
+          </tr>
+          <tr>
+            <td colspan="5" class="title">价格体系：{{ item.storePricing }}</td>
+          </tr>
+          <!-- <tr>
+            <td colspan="2">{{ item.client }}</td>
+            <td>{{ item.store }}</td>
+            <td>{{ item.storeArea }}</td>
+            <td>{{ item.storePricing }}</td>
+          </tr> -->
+          <!-- <tr>
+            <td colspan="5" style="height: 20px;"></td>
+          </tr> -->
+          <tr>
+            <td width="36%">产品名称</td>
+            <td width="10%">宽</td>
+            <td width="10%">高</td>
+            <td width="8%">数量</td>
+            <td width="36%">制作选项</td>
+          </tr>
+          <tr v-for="itemGoods in item.goods" :key="itemGoods.id">
+            <td>{{ itemGoods.name }}</td>
+            <td>{{ itemGoods.width }}</td>
+            <td>{{ itemGoods.height }}</td>
+            <td>{{ itemGoods.nums }}</td>
+            <td>{{ itemGoods.craftDesc }}</td>
+          </tr>
+        </table>
+      </div>
     </a-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { judgeCode } from "@/utils/common";
 import api from '@/api/order'
 import summaryOrderApi from '@/api/summaryOrder'
@@ -43,8 +85,6 @@ import pricingCraftApi from '@/api/pricingCraft'
 import billApi from '@/api/bill'
 import { Message, Modal } from '@arco-design/web-vue'
 import MaFormModal from "@/components/ma-form-modal/index.vue"
-import labelPrint from '@/views/orderDelivery/label.vue';
-
 
 const crudRef = ref()
 const deleteForms = ref([])
@@ -53,6 +93,7 @@ const nextStage = ref('')
 const currentStatus = ref([50, 60, 70, 90])
 const requestParamsData = ref()
 const loading = ref(false)
+const triggerPrinter = ref(false);
 
 const modalRef = ref()
 const visible = ref(false)
@@ -104,6 +145,70 @@ const craftShowIndex = {
   'amount': { 'addDisabled': true, 'editDisabled': true },
 }
 
+const openPrintWindow = async () => {
+  await nextTick(); // 确保 DOM 已经更新
+  const printHTML = document.querySelector('#printArea').innerHTML;
+  const printWindow = window.open('', '_blank');
+  const printStyles = `
+    .icon {
+      width: 1em;
+    }
+    table {
+      width: 360px;
+      border-collapse: collapse;
+      font-size: 9px;
+    }
+    .code {
+      font-weight: bolder;
+      font-size: 16px;
+    }
+    .title {
+      font-weight: bolder;
+      text-align: left;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 2px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  `;
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>大格标签打印</title>
+        <style>
+          ${printStyles}
+        </style>
+      </head>
+      <body>
+        ${printHTML}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+  labelPrintVisible.value = false;
+};
+
+watch(triggerPrinter, (newValue) => {
+  if (newValue) {
+    openPrintWindow();
+  }
+});
+
+watch(labelPrintVisible, (newValue) => {
+  if (newValue) {
+    triggerPrinter.value = true;
+  } else {
+    triggerPrinter.value = false;
+  }
+});
+
 const selectChange = (val) => {
   selecteds.value = val
 }
@@ -128,14 +233,17 @@ const printLabel = () => {
       orderTreeData.value = transformData(res.data)
       console.log('transformData', orderTreeData.value)
       labelPrintVisible.value = true
-      loading.value = true;
+      // loading.value = true;
     })
-  timer = setTimeout(() => {
-    window.print();
-    loading.value = false;
-    // labelPrintVisible.value = false;
-    clearTimeout(timer);
-  }, 3000);
+  // timer = setTimeout(() => {
+  //   const printHTML = document.querySelector('#report').innerHTML
+  //   console.log('printHTML', printHTML)
+  //   // window.document.body.innerHTML = printHTML
+  //   window.print();
+  //   loading.value = false;
+  //   // labelPrintVisible.value = false;
+  //   clearTimeout(timer);
+  // }, 3000);
 }
 
 const transformData = (data) => {
@@ -172,7 +280,7 @@ const transformData = (data) => {
 const summaryOrders = async () => {
   if (selecteds.value.length === 0) {
     Message.error('至少要选择一条订单')
-    return
+    return false
   }
   let orderIds = []
   console.log('selecteds', selecteds)
@@ -707,5 +815,33 @@ const submitModalColumn = reactive([
 <style scoped>
 .icon {
   width: 1em;
+}
+
+/* 添加一些样式使打印内容更好看 */
+.container {
+  padding: 10px;
+  margin: 0;
+}
+
+table {
+  /* width: 100%; */
+  width: 335px;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.title {
+  font-weight: bolder;
+}
+
+th,
+td {
+  border: 1px solid #000;
+  padding: 2px;
+  text-align: center;
+}
+
+th {
+  background-color: #f2f2f2;
 }
 </style>
