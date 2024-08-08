@@ -8,6 +8,7 @@ import useConfigStore from './modules/config'
 import useMessageStore from './modules/message'
 import useFormStore from './modules/form'
 import useSysInfoStore from './modules/sysInfo'
+import useBizDictStore from './modules/bizDict'
 
 const pinia = createPinia()
 
@@ -21,5 +22,6 @@ export {
   useMessageStore,
   useFormStore,
   useSysInfoStore,
+  useBizDictStore
 }
 export default pinia
