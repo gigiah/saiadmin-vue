@@ -1,19 +1,36 @@
 <template>
   <a-card size="small">
     <template #title>
-      <a-checkbox :value="order.id">订单编号:{{order.code}} 门店名称:{{order.store_name}}</a-checkbox>
+      <div class="flex-row align-center flex">
+        <a-checkbox :value="order.id"><span class="pr-2">订单编号:</span>{{order.code}}</a-checkbox>
+        <div class="text-xs">
+          <span class="pr-4 text-center font-bold" v-if="order.store_name">{{order.store_name}}</span>
+          <span class="pr-4 text-center font-bold" v-if="order.store_area_type">{{order.store_area_type}}</span>
+          <span class="pr-4 text-center font-bold" v-if="order.store_business_type">{{order.store_business_type}}</span>
+          <span class="pr-4 text-center font-bold" v-if="order.store_product_type">{{order.store_product_type}}</span>
+          <span class="pr-4 text-center font-bold" v-if="order.store_pricing_type">{{order.store_pricing_type}}</span>
+          <span class="pr-2 text-center font-bold">门店地址:</span>
+          <store-select v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
+        </div>
+      </div>
     </template>
     <template #extra>
       <a-button type="primary" @click="expandAll" size="mini" style="margin-right: 1rem">{{tableExpand ? '收起': '展开'}}全部</a-button>
       <a-button type="primary" status="success" size="mini" @click="handleSubmit" style="margin-right: 1rem">提交审订</a-button>
       <a-button type="primary" status="danger" size="mini" @click="handleDeleteOrder">删除订单</a-button>
     </template>
-    <div class="flex flex-row align-center">
-      <a-typography>{{ order.consignee_address }}</a-typography>
-    </div>
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-      <a-typography-title :heading="6">商品列表</a-typography-title>
+<!--    <div class="flex flex-row align-center">-->
+<!--      <a-typography>{{ order.consignee_address }}</a-typography>-->
+<!--    </div>-->
+    <div class="flex flex-row align-center pb-3 gap-4">
+<!--      style="display: flex; flex-direction: row; justify-content: space-between; padding-bottom: 10px"-->
+<!--      <a-typography-title :heading="6">商品列表</a-typography-title>-->
       <a-button type="primary" status="success" @click="addNew" size="mini">新增商品</a-button>
+      <div class="flex flex-row align-center gap-2">
+        <span style="padding-top: 0.125rem; color: black">订单备注:</span>
+        <a-input size="mini" v-model="order.remark" style="width: 200px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+
+      </div>
     </div>
     <a-table size="mini" :data="goods" column-resizable :bordered="{cell: true}" :pagination="false"
              ref="tableRef"
@@ -26,7 +43,7 @@
             <product-id-select size="mini" v-else v-model="record.product_id" :disabled="disableProductEdit(record)" @change="onProductChanged($event, record)" />
           </template>
         </a-table-column>
-        <a-table-column title="产品级别" data-index="product_grade_id">
+        <a-table-column title="产品级别" data-index="product_grade_id" :width="100">
 <!--          <template #cell="{ record, column, index }">-->
 <!--            <product-grade-select v-model="record.product_grade_id" :disabled="true" />-->
 <!--          </template>-->
@@ -35,7 +52,7 @@
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="画面类型" data-index="product_picture_type_id">
+        <a-table-column title="画面类型" data-index="product_picture_type_id" :width="100">
 <!--          <template #cell="{ record, column, index }">-->
 <!--            <product-picture-type-select v-model="record.product_picture_type_id" :disabled="true" />-->
 <!--          </template>-->
@@ -44,7 +61,7 @@
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="源文件" data-index="associated_file">
+        <a-table-column title="源文件" data-index="associated_file" :width="300">
           <template #cell="{ record, column, index }">
             <span v-if="record.row_type === 'craft'"></span>
             <associated-file-select size="mini" v-else v-model="record.associated_file" :disabled="!record.editable" />
@@ -67,11 +84,13 @@
         </a-table-column>
         <a-table-column title="工艺" data-index="craft_id">
           <template #cell="{ record, column, index }">
-            <span v-if="record.row_type === 'goods'"></span>
-            <pricing-craft-select size="mini" v-else v-model="record.craft_id" :disabled="disableCraftEdit(record)" @change="onCraftChanged($event, record)" :product-id="record.product_id" />
+            <a-button v-if="record.row_type === 'goods'" size="mini" status="success" shape="circle" @click="addCraft(record)">
+              <icon-plus />
+            </a-button>
+            <pricing-craft-select size="mini" v-if="record.row_type === 'craft'" v-model="record.craft_id" :disabled="disableCraftEdit(record)" @change="onCraftChanged($event, record)" :product-id="record.product_id" />
           </template>
         </a-table-column>
-        <a-table-column title="计价方式" data-index="pricing_type_id">
+        <a-table-column title="计价方式" data-index="pricing_type_id" :width="100">
 <!--          <template #cell="{ record, column, index }">-->
 <!--            <pricing-type-select v-model="record.pricing_type_id" :disabled="true" />-->
 <!--          </template>-->
@@ -80,7 +99,7 @@
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="计量单位" data-index="pricing_unit_id">
+        <a-table-column title="计量单位" data-index="pricing_unit_id" :width="100">
 <!--          <template #cell="{ record, column, index }">-->
 <!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled="true" />-->
 <!--          </template>-->
@@ -100,9 +119,6 @@
         <a-table-column title="操作" fixed="right" :width="280">
           <template #cell="{ record, column }">
             <div style="display: flex; flex-direction: row; gap: 10px">
-              <a-button v-if="!record.editable && record.row_type === 'goods'" size="mini" status="success" shape="circle" @click="addCraft(record)">
-                <icon-plus />
-              </a-button>
               <a-button v-if="!record.editable" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
                 <icon-delete />
               </a-button>
@@ -135,6 +151,7 @@ import {useBizDictStore} from "@/store";
 import ProductIdSelect from "@/views/order4Client/components/productIdSelect.vue";
 import AssociatedFileSelect from "@/views/order4Client/components/associatedFileSelect.vue";
 import PricingCraftSelect from "@/views/order4Client/components/pricingCraftSelect.vue";
+import StoreSelect from "@/views/order4Client/components/storeSelect.vue";
 
 const bizDict = useBizDictStore();
 
@@ -372,6 +389,44 @@ function expandAll() {
   tableExpand.value = !tableExpand.value;
   tableExpand.value ? tableRef.value.expandAll(true): tableRef.value.expandAll(false);
 }
+
+let tempRemark = props.order.remark;
+
+function onRemarkFocus() {
+  tempRemark = props.order.remark;
+}
+
+function onRemarkBlur() {
+  if (tempRemark === props.order.remark) {
+    return;
+  }
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: props.order.consignee_id,
+    remark: props.order.remark
+  }).then(value => {
+    if (value.code === 200) {
+      tempRemark = props.order.remark;
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
+function onStoreChanged(value) {
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: value
+  }).then(value => {
+    if (value.code === 200) {
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
 </script>
 
 <style scoped>

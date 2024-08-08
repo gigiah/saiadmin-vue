@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-4 ma-content-block lg:flex gap-4 justify-end">
+    <div class="p-4 ma-content-block lg:flex gap-4">
       <a-button type="primary" size="mini" @click="onAddStore">选择门店</a-button>
       <a-button type="primary" size="mini" @click="onSelectAll">选择全部</a-button>
       <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">发起审订</a-button>
