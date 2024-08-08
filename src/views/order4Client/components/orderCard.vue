@@ -116,7 +116,7 @@
             <span>{{record.unit_price ? record.unit_price : ''}}</span>
           </template>
         </a-table-column>
-        <a-table-column title="操作" fixed="right" :width="280">
+        <a-table-column title="操作" fixed="right" :width="100">
           <template #cell="{ record, column }">
             <div style="display: flex; flex-direction: row; gap: 10px">
               <a-button v-if="!record.editable" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
@@ -324,6 +324,10 @@ function onDeleteGoodsOrCraft(record) {
 
 function onSubmitGoodsOrCraft(record) {
   if (typeof(record.key) === 'string' && record.key.includes('tmpAdd')) {
+    if (!record.width || !record.height || !record.nums || !record.product_id) {
+      Message.error('请选择产品，填写宽度、高度、数量');
+      return;
+    }
     insertGoodsOrCraft(record);
   } else {
     updateGoodsOrCraft(record);

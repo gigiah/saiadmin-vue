@@ -2,11 +2,11 @@
   <div>
     <div class="p-4 ma-content-block lg:flex gap-4">
       <a-button type="primary" size="mini" @click="onAddStore">选择门店</a-button>
-      <a-button type="primary" size="mini" @click="onSelectAll">选择全部</a-button>
+      <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">发起审订</a-button>
       <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
     </div>
-    <a-checkbox-group style="display: block" v-model="checkedValues">
+    <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"></order-card>
     </a-checkbox-group>
     <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
@@ -112,8 +112,16 @@ function onDeleteBatch() {
   });
 }
 
+let isSelectAll = computed(() => {
+  return checkedValues.value.length === orders.value.length;
+})
+
 function onSelectAll() {
-  checkedValues.value = orders.value.map((item) => item.id);
+  if (!isSelectAll.value) {
+    checkedValues.value = orders.value.map((item) => item.id);
+  } else {
+    checkedValues.value = [];
+  }
 }
 </script>
 
