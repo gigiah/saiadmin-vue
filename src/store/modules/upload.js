@@ -12,8 +12,8 @@ const useUploadStore = defineStore('upload', {
         },
     },
     actions: {
-        updateSettings(partial) {
-            this.$patch(partial)
-        },
+        uploadPackage(obj) {
+
+        }
     },
 })

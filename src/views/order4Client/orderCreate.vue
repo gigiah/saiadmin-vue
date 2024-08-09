@@ -7,7 +7,7 @@
       <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"></order-card>
+      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="create"></order-card>
     </a-checkbox-group>
     <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
   </div>
@@ -82,6 +82,7 @@ function onSubmitOrder() {
 
 function onOrderChanged() {
   console.log('订单变更');
+checkedValues.value = [];
   getOrders();
 }
 

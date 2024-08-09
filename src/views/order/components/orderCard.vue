@@ -2,9 +2,8 @@
   <a-card size="small">
     <template #title>
       <div class="flex-row align-center flex">
-        <a-checkbox v-if="scene !== 'index'" :value="order.id"><span class="pr-2">订单编号:</span>{{order.code}}</a-checkbox>
+        <a-checkbox :value="order.id"><span class="pr-2">订单编号:</span>{{order.code}}</a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 text-center font-bold" v-if="order.store_name"><span class="pr-2">订单编号:</span>{{order.code}}</span>
           <span class="pr-4 text-center font-bold" v-if="order.store_name">{{order.store_name}}</span>
           <span class="pr-4 text-center font-bold" v-if="order.store_area_type">{{order.store_area_type}}</span>
           <span class="pr-4 text-center font-bold" v-if="order.store_business_type">{{order.store_business_type}}</span>
@@ -12,49 +11,68 @@
           <span class="pr-4 text-center font-bold" v-if="order.store_pricing_type">{{order.store_pricing_type}}</span>
           <span class="pr-4 text-center font-bold" v-if="order.settle_method">{{order.store_pricing_type}}</span>
           <span class="pr-2 text-center font-bold">收货地址:</span>
-          <store-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
+          <store-select style="width: 150px" disabled v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
         </div>
       </div>
     </template>
     <template #extra>
-      <a-button type="primary" @click="expandAll" size="mini" style="margin-right: 1rem">{{tableExpand ? '收起': '展开'}}全部</a-button>
-      <a-button type="primary" v-if="scene === 'create'" status="success" size="mini" @click="handleSubmit" style="margin-right: 1rem">提交审订</a-button>
-      <a-button type="primary" v-if="scene === 'check'" status="success" size="mini" @click="handleSubmitCheck" style="margin-right: 1rem">发起提交</a-button>
-      <a-button type="primary" v-if="scene !== 'index'" status="danger" size="mini" @click="handleDeleteOrder">删除订单</a-button>
+      <div class="flex flex-row items-center gap-4">
+        <a-button type="primary" @click="expandAll" size="mini">{{tableExpand ? '收起': '展开'}}全部</a-button>
+        <a-button v-if="scene === 'confirm'" type="primary" size="mini" @click="onPass">通过</a-button>
+        <a-button v-if="scene === 'confirm'" type="primary" size="mini" status="danger" @click="onBack">打回</a-button>
+      </div>
     </template>
-    <div v-if="scene === 'index'" class="flex flex-row align-center gap-2 pb-3 font-bold" style="font-size: 12px">
-        <span v-if="scene === 'check'" class="pt-0.5">
-          <span class="text-black pl-1">录单人:</span>
-          <span class="text-black pl-3">{{order.order_creater}}</span>
-        </span>
-      <span v-if="scene === 'index'" class="pt-0.5">
+    <div class="flex flex-row items-center gap-2 pb-3 font-bold" style="font-size: 12px">
+      <span class="pt-0.5">
           <span class="text-black pl-1">提交人:</span>
           <span class="text-black pl-3">{{order.order_submiter}}</span>
         </span>
-      <span v-if="scene === 'index'" class="pt-0.5">
+      <span class="pt-0.5">
           <span class="text-black pl-1">卡券名称:</span>
           <span class="text-black pl-3">{{order.coupon_name}}</span>
         </span>
-      <span v-if="scene === 'index'" class="pt-0.5">
+      <span class="pt-0.5">
           <span class="text-black pl-1">发货计划:</span>
-          <span class="text-black pl-3">{{order.delivery_time}}</span>
-        </span>
+          <a-date-picker :disabled="scene === 'index'" size="mini" style="width: 150px; margin-left: 20px" v-model="order.delivery_time" @change="onDeliveryTimeChange" />
+      </span>
       <span v-if="scene === 'index'" class="pt-0.5">
           <span class="text-black pl-1">支付状态:</span>
           <span class="text-black pl-3">{{payStatusLabel}}</span>
         </span>
-      <span v-if="scene === 'index'" class="pt-0.5">
+      <span class="pt-0.5">
           <span class="text-black pl-1">发货状态:</span>
-          <span class="text-black pl-3">{{deliveryStatusLabel}}</span>
+        <a-select :disabled="scene === 'index'" :options="[{
+          label: '已发货',
+          value: 1
+        }, {
+          label: '未发货',
+          value: 2
+        }]" v-model="order.delivery_status" size="mini" style="width: 100px; margin-left: 20px" @change="onDeliveryStatusChange" />
         </span>
+
+      <span class="pt-0.5">
+          <span class="text-black pl-1">优惠金额:</span>
+          <span class="text-black pl-3">{{order.coupon_consume}}</span>
+      </span>
+      <span class="pt-0.5 flex flex-row items-center">
+          <span class="text-black">运费:</span>
+          <a-input-number style="width: 80px; margin-left: 20px;" size="mini" class="pl-3" v-model="order.freight" @blur="onFreightBlur" />
+      </span>
+      <span class="pt-0.5">
+          <span class="text-black pl-1">订单金额:</span>
+          <span class="text-black pl-3">{{order.total_amount}}</span>
+      </span>
+      <span v-if="scene === 'index'" class="pt-0.5">
+          <span class="text-black pl-1">汇总批号:</span>
+          <span class="text-black pl-3">{{order.summary_batch_code}}</span>
+      </span>
     </div>
     <div class="flex flex-row align-center pb-3 gap-4">
 <!--      style="display: flex; flex-direction: row; justify-content: space-between; padding-bottom: 10px"-->
 <!--      <a-typography-title :heading="6">商品列表</a-typography-title>-->
-      <a-button type="primary" v-if="scene === 'create'" status="success" @click="addNew" size="mini">新增商品</a-button>
       <div class="flex flex-row align-center gap-2">
         <span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black" >订单备注:</span>
-        <a-input size="mini" :disabled="scene === 'index'" v-model="order.remark" style="width: 800px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+        <a-input size="mini" disabled v-model="order.remark" style="width: 800px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
       </div>
     </div>
     <a-table size="mini" :data="goods" column-resizable :bordered="{cell: true}" :pagination="false"
@@ -89,22 +107,28 @@
         <a-table-column title="源文件" data-index="associated_file" :width="300">
           <template #cell="{ record, column, index }">
             <span v-if="record.row_type === 'craft'"></span>
-            <associated-file-select size="mini" v-else v-model="record.associated_file" :disabled="!record.editable" />
+            <associated-file-select size="mini" v-else v-model="record.associated_file" disabled />
+          </template>
+        </a-table-column>
+        <a-table-column title="识别符" data-index="identify" :width="100">
+          <template #cell="{ record, column, index }">
+            <span v-if="record.row_type === 'craft'"></span>
+            <a-input size="mini" v-else v-model="record.identify" :disabled="!record.editable" />
           </template>
         </a-table-column>
         <a-table-column title="宽度cm" data-index="width" :width="120">
           <template #cell="{ record, column, index }">
-            <a-input-number size="mini" v-model="record.width" :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
+            <a-input-number size="mini" v-model="record.width" disabled :min="0" :step="1" />
           </template>
         </a-table-column>
         <a-table-column title="高度cm" data-index="height" :width="120">
           <template #cell="{ record, column, index }">
-            <a-input-number size="mini" v-model="record.height" :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
+            <a-input-number size="mini" v-model="record.height" disabled :min="0" :step="1" />
           </template>
         </a-table-column>
         <a-table-column title="数量" data-index="nums" :width="120">
           <template #cell="{ record, column, index }">
-            <a-input-number size="mini" v-model="record.nums" :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
+            <a-input-number size="mini" v-model="record.nums" :disabled="scene !== 'index' || !record.editable" :min="0" :step="1" />
           </template>
         </a-table-column>
         <a-table-column v-if="scene === 'create'" title="工艺" data-index="craft_id">
@@ -142,7 +166,7 @@
           </template>
         </a-table-column>
         <a-table-column v-if="scene === 'check'" title="金额" data-index="amount" />
-        <a-table-column v-if="scene !== 'index'" title="操作" fixed="right" :width="100">
+        <a-table-column title="操作" fixed="right" :width="140">
           <template #cell="{ record, column }">
             <div style="display: flex; flex-direction: row; gap: 10px">
               <a-button v-if="!record.editable && scene === 'create'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
@@ -157,19 +181,26 @@
               <a-button v-if="record.editable" type="primary" status="danger" size="mini" shape="circle" @click="onCancelGoodsOrCraft(record)">
                 <icon-close />
               </a-button>
+              <a-button v-if="record.row_type === 'goods'" size="mini" status="success" shape="circle" @click="openFileModal(record)">
+                <icon-eye />
+              </a-button>
             </div>
           </template>
         </a-table-column>
       </template>
     </a-table>
   </a-card>
+  <ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800"
+                 :column="modalColumn" :submit="() => { }">
+  </ma-form-modal>
 </template>
 <script setup>
 
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch, reactive} from "vue";
 import orderApi from '@/api/order';
 import pricingProductApi from '@/api/pricingProduct';
 import pricingCraftApi from '@/api/pricingCraft';
+import uploadBatchApi from '@/api/uploadBatch';
 import {Message, Modal} from "@arco-design/web-vue";
 import {v4 as uuidv4} from 'uuid';
 
@@ -178,6 +209,7 @@ import ProductIdSelect from "@/views/order4Client/components/productIdSelect.vue
 import AssociatedFileSelect from "@/views/order4Client/components/associatedFileSelect.vue";
 import PricingCraftSelect from "@/views/order4Client/components/pricingCraftSelect.vue";
 import StoreSelect from "@/views/order4Client/components/storeSelect.vue";
+import MaFormModal from "@/components/ma-form-modal/index.vue"
 
 const bizDict = useBizDictStore();
 
@@ -185,6 +217,81 @@ const props = defineProps({
   order: Object,
   scene: String
 });
+
+
+const modalColumn = reactive([
+  {
+    title: '标题',
+    dataIndex: 'title',
+    width: 180,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    disabled: true,
+    commonRules: [{ required: true, message: '标题必填' }],
+  },
+  {
+    title: '源文件',
+    dataIndex: 'source_file',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    disabled: true,
+    commonRules: [{ required: true, message: '源文件必填' }],
+  },
+  {
+    title: '预览图',
+    dataIndex: 'preview_image',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
+    multiple: false,
+    disabled: true,
+    commonRules: [{ required: false, message: '预览图必填' }],
+  },
+  {
+    formType: 'card',
+    title: '链接文件',
+    formList: [
+      {
+        title: '',
+        hideLabel: true,
+        formType: 'children-form',
+        dataIndex: 'link_file_list',
+        type: 'table',
+        showBtn: false,
+        disabled: true,
+        formList: [
+          {
+            title: '文件名',
+            hideLabel: true,
+            dataIndex: 'label',
+            disabled: true,
+            formType: 'input',
+            width: 150,
+          },
+          {
+            title: '地址',
+            hideLabel: true,
+            dataIndex: 'value',
+            disabled: true,
+            formType: 'input',
+          },
+        ],
+      },
+    ],
+  },
+])
 
 watch(() => props.order, () => {
   console.log('order changed');
@@ -226,7 +333,7 @@ const tableRef = ref();
 let tempRecord = {};
 
 function disableProductEdit(record) {
-  if (props.scene === 'check') {
+  if (props.scene === 'confirm') {
     return true;
   }
   if (typeof(record.key) === 'string') {
@@ -504,6 +611,99 @@ function onStoreChanged(value) {
       emit('changed');
     }
   })
+}
+
+function onFreightBlur() {
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: props.order.consignee_id,
+    freight: props.order.freight
+  }).then(value => {
+    if (value.code === 200) {
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
+function onPass() {
+  Modal.confirm({
+    title: '确认',
+    content: '是否确认？',
+    onOk: () => {
+      orderApi.handleOrderChange({
+        ids: [props.order.id],
+        value: '生产中',
+      }).then(value => {
+        if (value.code === 200) {
+          Message.success('提交成功');
+          emit('changed');
+        }
+      })
+    }
+  });
+}
+
+function onBack() {
+  Modal.confirm({
+    title: '确认',
+    content: '是否确认？',
+    onOk: () => {
+      orderApi.handleOrderChange({
+        ids: [props.order.id],
+        value: '审订中',
+      }).then(value => {
+        if (value.code === 200) {
+          Message.success('提交成功');
+          emit('changed');
+        }
+      })
+    }
+  });
+}
+
+function onDeliveryStatusChange() {
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: props.order.consignee_id,
+    delivery_status: props.order.delivery_status
+  }).then(value => {
+    if (value.code === 200) {
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
+function onDeliveryTimeChange() {
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: props.order.consignee_id,
+    delivery_time: props.order.delivery_time
+  }).then(value => {
+    if (value.code === 200) {
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
+const modalRef = ref()
+
+const visible = ref(false)
+
+const openFileModal = (record) => {
+  console.log(record)
+  uploadBatchApi.read(record.associated_file)
+      .then(res => {
+        Object.keys(res.data).forEach((key) => {
+          modalRef.value.form[key] = res.data[key]
+        })
+        visible.value = true
+      })
 }
 
 </script>
