@@ -1,84 +1,61 @@
-<template>
-  <div class="mgs-nfc rounded p-2 shadow-lg">
-    <a-tabs default-active-key="message" type="rounded">
-      <a-tab-pane key="message">
-        <template #title>
-          {{ $t('sys.operationMessage.message') }}
-          <a-badge
-            :count="5"
-            dot
-            :dotStyle="{ width: '5px', height: '5px', top: '-8px' }"
-            v-if="messageStore.messageList.length > 0"
-          > </a-badge>
-        </template>
-        <a-list :max-height="230" class="h-full" v-if="messageStore.messageList.length > 0">
-          <a-list-item
-            v-for="item in messageStore.messageList" :key="item.id" class="cursor-pointer"
-            @click="viewMessage(item)"
-          >
-            <a-list-item-meta :title="item.title">
-              <template #description>
-                <div class="flex justify-between" style="font-size: 13px;">
-                  <span>发送人：{{item.send_user.nickname}}</span>
-                  <span>时间：{{item.created_at.substr(0, 10)}}</span>
-                </div>
-              </template>
-              <template #avatar>
-                <a-avatar shape="square">
-                  <img alt="avatar" :src="`${item.send_user.avatar ? item.send_user.avatar : $url + 'avatar.jpg'}`" />
-                </a-avatar>
-              </template>
-            </a-list-item-meta>
-          </a-list-item>
-        </a-list>
-        <a-empty v-else class="h-full" />
-      </a-tab-pane>
-      <a-tab-pane key="todo">
-        <template #title>{{ $t('sys.operationMessage.todo') }}</template>
-        <a-empty class="h-full" />
-      </a-tab-pane>
-    </a-tabs>
-  </div>
-
-  <a-modal v-model:visible="detailVisible" fullscreen :footer="false">
-    <template #title>消息详情</template>
-    <a-typography :style="{ marginTop: '-30px' }">
-      <a-typography-title class="text-center">
-        {{ row?.title }}
-      </a-typography-title>
-      <a-typography-paragraph class="text-right" style="font-size: 13px; color: var(--color-text-3)">
-        <a-space size="large">
-          <span>创建时间：{{ row?.created_at }}</span>
-        </a-space>
-      </a-typography-paragraph>
-      <a-typography-paragraph>
-        <div v-html="row?.content" ></div>
-      </a-typography-paragraph>
-    </a-typography>
-  </a-modal>
-</template>
-
 <script setup>
-import { ref } from 'vue'
-import { useMessageStore } from '@/store'
-import queueMessage from '@/api/system/queueMessage'
-const messageStore = useMessageStore()
+import useUploadStore from "@/store/modules/upload";
+import {onMounted, ref, watch} from "vue";
 
-const row = ref({})
-const detailVisible = ref(false)
+const uploadStore = useUploadStore();
+const hasUpload = ref(false);
 
-const viewMessage = async (record) => {
-  row.value = record
-  await queueMessage.updateReadStatus({ ids: [record.id] })
-  messageStore.messageList.find( (item, idx) => {
-    if (item && record.id == item.id) messageStore.messageList.splice(idx, 1)
-  })
-  detailVisible.value = true
+watch(() => uploadStore.$state, (val) => {
+  hasUpload.value = Object.keys(uploadStore.$state).length > 0;
+}, {deep: true});
+
+function getCurrentTitle(item) {
+    if (item.status === 'uploading') {
+        return `文件上传中：${item.currentFileName}`;
+    }
+    if (item.status === 'success') {
+        return `文件已全部上传成功`;
+    }
+    if (item.status === 'error') {
+      return `文件上传失败：${item.currentFileName}`;
+    }
+    return '正在等待上传';
 }
 
-</script>
+onMounted(() => {
+  hasUpload.value = Object.keys(uploadStore.$state).length > 0;
+})
 
-<style scoped lang="less">
+</script>
+<template>
+  <div class="mgs-nfc rounded p-2 shadow-lg flex items-center justify-center">
+    <a-list
+        :max-height="360" class="h-full w-full" v-if="hasUpload">
+      <a-list-item v-for="(item, key) in uploadStore.$state"
+                   class="cursor-pointer"
+                   :key="key">
+        <a-list-item-meta :title="getCurrentTitle(item)">
+          <template #description>
+            <div class="flex justify-between" style="font-size: 13px;">
+              <span>{{item.current}}/{{item.count}}</span>
+            </div>
+          </template>
+          <template #avatar>
+            <a-avatar class="arco-badge-color-green" >
+              <icon-check v-if="item.status === 'success'" />
+              <icon-close v-else-if="item.status === 'error'" />
+              <icon-upload v-else />
+            </a-avatar>
+          </template>
+        </a-list-item-meta>
+      </a-list-item>
+    </a-list>
+    <a-empty v-else />
+  </div>
+
+</template>
+
+<style lang="less" scoped>
 .mgs-nfc {
   width: 400px;
   background: var(--color-bg-1);

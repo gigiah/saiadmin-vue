@@ -1,23 +1,6 @@
 <template>
   <div class="justify-between p-4 ma-content-block lg:flex">
-    <a-modal :hide-title="true" :width="800" v-model:visible="visible" title="上传文件" @ok="handleOk"
-      @cancel="handleCancel">
-      <a-form ref="uploadForm" :model="formData">
-        <a-form-item label="源文件(必须先上传)">
-          <ma-upload v-model="uploadData.sourceFiles" :show-list="true" :multiple="false" type="file"
-            @getUploadName="updateUploadNname"
-            :requestData="{ clientName: sysInfoStore.info.client_name, folderBySelf: 1 }" />
-        </a-form-item>
-        <a-form-item label="预览图">
-          <ma-upload v-model="uploadData.previewImages" :show-list="true" :multiple="false" type="file"
-            :requestData="{ clientName: sysInfoStore.info.client_name, folder: uploadData.title }" />
-        </a-form-item>
-        <a-form-item label="链接文件">
-          <ma-upload :limit="20" v-model="uploadData.linkFiles" :show-list="true" :multiple="true" type="file"
-            :requestData="{ clientName: sysInfoStore.info.client_name, folder: uploadData.title }" />
-        </a-form-item>
-      </a-form>
-    </a-modal>
+    <upload-modal :key="modalKey" :visible="visible" @ok="handleOk" @cancel="handleCancel" />
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- 表格按钮后置扩展 -->
@@ -34,41 +17,33 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import {ref, reactive, computed, onMounted, toRaw, watch} from 'vue'
 import api from '@/api/uploadBatch'
 import { Message, Notification } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
+import OssUpload from "@/views/uploadBatch/components/ossUpload.vue";
+import useUploadStore from "@/store/modules/upload";
+import UploadModal from "@/views/uploadBatch/components/upload-modal.vue";
 
 const crudRef = ref()
 const sysInfoStore = useSysInfoStore()
 const diskVol = ref({})
-
-const uploadData = ref({
-  title: null,
-  sourceFiles: null,
-  previewImages: null,
-  linkFiles: [],
-})
 
 const visible = ref(false)
 
 const showModal = () => {
   visible.value = true
 }
-const handleOk = () => {
-  console.log('保存文件', uploadData.value)
-  api.handleCreateBatch(uploadData.value)
+
+const modalKey = ref(0)
+
+function handleOk() {
+  modalKey.value++
   visible.value = false
-  Notification.success('保存成功')
-  //清空当前
-  uploadData.value = {
-    sourceFiles: null,
-    previewImages: null,
-    linkFiles: [],
-  }
 }
-const handleCancel = () => {
-  visible.value = false;
+
+function handleCancel() {
+  visible.value = false
 }
 
 const getDiskVol = () => {
@@ -79,13 +54,16 @@ const getDiskVol = () => {
     }
   })
 }
-getDiskVol()
 
-const updateUploadNname = (val) => {
-  console.log('updateUploadNname', val)
-  let baseName = val.split('.').slice(0, -1).join('.');
-  uploadData.value.title = baseName
-}
+onMounted(() => {
+  getDiskVol()
+});
+
+// const updateUploadNname = (val) => {
+//   console.log('updateUploadNname', val)
+//   let baseName = val.split('.').slice(0, -1).join('.');
+//   uploadData.value.title = baseName
+// }
 
 const crud = reactive({
   api: api.getPageList,

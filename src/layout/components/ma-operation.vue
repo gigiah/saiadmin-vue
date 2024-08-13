@@ -52,11 +52,11 @@
         </a-button>
       </a-tooltip>
 
-      <!-- <a-trigger trigger="click">
+      <a-trigger trigger="click">
         <a-button :shape="'circle'">
           <template #icon>
             <a-badge :count="5" dot :dotStyle="{ width: '5px', height: '5px' }"
-              v-if="messageStore.messageList.length > 0">
+              v-if="uploadStore.hasTask">
               <icon-notification />
             </a-badge>
             <icon-notification v-else />
@@ -66,7 +66,7 @@
         <template #content>
           <message-notification />
         </template>
-      </a-trigger> -->
+      </a-trigger>
 
       <a-tooltip :content="$t('sys.pageSetting')">
         <a-button :shape="'circle'" @click="() => appStore.settingOpen = true" class="hidden lg:inline">
@@ -102,10 +102,10 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, computed, watch} from 'vue'
 import { useAppStore, useUserStore, useMessageStore } from '@/store'
 import tool from '@/utils/tool'
-import MessageNotification from './components/message-notification.vue'
+import MessageNotification from '@/layout/components/components/message-notification.vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Message } from '@arco-design/web-vue'
@@ -113,9 +113,11 @@ import WsMessage from '@/ws-serve/message'
 import { info } from '@/utils/common'
 import commonApi from '@/api/common'
 import noticeApi from '@/api/notice'
+import useUploadStore from "@/store/modules/upload";
 
 const { t } = useI18n()
 const messageStore = useMessageStore()
+const uploadStore = useUploadStore()
 const userStore = useUserStore()
 const appStore = useAppStore()
 const setting = ref(null)
@@ -196,12 +198,12 @@ const stopMarquee = () => {
 //   }
 //   messageStore.messageList = data
 // });
-
+//:deep(.arco-avatar-text) {
+//  top: 1px;
+//}
 </script>
+
 <style scoped>
-:deep(.arco-avatar-text) {
-  top: 1px;
-}
 
 :deep(.arco-divider-horizontal) {
   margin: 5px 0;
