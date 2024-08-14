@@ -126,6 +126,9 @@ const useUploadStore = defineStore('upload', {
 });
 
 async function createOssClient(target, files, batchId = 0) {
+    if (files.length === 0) {
+        return [];
+    }
     let requestFiles = files.map((file) => {
         return {
             fileName: file.name,
