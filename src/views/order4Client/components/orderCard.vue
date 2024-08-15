@@ -1,18 +1,18 @@
 <template>
   <a-card size="small">
     <template #title>
-      <div class="flex-row align-center flex">
+      <div class="flex flex-row align-center">
         <a-checkbox v-if="scene !== 'index'" :value="order.id"><span class="pr-2">订单编号:</span>{{order.code}}</a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 text-center font-bold" v-if="order.store_name"><span class="pr-2">订单编号:</span>{{order.code}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.store_name">{{order.store_name}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.store_area_type">{{order.store_area_type}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.store_business_type">{{order.store_business_type}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.store_product_type">{{order.store_product_type}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.store_pricing_type">{{order.store_pricing_type}}</span>
-          <span class="pr-4 text-center font-bold" v-if="order.settle_method">{{order.store_pricing_type}}</span>
-          <span class="pr-2 text-center font-bold">收货地址:</span>
-          <store-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
+          <span class="pr-4 font-bold text-center" v-if="order.store_name"><span class="pr-2">订单编号:</span>{{order.code}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_name">{{order.store_name}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{order.store_area_type}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{order.store_business_type}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_product_type">{{order.store_product_type}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_pricing_type">{{order.store_pricing_type}}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.settle_method">{{order.store_pricing_type}}</span>
+          <span class="pr-2 font-bold text-center">收货地址:</span>
+          <consignee-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
         </div>
       </div>
     </template>
@@ -22,37 +22,37 @@
       <a-button type="primary" v-if="scene === 'check'" status="success" size="mini" @click="handleSubmitCheck" style="margin-right: 1rem">发起提交</a-button>
       <a-button type="primary" v-if="scene !== 'index'" status="danger" size="mini" @click="handleDeleteOrder">删除订单</a-button>
     </template>
-    <div v-if="scene === 'index'" class="flex flex-row align-center gap-2 pb-3 font-bold" style="font-size: 12px">
+    <div v-if="scene === 'index'" class="flex flex-row gap-2 pb-3 font-bold align-center" style="font-size: 12px">
         <span v-if="scene === 'check'" class="pt-0.5">
-          <span class="text-black pl-1">录单人:</span>
-          <span class="text-black pl-3">{{order.order_creater}}</span>
+          <span class="pl-1 text-black">录单人:</span>
+          <span class="pl-3 text-black">{{order.order_creater}}</span>
         </span>
       <span v-if="scene === 'index'" class="pt-0.5">
-          <span class="text-black pl-1">提交人:</span>
-          <span class="text-black pl-3">{{order.order_submiter}}</span>
+          <span class="pl-1 text-black">提交人:</span>
+          <span class="pl-3 text-black">{{order.order_submiter}}</span>
         </span>
       <span v-if="scene === 'index'" class="pt-0.5">
-          <span class="text-black pl-1">卡券名称:</span>
-          <span class="text-black pl-3">{{order.coupon_name}}</span>
+          <span class="pl-1 text-black">卡券名称:</span>
+          <span class="pl-3 text-black">{{order.coupon_name}}</span>
         </span>
       <span v-if="scene === 'index'" class="pt-0.5">
-          <span class="text-black pl-1">发货计划:</span>
-          <span class="text-black pl-3">{{order.delivery_time}}</span>
+          <span class="pl-1 text-black">发货计划:</span>
+          <span class="pl-3 text-black">{{order.delivery_time}}</span>
         </span>
       <span v-if="scene === 'index'" class="pt-0.5">
-          <span class="text-black pl-1">支付状态:</span>
-          <span class="text-black pl-3">{{payStatusLabel}}</span>
+          <span class="pl-1 text-black">支付状态:</span>
+          <span class="pl-3 text-black">{{payStatusLabel}}</span>
         </span>
       <span v-if="scene === 'index'" class="pt-0.5">
-          <span class="text-black pl-1">发货状态:</span>
-          <span class="text-black pl-3">{{deliveryStatusLabel}}</span>
+          <span class="pl-1 text-black">发货状态:</span>
+          <span class="pl-3 text-black">{{deliveryStatusLabel}}</span>
         </span>
     </div>
-    <div class="flex flex-row align-center pb-3 gap-4">
+    <div class="flex flex-row gap-4 pb-3 align-center">
 <!--      style="display: flex; flex-direction: row; justify-content: space-between; padding-bottom: 10px"-->
 <!--      <a-typography-title :heading="6">商品列表</a-typography-title>-->
       <a-button type="primary" v-if="scene === 'create'" status="success" @click="addNew" size="mini">新增商品</a-button>
-      <div class="flex flex-row align-center gap-2">
+      <div class="flex flex-row gap-2 align-center">
         <span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black" >订单备注:</span>
         <a-input size="mini" :disabled="scene === 'index'" v-model="order.remark" style="width: 800px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
       </div>
@@ -178,6 +178,7 @@ import ProductIdSelect from "@/views/order4Client/components/productIdSelect.vue
 import AssociatedFileSelect from "@/views/order4Client/components/associatedFileSelect.vue";
 import PricingCraftSelect from "@/views/order4Client/components/pricingCraftSelect.vue";
 import StoreSelect from "@/views/order4Client/components/storeSelect.vue";
+import ConsigneeSelect from "@/views/order4Client/components/consigneeSelect.vue";
 
 const bizDict = useBizDictStore();
 

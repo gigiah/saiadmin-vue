@@ -65,6 +65,17 @@
       commonRules: [{ required: true, message: '门店名必填' }],
     },
     {
+      title: '门店地址',
+      dataIndex: 'address',
+      width: 260,
+      search: true,
+      addDisplay: true, 
+      editDisplay: true,
+      hide: false,
+      formType: 'input',
+      commonRules: [{ required: true, message: '门店地址必填' }],
+    },
+    {
       title: '营销区域',
       dataIndex: 'area_type_id',
       width: 100,
