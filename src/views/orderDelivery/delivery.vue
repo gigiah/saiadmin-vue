@@ -8,7 +8,7 @@
       </template> -->
       <!-- 表格前置扩展 -->
       <template #tableBeforeButtons>
-        <a-button @click="batchDelivery()" type="primary" status="success">批量发货</a-button>
+        <a-button @click="batchDelivery()" type="primary" status="success">发货</a-button>
       </template>
       <!-- 操作前置扩展 -->
       <!-- <template #operationBeforeExtend="{ record }">
@@ -554,7 +554,7 @@ const modalColumn = reactive([
         }
       }
       else {
-        if (value) Message.error('暂不支持该承运商，请勿选择')
+        // if (value) Message.error('暂不支持该承运商，请勿选择')
         return {
           delivery_exp_type_sf: { display: false },
           delivery_exp_type_dbl: { display: false },
