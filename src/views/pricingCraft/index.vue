@@ -186,7 +186,9 @@ const columns = reactive([
       // currentRule.value.msg = '范围在' + item.price_min + '-' + item.price_max
       maFormObject.price_min = item.price_min
       maFormObject.price_max = item.price_max
-      maFormObject.pricing_type = item.pricing_type
+      // maFormObject.pricing_type = item.pricing_type
+      maFormObject.pricing_type_id = item.pricing_type_id
+      maFormObject.pricing_unit_id = item.pricing_unit_id
     },
     commonRules: [{ required: false, message: '工艺必填' }],
   },
@@ -240,13 +242,51 @@ const columns = reactive([
     disabled: true,
     commonRules: [{ required: false, message: '最高限价必填' }],
   },
+  // {
+  //   title: '计价方式',
+  //   dataIndex: 'pricing_type',
+  //   formType: 'select',
+  //   search: false,
+  //   dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+  //   disabled: true,
+  // },
   {
     title: '计价方式',
-    dataIndex: 'pricing_type',
-    formType: 'select',
+    dataIndex: 'pricing_type_id',
+    width: 100,
     search: false,
-    dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
     disabled: true,
+    dict: { url: '/pricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
+  },
+  {
+    title: '计量单位',
+    dataIndex: 'pricing_unit_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    dict: { url: '/pricingUnit/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
+  },
+  {
+    title: '详情图',
+    dataIndex: 'desc_json',
+    width: 180,
+    search: false,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
+    multiple: false,
+    commonRules: [{ required: false, message: '详情图必填' }],
   },
   {
     title: '创建者',

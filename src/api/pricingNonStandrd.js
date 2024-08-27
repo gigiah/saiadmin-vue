@@ -1,7 +1,7 @@
 import { request } from '@/utils/request.js'
 
 /**
- * 非标计价方式 API接口
+ * 非标计价规则 API接口
  */
 export default {
 

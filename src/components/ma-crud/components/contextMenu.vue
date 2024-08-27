@@ -1,16 +1,16 @@
 <template>
   <ul
-    class="ma-crud-contextmenu shadow-lg"
+    class="shadow-lg ma-crud-contextmenu"
     v-show="crudContextMenuVisible"
     :style="{ left: left + 'px', top: top + 'px', height: 'auto' }"
   >
     <template v-for="item in (options?.contextMenu?.items ?? [])">
       <li v-if="item.operation === 'divider'"><a-divider margin="8px" /></li>
-      <li v-if="item.operation === 'print'">
+      <!-- <li v-if="item.operation === 'print'">
         <div class="context-menu-item" @click="execCommand(item)">
           <icon-printer /> <span class="ml-2">{{ item.text ?? '打印表格' }}</span>
         </div>
-      </li>
+      </li> -->
       <li v-if="item.operation === 'refresh'">
         <div class="context-menu-item" @click="execCommand(item)">
           <icon-refresh /> <span class="ml-2">{{ item.text ?? '刷新表格' }}</span>

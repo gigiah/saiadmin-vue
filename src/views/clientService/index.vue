@@ -34,6 +34,11 @@ if (!sysInfoStore.info.is_admin) {
   dept_id = sysInfoStore.info.dept_id
 }
 
+let showOperation = true
+if (sysInfoStore.info.is_client || !sysInfoStore.info.is_team_leader) {
+  showOperation = false
+}
+
 const crud = reactive({
   api: api.getPageList,
   beforeRequest: params => {
@@ -44,11 +49,11 @@ const crud = reactive({
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: !sysInfoStore.info.is_client,
+  operationColumn: showOperation,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/clientService/save'] },
-  edit: { show: true, api: api.update, auth: ['/clientService/update'] },
-  delete: { show: true, api: api.delete, auth: ['/clientService/destroy'] },
+  add: { show: showOperation, api: api.save, auth: ['/clientService/save'] },
+  edit: { show: showOperation, api: api.update, auth: ['/clientService/update'] },
+  delete: { show: showOperation, api: api.delete, auth: ['/clientService/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/clientService/recovery'] },
   formOption: { width: 800 },
   beforeOpenAdd: () => {
@@ -88,6 +93,7 @@ const columns = reactive([
     dataIndex: 'type',
     formType: 'radio',
     addDefaultValue: 'team',
+    disabled: sysInfoStore.info.is_admin,
     width: 100,
     dict: {
       name: 'bizClientServiceType',
@@ -130,7 +136,7 @@ const columns = reactive([
     addDisplay: true,
     editDisplay: true,
     hide: false,
-    dict: { url: '/core/dept/index?role_code=' + role_code + '&id=' + dept_id, props: { label: 'name', value: 'id' }, translation: true },
+    dict: { url: '/core/dept/index?type=all&role_code=' + role_code + '&id=' + dept_id, props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进团队必填' }],
   },

@@ -9,8 +9,8 @@
       </template>
     </ma-crud>
   </div>
-  <a-modal @cancel="hideBizWechat" :width="240" :footer="false" :visible="visible">
-    <a-image width="200" height="200" :src="wechatImg" />
+  <a-modal @cancel="hideBizWechat" :width="350" :footer="false" :visible="visible">
+    <a-image width="300" :src="wechatImg" />
   </a-modal>
 </template>
 

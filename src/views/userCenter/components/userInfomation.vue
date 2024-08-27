@@ -1,21 +1,21 @@
 
 <template>
-  <a-form class="w-full md:w-full mt-3" :model="userInfo" @submit="modifyInfo">
+  <a-form class="w-full mt-3 md:w-full" :model="userInfo" @submit="modifyInfo">
     <a-form-item label="账户名" label-col-flex="80px">
       <a-input disabled :default-value="userInfo.username" allow-clear />
     </a-form-item>
     <a-form-item label="昵称" label-col-flex="80px">
-      <a-input v-model="userInfo.nickname" allow-clear />
+      <a-input disabled v-model="userInfo.nickname" allow-clear />
     </a-form-item>
     <a-form-item label="手机" label-col-flex="80px">
-      <a-input v-model="userInfo.phone" allow-clear />
+      <a-input disabled v-model="userInfo.phone" allow-clear />
     </a-form-item>
     <a-form-item label="邮箱" label-col-flex="80px">
-      <a-input v-model="userInfo.email" allow-clear />
+      <a-input disabled v-model="userInfo.email" allow-clear />
     </a-form-item>
-    <a-form-item label="个人签名" label-col-flex="80px">
-      <a-textarea v-model="userInfo.signed" :max-length="255" class="h-28" show-word-limit allow-clear />
-    </a-form-item>
+    <!-- <a-form-item label="个人签名" label-col-flex="80px">
+      <a-textarea disabled v-model="userInfo.signed" :max-length="255" class="h-28" show-word-limit allow-clear />
+    </a-form-item> -->
     <a-form-item label-col-flex="80px">
       <a-button html-type="submit" type="primary">保存</a-button>
     </a-form-item>

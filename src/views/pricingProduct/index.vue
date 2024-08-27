@@ -188,11 +188,37 @@ const columns = reactive([
       }
       modalForm.price_min = item.price_min
       modalForm.price_max = item.price_max
-      modalForm.pricing_type = item.pricing_type
+      modalForm.pricing_type_id = item.pricing_type_id
+      modalForm.grade_id = item.grade_id
+      modalForm.picture_type_id = item.picture_type_id
     },
     commonRules: [
       { required: true, message: '必填' },
     ],
+  },
+  {
+    title: '产品级别',
+    dataIndex: 'grade_id',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    dict: { url: '/productGrade/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
+  },
+  {
+    title: '画面类型',
+    dataIndex: 'picture_type_id',
+    width: 100,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    dict: { url: '/productPictureType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
   },
   {
     title: '标准单价',
@@ -208,6 +234,30 @@ const columns = reactive([
       { required: true, message: '必填' },
       // { type: 'number', min: currentRule.min, max: currentRule.max, message: currentRule.msg },
     ],
+  },
+  {
+    title: '计价方式',
+    dataIndex: 'pricing_type_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    dict: { url: '/pricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
+  },
+  {
+    title: '计量单位',
+    dataIndex: 'pricing_unit_id',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    disabled: true,
+    dict: { url: '/pricingUnit/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+    formType: 'select',
   },
   {
     title: '自动推送',
@@ -248,13 +298,27 @@ const columns = reactive([
     disabled: true,
     commonRules: [{ required: false, message: '最高限价必填' }],
   },
+  // {
+  //   title: '计价方式',
+  //   dataIndex: 'pricing_type',
+  //   formType: 'select',
+  //   search: false,
+  //   dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
+  //   disabled: true,
+  // },
   {
-    title: '计价方式',
-    dataIndex: 'pricing_type',
-    formType: 'select',
+    title: '详情图',
+    dataIndex: 'desc_json',
+    width: 180,
     search: false,
-    dict: { name: 'bizPricingType', props: { label: 'label', value: 'value' }, translation: true },
-    disabled: true,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    formType: 'upload',
+    type: 'image',
+    returnType: 'url',
+    multiple: false,
+    commonRules: [{ required: false, message: '详情图必填' }],
   },
   {
     title: '创建者',

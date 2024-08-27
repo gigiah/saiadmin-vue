@@ -212,7 +212,7 @@ const applyColumn = reactive([
     hide: false,
     dict: { name: 'bizSettleMethod', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
-    // commonRules: [{ required: false, message: '结账方式必填' }],
+    rules: [{ required: true, message: '结账方式必填' }],
   },
   {
     title: '信用级别',
@@ -388,7 +388,7 @@ const applyColumn = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    // commonRules: [{ required: false, message: '系统主帐号必填' }],
+    rules: [{ required: true, message: '系统主帐号必填' }],
   },
   {
     title: '系统初始密码',
@@ -399,7 +399,7 @@ const applyColumn = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    // commonRules: [{ required: false, message: '系统初始密码必填' }],
+    rules: [{ required: true, message: '初始密码必填' }],
   },
   // {
   //   title: '品牌证书',
@@ -428,6 +428,7 @@ const applyColumn = reactive([
       translation: true
     },
     formType: 'select',
+    rules: [{ required: true, message: '营销团队必填' }],
   },
   {
     title: '客服团队',
@@ -587,7 +588,19 @@ const columns = reactive([
     editDisplay: false,
     hide: true,
     formType: 'input',
-    commonRules: [{ required: false, message: '人员ID必填' }],
+    // commonRules: [{ required: false, message: '人员ID必填' }],
+  },
+  {
+    title: '系统主账号',
+    dataIndex: 'pass_account',
+    width: 180,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    readonly: true,
+    // rules: [{ required: true, message: '公司名称必填' }],
   },
   {
     title: '公司名称',
@@ -599,7 +612,7 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     readonly: true,
-    rules: [{ required: true, message: '公司名称必填' }],
+    // rules: [{ required: true, message: '公司名称必填' }],
   },
   {
     title: '办公地点',
@@ -611,7 +624,7 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     readonly: true,
-    rules: [{ required: true, message: '办公地点必填' }],
+    // rules: [{ required: true, message: '办公地点必填' }],
   },
   {
     title: '联系人',
@@ -623,7 +636,7 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     readonly: true,
-    rules: [{ required: true, message: '联系人必填' }],
+    // rules: [{ required: true, message: '联系人必填' }],
   },
   {
     title: '手机号',
@@ -635,7 +648,7 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     readonly: true,
-    rules: [{ required: true, message: '手机号必填' }],
+    // rules: [{ required: true, message: '手机号必填' }],
   },
   {
     title: '微信号',

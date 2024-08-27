@@ -279,6 +279,7 @@ const columns = reactive([
 		multiple: false,
 		dict: { url: '/core/post/index?saiType=all', props: { label: 'name', value: 'id' } },
 		hide: true,
+		commonRules: [{ required: true, message: '岗位必填' }],
 		editDefaultValue: async (record) => {
 			const response = await user.read(record.id)
 			const ids = response.data.postList.map((item) => item.id)

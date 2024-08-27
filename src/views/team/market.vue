@@ -134,7 +134,8 @@ const selectOperation = (value, record) => {
 const crud = reactive({
 	api: user.getPageList,
 	beforeRequest: params => {
-		params.code = 'marketing'
+		params.code = 'marketing',
+		params.dept_id = sysInfoStore.info.dept_id
 	},
 	recycleApi: user.getRecyclePageList,
 	searchColNumber: 3,
@@ -258,7 +259,7 @@ const columns = reactive([
 		type: 'password',
 		addRules: [{ required: true, message: '密码必填' }],
 	},
-	{ title: '昵称', dataIndex: 'nickname', width: 120, addRules: [{ required: true, message: '昵称必填' }], },
+	{ title: '昵称', dataIndex: 'nickname', width: 120, disabled: true, addRules: [{ required: true, message: '昵称必填' }], },
 	{
 		title: '角色',
 		dataIndex: 'role_ids',

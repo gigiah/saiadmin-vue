@@ -103,11 +103,19 @@ const crud = reactive({
 	formOption: {
 		width: 800,
 	},
+	beforeAdd: (record) => {
+		record.reqType = 'client'
+		return true
+	},
 	beforeOpenEdit: (record) => {
 		if (record.id === sysInfoStore.info.sys_user_id) {
 			Message.error('不可编辑自己')
 			return false
 		}
+		return true
+	},
+	beforeEdit: (record) => {
+		record.reqType = 'client'
 		return true
 	},
 	beforeDelete: (ids) => {
@@ -221,6 +229,23 @@ const columns = reactive([
 	// 	type: 'image',
 	// 	labelWidth: '86px',
 	// },
+	{
+		title: '销售区域',
+		dataIndex: 'area_type_ids',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'select',
+		multiple: true,
+		dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+		// commonRules: [{ required: false, message: '必填' }],
+		editDefaultValue: async (record) => {
+			const response = await user.read(record.id)
+			return response.data.area_list.map((item) => item.id)
+		},
+	},
 	{
 		title: '启用状态',
 		dataIndex: 'status',
