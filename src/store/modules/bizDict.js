@@ -26,9 +26,9 @@ const useBizDictStore = defineStore('bizDict', {
                 }
             });
         },
-        fetchPricingProduct4Search(range = '') {
+        fetchPricingProduct4Search(range = '', role = '') {
             request({
-                url: `/pricingProduct/index4Search?range=${range}`,
+                url: `/pricingProduct/index4Search?range=${range}&role=${role}`,
                 method: 'get'
             }).then(resp => {
                 if (resp.code === 200) {

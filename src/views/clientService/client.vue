@@ -36,9 +36,9 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: false, api: api.save, auth: ['/clientService/save'] },
+  add: { show: true, api: api.save, auth: ['/clientService/save'] },
   edit: { show: false, api: api.update, auth: ['/clientService/update'] },
-  delete: { show: false, api: api.delete, auth: ['/clientService/destroy'] },
+  delete: { show: true, api: api.delete, auth: ['/clientService/destroy'] },
   recovery: { show: false, api: api.recovery, auth: ['/clientService/recovery'] },
   formOption: { width: 800 },
 })

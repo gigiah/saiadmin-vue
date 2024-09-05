@@ -104,6 +104,8 @@ const submitVisible = ref(false)
 
 const orderTreeData = ref([])
 
+const currentClientGrpId = ref(false)
+
 const orderShowIndex = {
   'store_id': { 'addDisabled': false, 'editDisabled': true },
   'consignee_id': { 'addDisabled': false, 'editDisabled': true },
@@ -235,15 +237,6 @@ const printLabel = () => {
       labelPrintVisible.value = true
       // loading.value = true;
     })
-  // timer = setTimeout(() => {
-  //   const printHTML = document.querySelector('#report').innerHTML
-  //   console.log('printHTML', printHTML)
-  //   // window.document.body.innerHTML = printHTML
-  //   window.print();
-  //   loading.value = false;
-  //   // labelPrintVisible.value = false;
-  //   clearTimeout(timer);
-  // }, 3000);
 }
 
 const transformData = (data) => {
@@ -508,7 +501,10 @@ const deleteByForm = (id, table) => {
 
 const crud = reactive({
   api: api.orderTree4Delivery,
-  requestParams: { status: currentStatus },
+  requestParams: { 
+    status: currentStatus,
+    show_children: 1,
+   },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   pageLayout: 'fixed',
@@ -520,7 +516,7 @@ const crud = reactive({
   delete: { show: false, api: api.delete, auth: [], realApi: api.realDestroy, realAuth: [] },
   recovery: { show: false, api: api.recovery, auth: [] },
   formOption: { width: 600 },
-  isExpand: false,
+  isExpand: true,
   size: 'mini',
   // resizable: false,
   stripe: false,
@@ -533,7 +529,7 @@ const crud = reactive({
     console.log('requestParams', requestParams)
     requestParamsData.value = requestParams
     currentClientGrpId.value = requestParamsData.value.client_group_id && requestParamsData.value.client_group_id != undefined ? requestParamsData.value.client_group_id : null
-    areaTypeDict()
+    // areaTypeDict()
   },
   //添加门店前操作
   beforeOpenAdd: () => {
@@ -608,7 +604,7 @@ const columns = reactive([
     dataIndex: 'delivery_time',
     search: true,
     searchFormType: 'range',
-    showTime: true,
+    showTime: false,
     formType: 'date',
     width: 200,
   },
@@ -619,13 +615,8 @@ const columns = reactive([
     search: true,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: true,
     dict: { url: '/storeAreaType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
-    // dict: {
-    //   data() {
-    //     return areaType
-    //   },
-    // },
     formType: 'select',
   },
   {
@@ -635,7 +626,7 @@ const columns = reactive([
     search: true,
     addDisplay: true,
     editDisplay: true,
-    hide: false,
+    hide: true,
     dict: { url: '/storePricingType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
   },
@@ -644,6 +635,7 @@ const columns = reactive([
     dataIndex: 'store_id',
     search: true,
     formType: 'select',
+    hide: true,
     dict: {
       url: '/store/index?type=all&client_group_id={{key}}',
       props: { label: 'name', value: 'id' },
@@ -655,6 +647,35 @@ const columns = reactive([
       return record.store_id == 0 ? undefined : record.store_id
     },
   },
+  //名称开始
+  {
+    title: '营销区域',
+    dataIndex: 'store_area_type',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+  },
+  {
+    title: '价格体系',
+    dataIndex: 'store_pricing_type',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+  },
+  {
+    title: '门店',
+    dataIndex: 'store_name',
+    search: false,
+    formType: 'input',
+    hide: false,
+  },
+  //名称结束
   {
     title: '订单号',
     dataIndex: 'code',

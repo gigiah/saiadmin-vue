@@ -1,6 +1,6 @@
 <template>
   <div>
-<!--    <div class="p-4 ma-content-block lg:flex gap-4">-->
+<!--    <div class="gap-4 p-4 ma-content-block lg:flex">-->
 <!--      <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>-->
 <!--      <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>-->
 <!--      <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>-->
@@ -83,7 +83,8 @@ onMounted(() => {
 
 function getOrders() {
   orderApi.orderTree({
-    status: '40,50,60,70,90', // 0: 录入中
+    // status: '40,50,60,70,90', // 0: 录入中
+    status: [40,50,60,70,90],
   }).then(res => {
     orders.value = res.data;
   })

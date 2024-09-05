@@ -4,7 +4,7 @@
       <a-form-item label="门店名称" field="store_id" required>
         <store-select v-model="addStoreModalForm.store_id"></store-select>
       </a-form-item>
-      <a-form-item label="门店地址" field="consignee_id" required>
+      <a-form-item label="收货地址" field="consignee_id" required>
         <consignee-select v-model="addStoreModalForm.consignee_id"></consignee-select>
       </a-form-item>
     </a-form>

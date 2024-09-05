@@ -108,7 +108,7 @@ const columns = reactive([
     hide: false,
     disabled: true,
     dict: {
-      url: '/core/user/index?type=all',
+      url: '/core/user/index?type=all&isSelfDept=1',
       props: { label: 'nickname', value: 'id' },
       translation: true,
     },
@@ -144,8 +144,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '汇总批次号必填' }],
   },
   {
-    title: '汇总时间',
-    extra: '123123',
+    title: '汇总时间*',
     dataIndex: 'create_time',
     width: 180,
     search: true,
@@ -167,7 +166,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     dict: {
-      url: '/core/user/index?type=all',
+      url: '/core/user/index?type=all&codes=prePrint',
       props: { label: 'nickname', value: 'id' },
       translation: true,
     },

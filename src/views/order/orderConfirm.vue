@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-4 ma-content-block lg:flex gap-4">
+    <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">通过</a-button>
       <a-button type="primary" size="mini" status="danger" @click="onDeleteBatch" :disabled="submitDisabled">打回</a-button>
@@ -38,7 +38,7 @@ onMounted(() => {
 
 function getOrders() {
   orderApi.orderTree({
-    status: 40, // 0: 录入中
+    status: 40,
   }).then(res => {
     orders.value = res.data;
   })
@@ -65,12 +65,14 @@ function onSubmitOrder() {
     content: '是否确认？',
     onOk: () => {
       orderApi.handleOrderChange({
-        ids: [props.order.id],
+        // ids: [props.order.id],
+        ids: checkedValues.value,
         value: '生产中',
       }).then(value => {
         if (value.code === 200) {
           Message.success('提交成功');
-          emit('changed');
+          // emit('changed');
+          getOrders()
         }
       })
     }

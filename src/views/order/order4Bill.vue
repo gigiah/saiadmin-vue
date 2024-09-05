@@ -468,24 +468,24 @@ const columns = reactive([
 		width: 200,
 	},
 	{
-		title: '创建日期',
-		dataIndex: 'create_time',
+		title: '订单日期*',
+		dataIndex: 'check_time',
 		searchFormType: 'range',
 		showTime: true,
 		formType: 'date',
 		search: true,
 		width: 200,
 	},
-	{
-		title: '汇总批次号',
-		dataIndex: 'summary_batch_code',
-	},
-	{
-		title: '汇总状态',
-		dataIndex: 'summary_status',
-		formType: 'select',
-		dict: { name: 'bizSummaryStatus', props: { label: 'label', value: 'value' }, translation: true },
-	},
+	// {
+	// 	title: '汇总批次号',
+	// 	dataIndex: 'summary_batch_code',
+	// },
+	// {
+	// 	title: '汇总状态',
+	// 	dataIndex: 'summary_status',
+	// 	formType: 'select',
+	// 	dict: { name: 'bizSummaryStatus', props: { label: 'label', value: 'value' }, translation: true },
+	// },
 	{
 		title: '运费',
 		dataIndex: 'freight',

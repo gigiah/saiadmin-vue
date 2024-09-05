@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="p-4 ma-content-block lg:flex gap-4">
+    <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
-      <a-button type="primary" size="mini" status="success" @click="onSubmitOrder" :disabled="submitDisabled">汇总</a-button>
+      <a-button type="primary" size="mini" status="success" @click="onSubmitOrder"
+        :disabled="submitDisabled">汇总</a-button>
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="index"></order-card>
+      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
+        scene="index"></order-card>
     </a-checkbox-group>
     <ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800"
-                   :column="submitModalColumn" :submit="submitSummary">
+      :column="submitModalColumn" :submit="submitSummary">
     </ma-form-modal>
   </div>
 </template>
@@ -17,10 +19,10 @@
 import orderApi from '@/api/order';
 import storeApi from '@/api/store';
 import summaryOrderApi from '@/api/summaryOrder';
-import {onMounted, ref, computed, reactive} from "vue";
+import { onMounted, ref, computed, reactive } from "vue";
 import OrderCard from "@/views/order/components/orderCard.vue";
-import {useBizDictStore} from "@/store";
-import {Message, Modal} from "@arco-design/web-vue";
+import { useBizDictStore } from "@/store";
+import { Message, Modal } from "@arco-design/web-vue";
 import MaFormModal from "@/components/ma-form-modal/index.vue"
 
 const stores = ref([]);
@@ -38,12 +40,12 @@ const onCheckUpdate = (result) => {
 onMounted(() => {
   getOrders();
   bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
-  bizDict.fetchPricingProduct4Search();
+  bizDict.fetchPricingProduct4Search('', 'admin');
 })
 
 function getOrders() {
   orderApi.orderTree({
-    status: [50,60,70,90], // 0: 录入中
+    status: [50, 60, 70, 90], // 0: 录入中
   }).then(res => {
     orders.value = res.data;
   })
@@ -111,15 +113,21 @@ function onSelectAll() {
 }
 
 const submitSummary = async (formData) => {
-  summaryOrderApi.handleOrderSummary({
-    orderIds: checkedValues.value,
-    summaryBatchCode: formData.summary_batch_code
-  }).then(res => {
-    if (res.code === 200) {
-      Message.success('汇总成功')
-      getOrders();
+  Modal.confirm({
+    title: '提示',
+    content: '请确保所有修改已经保存，否则可能产生严重错误',
+    onOk: () => {
+      summaryOrderApi.handleOrderSummary({
+        orderIds: checkedValues.value,
+        summaryBatchCode: formData.summary_batch_code
+      }).then(res => {
+        if (res.code === 200) {
+          Message.success('汇总成功')
+          getOrders();
+        }
+      })
     }
-  })
+  });
 }
 
 const submitModalColumn = reactive([
@@ -136,5 +144,4 @@ const submitModalColumn = reactive([
 ])
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
