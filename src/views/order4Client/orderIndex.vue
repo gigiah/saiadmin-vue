@@ -6,6 +6,9 @@
 <!--      <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>-->
 <!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
 <!--    </div>-->
+    <div class="pb-4 ma-content-block">
+      <order-index-search @search="getOrders" />
+    </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="index"></order-card>
     </a-checkbox-group>
@@ -26,6 +29,7 @@ import AddStoreModal from "@/views/order4Client/components/addStoreModal.vue";
 import {Message, Modal} from "@arco-design/web-vue";
 import {request} from "@/utils/request";
 import couponItemApi from "@/api/couponItem";
+import OrderIndexSearch from "@/views/order4Client/components/orderIndexSearch.vue";
 
 const stores = ref([]);
 const orders = ref([]);
@@ -81,9 +85,10 @@ onMounted(() => {
   bizDict.fetchPricingProduct4Search();
 })
 
-function getOrders() {
+function getOrders(params = {}) {
   orderApi.orderTree({
     status: '40,50,60,70,90', // 0: 录入中
+    ...params
   }).then(res => {
     orders.value = res.data;
   })

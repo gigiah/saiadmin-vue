@@ -1,5 +1,6 @@
 <template>
   <div>
+    <order-confirm-search @search="getOrders" />
     <div class="p-4 ma-content-block lg:flex gap-4">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">通过</a-button>
@@ -18,6 +19,7 @@ import {onMounted, ref, computed} from "vue";
 import OrderCard from "@/views/order/components/orderCard.vue";
 import {useBizDictStore} from "@/store";
 import {Message, Modal} from "@arco-design/web-vue";
+import OrderConfirmSearch from "@/views/order/components/orderConfirmSearch.vue";
 
 const stores = ref([]);
 const orders = ref([]);
@@ -36,9 +38,10 @@ onMounted(() => {
   bizDict.fetchPricingProduct4Search();
 })
 
-function getOrders() {
+function getOrders(params = {}) {
   orderApi.orderTree({
     status: 40, // 0: 录入中
+    ...params
   }).then(res => {
     orders.value = res.data;
   })

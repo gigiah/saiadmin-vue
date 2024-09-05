@@ -3,9 +3,13 @@ import OssUpload from "@/views/uploadBatch/components/ossUpload.vue";
 import {ref} from "vue";
 import {Message} from "@arco-design/web-vue";
 import useUploadStore from "@/store/modules/upload";
+import {useMessageStateStore} from "@/store";
+import messageState from "@/store/modules/messageState";
 
 const uploadStore = useUploadStore();
 const uploadForm = ref();
+
+const messageStateStore = useMessageStateStore();
 
 defineProps({
   visible: Boolean,
@@ -32,6 +36,7 @@ const handleOk = async () => {
     console.log('保存成功');
   });
   emit('ok')
+  messageStateStore.setIsShow(true);
   Message.info('上传中，请在消息通知中查看上传进度');
 }
 const handleCancel = () => {

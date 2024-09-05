@@ -52,8 +52,8 @@
         </a-button>
       </a-tooltip>
 
-      <a-trigger trigger="click">
-        <a-button :shape="'circle'">
+      <a-trigger :popup-visible="messageStateStore.isShow" trigger="click">
+        <a-button :shape="'circle'" @click="onShowMessage">
           <template #icon>
             <a-badge :count="5" dot :dotStyle="{ width: '5px', height: '5px' }"
               v-if="uploadStore.hasTask">
@@ -103,7 +103,7 @@
 
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue'
-import { useAppStore, useUserStore, useMessageStore } from '@/store'
+import {useAppStore, useUserStore, useMessageStore, useMessageStateStore} from '@/store'
 import tool from '@/utils/tool'
 import MessageNotification from '@/layout/components/components/message-notification.vue';
 import { useRouter } from 'vue-router'
@@ -125,6 +125,11 @@ const router = useRouter()
 const isFullScreen = ref(false)
 const showLogoutModal = ref(false)
 const isDev = ref(import.meta.env.DEV)
+
+const messageStateStore = useMessageStateStore();
+function onShowMessage() {
+  messageStateStore.setIsShow(!messageStateStore.isShow);
+}
 
 const announcements = ref([])
 
