@@ -1,5 +1,6 @@
 <template>
   <div>
+    <order-index-search @search="getOrders" />
     <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" status="success" @click="onSubmitOrder"
@@ -24,6 +25,7 @@ import OrderCard from "@/views/order/components/orderCard.vue";
 import { useBizDictStore } from "@/store";
 import { Message, Modal } from "@arco-design/web-vue";
 import MaFormModal from "@/components/ma-form-modal/index.vue"
+import OrderIndexSearch from "@/views/order/components/orderIndexSearch.vue";
 
 const stores = ref([]);
 const orders = ref([]);
@@ -43,9 +45,14 @@ onMounted(() => {
   bizDict.fetchPricingProduct4Search('', 'admin');
 })
 
-function getOrders() {
+function getOrders(params = {}) {
   orderApi.orderTree({
+<<<<<<< HEAD
     status: [50, 60, 70, 90], // 0: 录入中
+=======
+    status: [50,60,70,90], // 0: 录入中
+    ...params
+>>>>>>> dev-zq
   }).then(res => {
     orders.value = res.data;
   })

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <order-create-search @search="getOrders" />
     <div class="p-4 ma-content-block lg:flex gap-4">
       <a-button type="primary" size="mini" @click="onAddStore">选择门店</a-button>
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
@@ -21,6 +22,7 @@ import OrderCard from "@/views/order4Client/components/orderCard.vue";
 import {useBizDictStore} from "@/store";
 import AddStoreModal from "@/views/order4Client/components/addStoreModal.vue";
 import {Message, Modal} from "@arco-design/web-vue";
+import OrderCreateSearch from "@/views/order4Client/components/orderCreateSearch.vue";
 
 const stores = ref([]);
 const orders = ref([]);
@@ -39,9 +41,10 @@ onMounted(() => {
   bizDict.fetchPricingProduct4Search();
 })
 
-function getOrders() {
+function getOrders(params = {}) {
   orderApi.orderTree({
     status: 0, // 0: 录入中
+    ...params
   }).then(res => {
     orders.value = res.data;
   })

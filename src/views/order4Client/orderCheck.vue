@@ -1,5 +1,6 @@
 <template>
   <div>
+    <order-check-search @search="getOrders" />
     <div class="p-4 ma-content-block lg:flex gap-4">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>
@@ -26,6 +27,7 @@ import AddStoreModal from "@/views/order4Client/components/addStoreModal.vue";
 import {Message, Modal} from "@arco-design/web-vue";
 import {request} from "@/utils/request";
 import couponItemApi from "@/api/couponItem";
+import OrderCheckSearch from "@/views/order4Client/components/orderCheckSearch.vue";
 
 const stores = ref([]);
 const orders = ref([]);
@@ -81,9 +83,10 @@ onMounted(() => {
   bizDict.fetchPricingProduct4Search();
 })
 
-function getOrders() {
+function getOrders(params = {}) {
   orderApi.orderTree({
     status: 10, // 0: 录入中
+    ...params
   }).then(res => {
     orders.value = res.data;
   })
