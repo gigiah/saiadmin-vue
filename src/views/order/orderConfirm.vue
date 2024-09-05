@@ -40,12 +40,8 @@ onMounted(() => {
 
 function getOrders(params = {}) {
   orderApi.orderTree({
-<<<<<<< HEAD
-    status: 40,
-=======
     status: 40, // 0: 录入中
     ...params
->>>>>>> dev-zq
   }).then(res => {
     orders.value = res.data;
   })
