@@ -46,7 +46,7 @@
         <span class="pl-1 text-black">支付状态:</span>
         <span class="pl-3 text-black">{{ payStatusLabel }}</span>
       </span>
-      <span class="pt-0.5">
+      <span style="display: none;" class="pt-0.5">
         <span class="pl-1 text-black">发货状态:</span>
         <a-select :disabled="scene === 'index'" :options="[{
           label: '已发货',
@@ -57,14 +57,13 @@
         }]" v-model="order.delivery_status" size="mini" style="width: 100px; margin-left: 20px"
           @change="onDeliveryStatusChange" />
       </span>
-
       <span class="pt-0.5">
         <span class="pl-1 text-black">优惠金额:</span>
         <span class="pl-3 text-black">{{ order.coupon_consume }}</span>
       </span>
       <span class="pt-0.5 flex flex-row items-center">
         <span class="text-black">运费:</span>
-        <a-input-number style="width: 80px; margin-left: 20px;" size="mini" class="pl-3" v-model="order.freight"
+        <a-input-number style="width: 80px; margin-left: 20px;" size="mini" class="pl-3" v-model="order.freight_avg"
           @blur="onFreightBlur" />
       </span>
       <span class="pt-0.5">
@@ -111,7 +110,7 @@
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productPictureType']">{{ renderDictValue('productPictureType',
-          record.product_grade_id) }}</span>
+          record.product_picture_type_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -651,7 +650,7 @@ function onFreightBlur() {
     row_type: 'order',
     store_id: props.order.store_id,
     consignee_id: props.order.consignee_id,
-    freight: props.order.freight
+    freight_avg: props.order.freight_avg
   }).then(value => {
     if (value.code === 200) {
       Message.success('更新成功');

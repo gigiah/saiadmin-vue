@@ -146,7 +146,7 @@ const submitCancel = async (formData) => {
 
 const crud = reactive({
   api: api.getPageList,
-  requestParams: { check_time: 1, produce_status: 1 },
+  requestParams: { check_time: 1, produce_status: 2 },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -253,7 +253,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '汇总批次号必填' }],
   },
   {
-    title: '汇总时间',
+    title: '汇总时间*',
     dataIndex: 'create_time',
     width: 180,
     search: true,
@@ -261,7 +261,7 @@ const columns = reactive([
     editDisplay: false,
     hide: false,
     searchFormType: 'range',
-    showTime: true,
+    showTime: false,
     disabled: true,
     formType: 'date',
     commonRules: [{ required: false, message: '创建时间必填' }],
@@ -554,7 +554,7 @@ const columns = reactive([
         dataIndex: 'print_file_button',
         hide: true,
         type: 'primary',
-        title: '上传打印文件',
+        title: '下载打印文件',
         long: false,
         onClick: async () => {
           currentFileName.value = 'print'

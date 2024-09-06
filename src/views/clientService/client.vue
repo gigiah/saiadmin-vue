@@ -19,10 +19,12 @@ import { ref, reactive, onMounted } from 'vue'
 import api from '@/api/clientService'
 import sysUserApi from '@/api/system/user'
 import { Message } from '@arco-design/web-vue'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 const visible = ref(false)
 const wechatImg = ref()
+const sysInfoStore = useSysInfoStore()
 
 const crud = reactive({
   api: api.getPageList,
@@ -36,9 +38,9 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/clientService/save'] },
+  add: { show: sysInfoStore.info.is_client ? false : true, api: api.save, auth: ['/clientService/save'] },
   edit: { show: false, api: api.update, auth: ['/clientService/update'] },
-  delete: { show: true, api: api.delete, auth: ['/clientService/destroy'] },
+  delete: { show: sysInfoStore.info.is_client ? false : true, api: api.delete, auth: ['/clientService/destroy'] },
   recovery: { show: false, api: api.recovery, auth: ['/clientService/recovery'] },
   formOption: { width: 800 },
 })

@@ -4,7 +4,7 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- switch -->
       <template #accept_status="{ record }">
-        <a-switch :checked-value="1" unchecked-value="2" @change="changeAcceptedStatus($event, record.id)" />
+        <a-switch :checked-value="1" unchecked-value="2" v-model="record.accept_status" @change="changeAcceptedStatus($event, record.id)" />
       </template>
       <!-- 操作前置扩展 -->
       <template #operationBeforeExtend="{ record }">
@@ -186,6 +186,7 @@ const columns = reactive([
       translation: true,
     },
     formType: 'select',
+    cascaderItem: ['confirm_sys_id'],
     commonRules: [{ required: false, message: '客户必填' }],
   },
   {
@@ -210,12 +211,11 @@ const columns = reactive([
     dataIndex: 'confirm_sys_id',
     width: 100,
     search: false,
-    disabled: true,
     addDisplay: true,
     editDisplay: true,
     hide: true,
     dict: {
-      url: '/core/user/index?type=all&isClient=1',
+      url: '/core/user/index?type=all&isClient=1&client_group_id={{key}}',
       props: { label: 'nickname', value: 'id' },
       translation: true,
     },
@@ -235,7 +235,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '汇总批次号必填' }],
   },
   {
-    title: '汇总时间',
+    title: '汇总时间*',
     dataIndex: 'create_time',
     width: 180,
     search: true,

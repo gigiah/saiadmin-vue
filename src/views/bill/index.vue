@@ -66,7 +66,7 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '客户',
+    title: '客户*',
     dataIndex: 'client_group_id',
     width: 100,
     search: true,
@@ -122,7 +122,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '对账人员必填' }],
   },
   {
-    title: '生成日期',
+    title: '生成日期*',
     dataIndex: 'create_time',
     width: 180,
     search: true,

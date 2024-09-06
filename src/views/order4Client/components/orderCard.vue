@@ -5,10 +5,12 @@
         <a-checkbox v-if="scene !== 'index'" :value="order.id"><span v-if="scene !== 'create'">订单编号:<span
               class="pl-2">{{ order.code }}</span></span></a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 font-bold text-center" v-if="scene !== 'create' && order.store_name"><span class="pr-2">订单编号:</span>{{order.code}}</span>
+          <span class="pr-4 font-bold text-center" v-if="scene !== 'create' && order.store_name"><span
+              class="pr-2">订单编号:</span>{{ order.code }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_name">{{ order.store_name }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{ order.store_area_type }}</span>
-          <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{ order.store_business_type }}</span>
+          <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{ order.store_business_type
+            }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_product_type">{{ order.store_product_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_pricing_type">{{ order.store_pricing_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.settle_method">{{ settleMethodLabel }}</span>
@@ -71,7 +73,7 @@
       </span>
       <span v-if="scene === 'index'" class="pt-0.5">
         <span class="pl-1 text-black">运费:</span>
-        <span class="pl-3 text-black">{{ order.freight }}</span>
+        <span class="pl-3 text-black">{{ order.freight_avg }}</span>
       </span>
     </div>
     <div class="flex flex-row gap-4 pb-3 align-center">
@@ -79,6 +81,9 @@
       <!--      <a-typography-title :heading="6">商品列表</a-typography-title>-->
       <a-button type="primary" v-if="scene === 'create'" status="success" @click="addNew" size="mini">新增商品</a-button>
       <div class="flex flex-row gap-2 align-center">
+        <span v-if="scene === 'check'" class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">来源:
+          <span style="font-size: 12px; padding-left: 0.125rem; color: black">{{ order.source }}</span>
+        </span>
         <span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">订单备注:</span>
         <a-input size="mini" :disabled="scene === 'index'" v-model="order.remark" style="width: 800px"
           @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
@@ -110,7 +115,7 @@
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productPictureType']">{{ renderDictValue('productPictureType',
-          record.product_grade_id) }}</span>
+          record.product_picture_type_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -154,7 +159,8 @@
           <!--            <pricing-type-select v-model="record.pricing_type_id" :disabled="true" />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
-            <span v-if="bizDict.$state['pricingType']">{{ renderDictValue('pricingType', record.pricing_type_id) }}</span>
+            <span v-if="bizDict.$state['pricingType']">{{ renderDictValue('pricingType', record.pricing_type_id)
+              }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -163,7 +169,8 @@
           <!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled="true" />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
-            <span v-if="bizDict.$state['pricingUnit']">{{ renderDictValue('pricingUnit', record.pricing_unit_id) }}</span>
+            <span v-if="bizDict.$state['pricingUnit']">{{ renderDictValue('pricingUnit', record.pricing_unit_id)
+              }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -172,7 +179,7 @@
           <!--            <a-input v-model="record.unit_price" :disabled="true" />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
-            <span>{{ record.unit_price ? record.unit_price : '' }}</span>
+            <span>{{ record.unit_price && record.unit_price != '0.00' ? record.unit_price : '' }}</span>
           </template>
         </a-table-column>
         <a-table-column v-if="scene === 'check'" title="金额" data-index="amount" />
@@ -336,6 +343,12 @@ function onProductChanged(value, record) {
       record.pricing_type_id = res.data.pricing_type_id;
       record.pricing_unit_id = res.data.pricing_unit_id;
       record.unit_price = res.data.price;
+      if (res.data.is_width_default === 1) {
+        record.width = parseFloat(res.data.width_max)
+      }
+      if (res.data.is_height_default === 1) {
+        record.height = parseFloat(res.data.height_max)
+      }
     }
   })
 }

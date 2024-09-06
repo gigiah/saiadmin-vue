@@ -159,14 +159,14 @@ const columns = reactive([
   },
   {
     title: '受理人',
-    dataIndex: 'assign_sys_id',
+    dataIndex: 'accept_sys_id',
     width: 100,
     search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,
     dict: {
-      url: '/core/user/index?type=all&codes=prePrint',
+      url: '/core/user/index?type=all',
       props: { label: 'nickname', value: 'id' },
       translation: true,
     },
@@ -176,7 +176,7 @@ const columns = reactive([
   },
   {
     title: '受理时间',
-    dataIndex: 'assign_time',
+    dataIndex: 'accept_time',
     width: 180,
     search: true,
     addDisplay: false,

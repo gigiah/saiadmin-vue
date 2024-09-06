@@ -55,6 +55,10 @@ watch(
 
 const crud = reactive({
   api: api.getPageList,
+  requestParams: {
+    force_get: 1,
+    confirm_sys_id: sysInfoStore.info.sys_user_id,
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,

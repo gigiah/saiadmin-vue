@@ -129,6 +129,18 @@ const columns = reactive([
     commonRules: [{ required: false, message: '批次号必填' }],
   },
   {
+    title: '运单金额',
+    dataIndex: 'freight_total',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    disabled: false,
+    // commonRules: [{ required: true, message: '必填' }],
+  },
+  {
     title: '所属团队',
     dataIndex: 'dept_id',
     width: 180,

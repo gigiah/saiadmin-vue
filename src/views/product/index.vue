@@ -145,10 +145,12 @@ const columns = reactive([
     dataIndex: 'width_max',
     width: 180,
     search: false,
-    addDisplay: true, addDefaultValue: 0.00,
+    addDisplay: true, 
+    addDefaultValue: 0.00,
     editDisplay: true,
     hide: false,
     formType: 'input',
+    extra: '若设置宽度进模板，按该设定值',
     commonRules: [{ required: false, message: '宽度最大必填' }],
   },
   {
@@ -171,6 +173,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
+    extra: '若设置高度进模板，按该设定值',
     commonRules: [{ required: false, message: '高度最大必填' }],
   },
   {
