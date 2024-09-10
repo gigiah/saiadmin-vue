@@ -5,7 +5,7 @@
     breakpoint="md"
     v-model:open-keys="openKeys"
     v-model:selected-keys="actives"
-    :accordion="true"
+    :accordion="false"
     :collapsed-width="45"
     show-collapse-button
     :collapsed="appStore.menuCollapse"

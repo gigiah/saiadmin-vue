@@ -19,6 +19,7 @@
     </template>
     <template #extra>
       <div class="flex flex-row items-center gap-4">
+        <!-- <a-button type="primary" @click="viewPayCert" size="mini">查看支付凭证</a-button> -->
         <a-button type="primary" @click="expandAll" size="mini">{{ tableExpand ? '收起' : '展开' }}全部</a-button>
         <a-button v-if="scene === 'confirm'" type="primary" size="mini" @click="onPass">通过</a-button>
         <a-button v-if="scene === 'confirm'" type="primary" size="mini" status="danger" @click="onBack">打回</a-button>
@@ -45,6 +46,14 @@
       <span v-if="scene === 'index'" class="pt-0.5">
         <span class="pl-1 text-black">支付状态:</span>
         <span class="pl-3 text-black">{{ payStatusLabel }}</span>
+        <!-- <a-select  :options="[{
+          label: '已支付',
+          value: 1
+        }, {
+          label: '未支付',
+          value: 2
+        }]" v-model="order.pay_status" size="mini" style="width: 100px; margin-left: 20px"
+          @change="onPayStatusChange" /> -->
       </span>
       <span style="display: none;" class="pt-0.5">
         <span class="pl-1 text-black">发货状态:</span>
@@ -608,6 +617,10 @@ function expandAll() {
   tableExpand.value ? tableRef.value.expandAll(true) : tableRef.value.expandAll(false);
 }
 
+function viewPayCert() {
+
+}
+
 let tempRemark = props.order.remark;
 
 function onRemarkFocus() {
@@ -701,6 +714,20 @@ function onDeliveryStatusChange() {
     store_id: props.order.store_id,
     consignee_id: props.order.consignee_id,
     delivery_status: props.order.delivery_status
+  }).then(value => {
+    if (value.code === 200) {
+      Message.success('更新成功');
+      emit('changed');
+    }
+  })
+}
+
+function onPayStatusChange() {
+  orderApi.update(props.order.id, {
+    row_type: 'order',
+    store_id: props.order.store_id,
+    consignee_id: props.order.consignee_id,
+    pay_status: props.order.pay_status
   }).then(value => {
     if (value.code === 200) {
       Message.success('更新成功');

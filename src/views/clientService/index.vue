@@ -38,6 +38,9 @@ let showOperation = true
 if (sysInfoStore.info.is_client || !sysInfoStore.info.is_team_leader) {
   showOperation = false
 }
+if (sysInfoStore.info.is_admin === true) {
+  showOperation = true
+}
 
 const crud = reactive({
   api: api.getPageList,

@@ -169,7 +169,7 @@ const columns = reactive([
     editDisplay: true,
     hide: true,
     formType: 'input',
-    commonRules: [{ required: true, message: '面值必填' }],
+    // commonRules: [{ required: true, message: '面值必填' }],
   },
   {
     title: '数量',

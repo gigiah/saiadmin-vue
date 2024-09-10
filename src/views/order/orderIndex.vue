@@ -68,7 +68,6 @@ function onAddStore() {
   addStoreModalVisible.value = true;
 }
 
-
 function onSubmitOrder() {
   submitVisible.value = true;
 }
