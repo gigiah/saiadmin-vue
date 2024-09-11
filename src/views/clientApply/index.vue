@@ -4,12 +4,12 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- 操作前置扩展 -->
       <template #operationBeforeExtend="{ record }">
-        <a-link v-if="record.status == 1" @click="openModal(record)" v-auth="[]">
+        <a-button status="success" v-if="record.status === 1" @click="openModal(record)" v-auth="[]">
           <icon-check /> {{ '通过' }}
-        </a-link>
-        <a-link v-if="record.status == 1" @click="rejectApply(record)" v-auth="[]">
+        </a-button>
+        <a-button status="danger" v-if="record.status === 1" @click="rejectApply(record)" v-auth="[]">
           <icon-close /> {{ '拒绝' }}
-        </a-link>
+        </a-button>
       </template>
     </ma-crud>
     <div>
@@ -37,7 +37,7 @@ const openModal = (record) => {
   visible.value = true
 }
 
-const rejectApply = (record) => {
+const rejectApply = async (record) => {
   Modal.info({
     title: '提示',
     content: '确定吗？',
@@ -50,6 +50,7 @@ const rejectApply = (record) => {
       }).then(res => {
         if (res.code == 200) {
           Message.success('操作成功')
+          console.log(crudRef)
           crudRef.value.refresh()
         } else {
           Message.error('操作失败')
@@ -57,7 +58,7 @@ const rejectApply = (record) => {
       })
     },
   })
-  return true
+  return
 }
 
 const applySubmit = (formData) => {
@@ -559,7 +560,7 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 250,
+  operationColumnWidth: 300,
   add: { show: false, api: api.save, auth: ['/clientApply/save'] },
   edit: { show: true, text: '查看', api: api.update, auth: ['/clientApply/update'] },
   delete: { show: true, api: api.delete, auth: ['/clientApply/destroy'] },

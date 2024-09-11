@@ -137,7 +137,6 @@ const submitCancel = async (formData) => {
       Message.error('取消失败')
     }
   })
-  console.log('fuck')
   return
   // submitVisible.value = false
   // crudRef.value.refresh()
