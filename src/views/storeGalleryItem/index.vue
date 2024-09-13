@@ -121,7 +121,7 @@ const columns = reactive([
     type: 'image',
     returnType: 'url',
     multiple: false,
-    extra: '仅用于小程序用品预览（限800K）请核对与源文件内容相符！',
+    extra: '仅用于小程序用品预览，请确保与源文件内容相符！图片宽高建议在1200像素内，超出将不能完整显示。',
     commonRules: [{ required: false, message: '预览图必填' }],
   },
   {

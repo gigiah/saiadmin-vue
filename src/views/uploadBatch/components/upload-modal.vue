@@ -48,7 +48,7 @@ const handleCancel = () => {
   <a-modal :hide-title="true" :width="800" :visible="visible" title="上传文件" @ok="handleOk"
            @cancel="handleCancel">
     <a-form ref="uploadForm" :model="uploadData">
-      <a-form-item label="源文件(必须先上传)" field="sourceFiles" :rules="[{required: true, message: '源文件必须上传'}]">
+      <a-form-item label="源文件" field="sourceFiles" :rules="[{required: true, message: '源文件必须上传'}]">
         <oss-upload v-model="uploadData.sourceFiles" />
       </a-form-item>
       <a-form-item field="previewImages" label="预览图">

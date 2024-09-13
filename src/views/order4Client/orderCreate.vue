@@ -1,7 +1,7 @@
 <template>
   <div>
     <order-create-search @search="getOrders" />
-    <div class="p-4 ma-content-block lg:flex gap-4">
+    <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onAddStore">选择门店</a-button>
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">发起审订</a-button>
@@ -38,12 +38,12 @@ const onCheckUpdate = (result) => {
 onMounted(() => {
   getOrders();
   bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
-  bizDict.fetchPricingProduct4Search();
+  bizDict.fetchPricingProduct4Search('', '', 'client');
 })
 
 function getOrders(params = {}) {
   orderApi.orderTree({
-    status: 0, // 0: 录入中
+    status: [0], // 0: 录入中
     ...params
   }).then(res => {
     orders.value = res.data;

@@ -78,6 +78,17 @@ const columns = reactive([
     commonRules: [{ required: true, message: 'K值必填' }],
   },
   {
+    title: '基准值',
+    dataIndex: 'base_value',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    commonRules: [{ required: true, message: '基准值必填' }],
+  },
+  {
     title: '基准价',
     dataIndex: 'base_price',
     width: 180,

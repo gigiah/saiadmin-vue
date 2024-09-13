@@ -9,7 +9,7 @@
           <template #icon><icon-save /></template>云盘容量 {{ diskVol.remain }}/{{ diskVol.total }}G
         </a-button>
         <a-button @click="showModal" @submit="" type="primary" status="normal"
-          class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>上传资源包
+          class="w-full mt-2 lg:w-auto lg:mt-0"><template #icon><icon-plus /></template>上传文件
         </a-button>
       </template>
     </ma-crud>

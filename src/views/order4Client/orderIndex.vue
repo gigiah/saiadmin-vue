@@ -82,7 +82,7 @@ const onCheckUpdate = (result) => {
 onMounted(() => {
   getOrders();
   bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
-  bizDict.fetchPricingProduct4Search();
+  bizDict.fetchPricingProduct4Search('', '', 'client');
 })
 
 function getOrders(params = {}) {
