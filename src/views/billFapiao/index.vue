@@ -4,6 +4,17 @@
     <div class="justify-between p-4 ma-content-block lg:flex">
       <!-- CRUD 组件 -->
       <ma-crud :options="crud" :columns="columns" ref="crudRef">
+        <!-- 表格按钮后置扩展 -->
+        <template v-if="billType == 2" #tableAfterButtons>
+          <a-button type="outline">
+            <template #icon><icon-ordered-list /></template>
+            <span v-if="fapiaoMethod == 1">人工开票</span>
+            <span v-if="fapiaoMethod == 2">按店开票</span>
+          </a-button>
+          <a-button type="outline">
+            <template #icon><icon-menu /></template>{{ billTotal }}元
+          </a-button>
+        </template>
         <template #operationBeforeExtend="{ record }">
           <a-space v-if="record.fapiao_url" size="mini">
             <a-link @click="downloadFile(record)"><icon-to-bottom />下载发票</a-link>
@@ -25,6 +36,8 @@ import tool from '@/utils/tool'
 const crudRef = ref()
 const visible = ref(false)
 const billId = ref()
+const billType = ref()
+const billTotal = ref()
 const fapiaoMethod = ref()
 const showAdd = ref(true)
 const sysInfoStore = useSysInfoStore()
@@ -35,9 +48,10 @@ const downloadFile = async (record) => {
 
 const open = (row) => {
   console.log(row)
-  billId.value = row.id
-  fapiaoMethod.value = row.fapiao_method
-  if (fapiaoMethod.value == 2) {
+  billType.value = row.type
+  billTotal.value = row.final_total
+  fapiaoMethod.value = row.fapiao_method//1=人工 2=按店
+  if (fapiaoMethod.value == 2 || (sysInfoStore.info.is_client == true && row.fapiao_status == 1)) {
     showAdd.value = false
   } else {
     showAdd.value = true

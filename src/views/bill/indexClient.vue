@@ -7,7 +7,7 @@
           <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
         </a-space>
         <a-space size="mini" v-if="record.fapiao_method != 0">
-          <a-link @click="viewItems(record)"><icon-menu />查看发票</a-link>
+          <a-link @click="viewItems(record)"><icon-menu />发票处理</a-link>
         </a-space>
       </template>
     </ma-crud>
@@ -21,10 +21,13 @@ import api from '@/api/bill'
 import billFapiao from '@/views/billFapiao/index.vue'
 import { Message } from '@arco-design/web-vue'
 import tool from '@/utils/tool'
+import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
 
 const itemRef = ref()
+
+const sysInfoStore = useSysInfoStore()
 
 const viewItems = (record) => {
   itemRef.value.open(record)
@@ -44,18 +47,28 @@ const downloadManualExcel = async (record) => {
 
 const crud = reactive({
   api: api.getPageList,
+  requestParams: {  client_group_id: sysInfoStore.info.client_group_id },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 220,
+  operationColumnWidth: 280,
   add: { show: false, api: api.save },
   edit: { show: true, text: '选择开票方式', api: api.update },
   delete: { show: false, api: api.delete },
   recovery: { show: false, api: api.recovery },
   formOption: { width: 800 },
+  beforeOpenEdit: (formData) => {
+		console.log('beforeOpenEditColumns', columns)
+		console.log('beforeOpenEditForm', formData)
+    if(formData.type == 1){
+      Message.error('现结账单不可选择')
+      return false;
+    }
+		return true
+	},
 })
 
 const columns = reactive([
@@ -71,33 +84,33 @@ const columns = reactive([
     disabled: true,
     commonRules: [{ required: true, message: '主键必填' }],
   },
-  // {
-  //   title: '结款类型',
-  //   dataIndex: 'type',
-  //   width: 100,
-  //   search: true,
-  //   addDisplay: true, 
-  //   addDefaultValue: 1,
-  //   editDisplay: true,
-  //   hide: false,
-  //   dict: { name: 'bizBillType', props: { label: 'label', value: 'value' }, translation: true },
-  //   formType: 'select',
-  //   disabled: true,
-  //   commonRules: [{ required: true, message: '结款类型必填' }],
-  // },
-  // {
-  //   title: '对账单',
-  //   dataIndex: 'manual_excel',
-  //   width: 200,
-  //   search: false,
-  //   addDisplay: true,
-  //   editDisplay: true,
-  //   hide: true,
-  //   formType: 'upload',
-  //   type: 'file',
-  //   disabled: true,
-  //   commonRules: [{ required: true, message: '结算对账单必填' }],
-  // },
+  {
+    title: '结款类型',
+    dataIndex: 'type',
+    width: 100,
+    search: true,
+    addDisplay: true, 
+    addDefaultValue: 1,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'bizBillType', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'select',
+    disabled: true,
+    commonRules: [{ required: true, message: '结款类型必填' }],
+  },
+  {
+    title: '对账单',
+    dataIndex: 'manual_excel',
+    width: 200,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'upload',
+    type: 'file',
+    disabled: true,
+    // commonRules: [{ required: true, message: '结算对账单必填' }],
+  },
   // {
   //   title: '汇总金额',
   //   dataIndex: 'total',
@@ -140,7 +153,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '对账人员必填' }],
   },
   {
-    title: '生成时间',
+    title: '生成时间*',
     dataIndex: 'create_time',
     width: 180,
     search: true,

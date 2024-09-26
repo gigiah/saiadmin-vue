@@ -119,7 +119,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'select',
-    dict: { data: [{ "label": "运费", "value": 'freight' }, { "label": "数量", "value": 'nums' }], translation: true },
+    dict: { data: [{ "label": "运费", "value": 'freight_avg' }, { "label": "数量", "value": 'nums' }], translation: true },
   },
   {
     title: '原数值',

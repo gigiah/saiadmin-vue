@@ -13,7 +13,7 @@
           <span class="pr-4 font-bold text-center" v-if="order.store_pricing_type">{{ order.store_pricing_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.settle_method">{{ settleMethodLabel }}</span>
           <span class="pr-2 font-bold text-center">收货地址:</span>
-          <store-select style="width: 150px" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
+          <consignee-select style="width: 150px" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
         </div>
       </div>
     </template>
@@ -55,6 +55,10 @@
         }]" v-model="order.pay_status" size="mini" style="width: 100px; margin-left: 20px"
           @change="onPayStatusChange" /> -->
       </span>
+      <span class="pt-0.5">
+        <span class="pl-1 text-black">订单状态:</span>
+        <span class="pl-3 text-black">{{ orderStatusLabel }}</span>
+      </span>
       <span style="display: none;" class="pt-0.5">
         <span class="pl-1 text-black">发货状态:</span>
         <a-select :disabled="scene === 'index'" :options="[{
@@ -68,7 +72,7 @@
       </span>
       <span class="pt-0.5">
         <span class="pl-1 text-black">优惠金额:</span>
-        <span class="pl-3 text-black">{{ order.coupon_consume }}</span>
+        <span class="pl-3 text-black">{{ order.coupon_amount }}</span>
       </span>
       <span class="pt-0.5 flex flex-row items-center">
         <span class="text-black">运费:</span>
@@ -109,7 +113,7 @@
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productGrade']">{{ renderDictValue('productGrade',
-          record.product_grade_id) }}</span>
+              record.product_grade_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -119,7 +123,7 @@
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productPictureType']">{{ renderDictValue('productPictureType',
-          record.product_picture_type_id) }}</span>
+              record.product_picture_type_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
@@ -151,15 +155,15 @@
               :step="1" />
           </template>
         </a-table-column>
-        <a-table-column v-if="scene === 'create'" title="工艺" data-index="craft_id">
+        <a-table-column title="工艺" data-index="craft_id">
           <template #cell="{ record, column, index }">
-            <a-button v-if="record.row_type === 'goods'" size="mini" status="success" shape="circle"
+            <!-- <a-button v-if="record.row_type === 'goods'" size="mini" status="success" shape="circle"
               @click="addCraft(record)">
               <icon-plus />
-            </a-button>
+            </a-button> -->
             <pricing-craft-select size="mini" v-if="record.row_type === 'craft'" v-model="record.craft_id"
               :disabled="disableCraftEdit(record)" @change="onCraftChanged($event, record)"
-              :product-id="record.product_id" />
+              :product-id="record.product_id" :search-all-range="true" />
           </template>
         </a-table-column>
         <a-table-column title="计价方式" data-index="pricing_type_id" :width="100">
@@ -183,12 +187,12 @@
           </template>
         </a-table-column>
         <a-table-column title="单价" data-index="unit_price">
-          <!--          <template #cell="{ record, column, index }">-->
-          <!--            <a-input v-model="record.unit_price" :disabled="true" />-->
-          <!--          </template>-->
           <template #cell="{ record, column, index }">
-            <span>{{ record.unit_price ? record.unit_price : '' }}</span>
+            <a-input v-model="record.unit_price" :disabled="record.pricing_type_id !== 9 || scene === 'index' || !record.editable" />
           </template>
+          <!-- <template #cell="{ record, column, index }">
+            <span>{{ record.unit_price ? record.unit_price : '' }}</span>
+          </template> -->
         </a-table-column>
         <a-table-column title="金额" data-index="amount" />
         <a-table-column title="操作" fixed="right" :width="140">
@@ -239,6 +243,7 @@ import ProductIdSelect from "@/views/order4Client/components/productIdSelect.vue
 import AssociatedFileSelect from "@/views/order4Client/components/associatedFileSelect.vue";
 import PricingCraftSelect from "@/views/order4Client/components/pricingCraftSelect.vue";
 import StoreSelect from "@/views/order4Client/components/storeSelect.vue";
+import ConsigneeSelect from "@/views/order4Client/components/consigneeSelect.vue";
 import MaFormModal from "@/components/ma-form-modal/index.vue"
 
 const bizDict = useBizDictStore();
@@ -327,6 +332,29 @@ watch(() => props.order, () => {
   console.log('order changed');
   initGoods();
 });
+
+const orderStatusLabel = computed(() => {
+  switch (props.order.status) {
+    case 90:
+      return '已开票';
+    case 70:
+      return '已发货';
+    case 60:
+      return '发货中';
+    case 50:
+      return '生产中';
+    case 40:
+      return '审批中';
+    case 20:
+      return '提交中';
+    case 10:
+      return '审订中';
+    case 0:
+      return '录入中';
+    default:
+      return '未知';
+  }
+})
 
 const payStatusLabel = computed(() => {
   switch (props.order.pay_status) {

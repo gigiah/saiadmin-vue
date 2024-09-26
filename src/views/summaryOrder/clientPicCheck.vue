@@ -393,11 +393,13 @@ const columns = reactive([
     control: (val) => {
       if (val == 1) {
         return {
-          is_client_check: { disabled: true }
+          is_client_check: { disabled: true },
+          confirm_feedback: {disabled: true}
         }
       } else {
         return {
-          is_client_check: { disabled: false }
+          is_client_check: { disabled: false },
+          confirm_feedback: {disabled: false}
         }
       }
     }

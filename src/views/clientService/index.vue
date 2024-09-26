@@ -29,7 +29,6 @@ const sysInfoStore = useSysInfoStore()
 let role_code = ''
 let dept_id = 0
 if (!sysInfoStore.info.is_admin) {
-  console.log(sysInfoStore.info)
   role_code = sysInfoStore.info.role_codes[0]
   dept_id = sysInfoStore.info.dept_id
 }
@@ -96,7 +95,7 @@ const columns = reactive([
     dataIndex: 'type',
     formType: 'radio',
     addDefaultValue: 'team',
-    disabled: sysInfoStore.info.is_admin,
+    // disabled: sysInfoStore.info.is_admin,
     width: 100,
     dict: {
       name: 'bizClientServiceType',
@@ -126,7 +125,9 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     addDefaultValue: role_code,
+    editDefaultValue: role_code,
     disabled: sysInfoStore.info.is_admin ? false : true,
+    // disabled: sysInfoStore.info.is_admin ? false : true,
     dict: { name: 'bizClientServiceRole', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进角色必填' }],

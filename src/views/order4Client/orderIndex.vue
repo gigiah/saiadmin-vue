@@ -1,18 +1,20 @@
 <template>
   <div>
-<!--    <div class="gap-4 p-4 ma-content-block lg:flex">-->
-<!--      <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>-->
-<!--      <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>-->
-<!--      <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>-->
-<!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
-<!--    </div>-->
+    <!--    <div class="gap-4 p-4 ma-content-block lg:flex">-->
+    <!--      <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>-->
+    <!--      <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>-->
+    <!--      <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>-->
+    <!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
+    <!--    </div>-->
     <div class="pb-4 ma-content-block">
       <order-index-search @search="getOrders" />
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="index"></order-card>
+      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
+        scene="index"></order-card>
     </a-checkbox-group>
-    <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
+    <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess"
+      @add-cancel="addStoreModalVisible = false" />
     <modal :visible="addCouponModalVisible" title="选择卡券" @ok="onAddCouponOk" @cancel="onAddCouponCancel">
       <a-select :key="couponKey" v-model="couponSelected" placeholder="请选择" :options="couponList" />
     </modal>
@@ -22,12 +24,12 @@
 <script setup>
 import orderApi from '@/api/order';
 import storeApi from '@/api/store';
-import {onMounted, ref, computed} from "vue";
+import { onMounted, ref, computed } from "vue";
 import OrderCard from "@/views/order4Client/components/orderCard.vue";
-import {useBizDictStore} from "@/store";
+import { useBizDictStore } from "@/store";
 import AddStoreModal from "@/views/order4Client/components/addStoreModal.vue";
-import {Message, Modal} from "@arco-design/web-vue";
-import {request} from "@/utils/request";
+import { Message, Modal } from "@arco-design/web-vue";
+import { request } from "@/utils/request";
 import couponItemApi from "@/api/couponItem";
 import OrderIndexSearch from "@/views/order4Client/components/orderIndexSearch.vue";
 
@@ -80,7 +82,7 @@ const onCheckUpdate = (result) => {
 }
 
 onMounted(() => {
-  getOrders();
+  // getOrders();
   bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
   bizDict.fetchPricingProduct4Search('', '', 'client');
 })
@@ -88,7 +90,7 @@ onMounted(() => {
 function getOrders(params = {}) {
   orderApi.orderTree({
     // status: '40,50,60,70,90', // 0: 录入中
-    status: [40,50,60,70,90],
+    status: [40, 50, 60, 70, 90],
     ...params
   }).then(res => {
     orders.value = res.data;
@@ -173,5 +175,4 @@ function onSelectAll() {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

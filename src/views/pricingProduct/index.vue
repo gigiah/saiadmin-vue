@@ -4,15 +4,15 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- 表格按钮后置扩展 -->
       <template #tableAfterButtons>
-        <a-button type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择产品
+        <a-button v-if="sysInfoStore.info.is_team_leader" type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择产品
         </a-button>
       </template>
     </ma-crud>
     <a-modal v-model:visible="visible" @ok="modifySave">
       <a-transfer :title="['未选择产品', '已选择产品']" show-search :data="items4Transfer" v-model="items4TransferSelected"
         :source-input-search-props="{
-      placeholder: '搜索未选产品'
-    }" :target-input-search-props="{
+          placeholder: '搜索未选产品'
+        }" :target-input-search-props="{
       placeholder: '搜索已选产品'
     }" />
     </a-modal>
@@ -124,8 +124,8 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 160,
   add: { show: sysInfoStore.info.is_admin, api: api.save, auth: ['/pricingProduct/save'] },
-  edit: { show: true, api: api.update, auth: ['/pricingProduct/update'] },
-  delete: { show: true, api: api.delete, auth: ['/pricingProduct/destroy'] },
+  edit: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.update, auth: ['/pricingProduct/update'] },
+  delete: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.delete, auth: ['/pricingProduct/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingProduct/recovery'] },
   formOption: { width: 800 },
 })

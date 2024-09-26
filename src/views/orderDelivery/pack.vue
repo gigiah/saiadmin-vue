@@ -221,16 +221,18 @@ const printLabel = () => {
     return
   }
   let orderIds = []
+  let goodsIds = []
   console.log('selecteds', selecteds)
   selecteds.value.forEach(function (id) {
     if (judgeCode(id) === 'order') orderIds.push(id)
+    if (judgeCode(id) === 'goods') goodsIds.push(id)
   })
   if (orderIds.length === 0) {
     Message.error('至少要选择一条订单')
     return
   }
   let timer = null
-  api.orderTree4Print({ order_ids: orderIds })
+  api.orderTree4Print({ order_ids: orderIds, goods_ids: goodsIds })
     .then(res => {
       orderTreeData.value = transformData(res.data)
       console.log('transformData', orderTreeData.value)
@@ -687,7 +689,7 @@ const columns = reactive([
     dataIndex: 'product_id',
     formType: 'select',
     dict: {
-      url: '/pricingProduct/index4Search?range=all',
+      url: '/pricingProduct/index4Search?range=all&type=client',
       props: { label: 'name', value: 'product_id' },
       translation: true,
     },

@@ -3,14 +3,15 @@
 </template>
 
 <script setup>
-import {useBizDictStore} from "@/store";
-import {onMounted, ref, watch} from "vue";
+import { useBizDictStore } from "@/store";
+import { onMounted, ref, watch } from "vue";
 const bizDict = useBizDictStore();
 const props = defineProps({
   productId: {
     type: Number,
     required: false
-  }
+  },
+  searchAllRange: false,
 });
 const myKey = ref(0);
 
@@ -26,7 +27,7 @@ onMounted(() => {
   if (props.productId) {
     dictKey = `${props.productId}_pricingCraft4Search`;
     if (!bizDict.$state[dictKey] || bizDict.$state[dictKey].length === 0) {
-    bizDict.fetchPricingCraft4Search(props.productId);
+      bizDict.fetchPricingCraft4Search(props.productId, props.searchAllRange ? 'all' : '');
     }
   }
   // if (!bizDict.$state['pricingCraft4Search'] || bizDict.$state['pricingCraft4Search'].length === 0) {
@@ -39,5 +40,4 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

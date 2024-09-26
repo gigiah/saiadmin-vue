@@ -38,14 +38,27 @@ const viewItems = (record) => {
   itemRef.value.open(record)
 }
 
+// const exportBill = async (record) => {
+//   Message.info('系统对账单下载中，请稍后')
+//   const response = await api.exportBillExcel({ id: record.id })
+//   if (response) {
+//     tool.download(response, record.name + '系统对账单.xlsx')
+//     Message.success('开始下载')
+//   } else {
+//     Message.error('下载失败')
+//   }
+// }
+
 const exportBill = async (record) => {
-  Message.info('系统对账单下载中，请稍后')
-  const response = await api.exportBillExcel({ id: record.id })
-  if (response) {
-    tool.download(response, record.name + '系统对账单.xlsx')
-    Message.success('开始下载')
+  let res = await api.exportBillExcel({ id: record.id })
+  window.location.href = res.data.filePath
+}
+
+const downloadManualExcel = async (record) => {
+  if (!record.manual_excel) {
+    Message.error('暂无结算单')
   } else {
-    Message.error('下载失败')
+    window.location.href = record.manual_excel
   }
 }
 
@@ -93,6 +106,9 @@ const changeCheckoutStatus = async (status, id) => {
 
 const crud = reactive({
   api: api.getPageList,
+  requestParams: {
+    role: 'financial',
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -210,7 +226,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '客服人员必填' }],
   },
   {
-    title: '生成日期',
+    title: '生成日期*',
     dataIndex: 'create_time',
     width: 180,
     search: true,

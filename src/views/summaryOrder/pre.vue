@@ -8,9 +8,9 @@
       </template>
       <!-- 操作前置扩展 -->
       <template #operationBeforeExtend="{ record }">
-        <a-link v-if="record.produce_status == 0" @click="confirmProduceModal(record)" v-auth="[]">
+        <a-button status="success" v-if="record.produce_status == 0" @click="confirmProduceModal(record)" v-auth="[]">
           <icon-check />生产
-        </a-link>
+        </a-button>
       </template>
     </ma-crud>
     <a-modal v-model:visible="visible" :width="1200" :footer="false" draggable>
@@ -491,6 +491,19 @@ const columns = reactive([
     formType: 'input',
     disabled: true,
     commonRules: [{ required: false, message: '审图反馈信息必填' }],
+  },
+  {
+    title: '客方审核',
+    dataIndex: 'is_client_check',
+    search: true,
+    addDisplay: false,
+    addDefaultValue: 2,
+    editDisplay: false,
+    hide: false,
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    disabled: true,
+    commonRules: [{ required: false, message: '客方审核' }],
   },
   {
     title: '受理',

@@ -45,7 +45,7 @@ const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
 const nextStage = ref('')
-const currentStatus = ref([50, 60, 70, 90])
+const currentStatus = ref([50, 60, 70])
 const requestParamsData = ref()
 
 const modalRef = ref()
@@ -89,6 +89,23 @@ const craftShowIndex = {
 	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
 	'unit_price': { 'addDisabled': true, 'editDisabled': true },
 	'amount': { 'addDisabled': true, 'editDisabled': true },
+}
+
+const getDefaultDates = () => {
+	const today = new Date();
+	const tomorrow = new Date();
+	tomorrow.setDate(today.getDate() + 3);
+	// 格式化日期为 'YYYY-MM-DD' 的形式
+	function formatDate(date) {
+		let month = date.getMonth() + 1;
+		let day = date.getDate();
+		return [
+			date.getFullYear(),
+			month > 9 ? month : '0' + month,
+			day > 9 ? day : '0' + day
+		].join('-');
+	}
+	return [formatDate(today), formatDate(tomorrow)];
 }
 
 const selectChange = (val) => {
@@ -325,7 +342,13 @@ const deleteByForm = (id, table) => {
 
 const crud = reactive({
 	api: api.orderTree,
-	requestParams: { status: currentStatus },
+	requestParams: {
+		status: currentStatus,
+		is_force_date: true,
+		pay_status: 2,
+		type: 2,
+		settle_method: 'month',
+	},
 	recycleApi: api.getRecyclePageList,
 	showIndex: false,
 	pageLayout: 'fixed',
@@ -339,7 +362,7 @@ const crud = reactive({
 	formOption: { viewType: 'drawer', width: 600 },
 	isExpand: false,
 	size: 'mini',
-	searchColNumber: 3,
+	searchColNumber: 4,
 	// resizable: false,
 	stripe: false,
 	columnWidth: 80,
@@ -408,7 +431,7 @@ const columns = reactive([
 		hide: true,
 	},
 	{
-		title: '客方',
+		title: '客方*',
 		dataIndex: 'client_group_id',
 		width: 100,
 		search: true,
@@ -418,6 +441,7 @@ const columns = reactive([
 		dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
 		formType: 'select',
 		commonRules: [{ required: false, message: '客方必填' }],
+		cascaderItem: ['area_type_id', 'business_type_id'],
 	},
 	{
 		title: '门店',
@@ -440,26 +464,46 @@ const columns = reactive([
 		dataIndex: 'order_submiter',
 	},
 	{
-		title: '销售区域',
-		dataIndex: 'area_type',
-		formType: 'select',
+		title: '营销区域',
+		dataIndex: 'area_type_id',
+		width: 100,
 		search: true,
-		dict: {
-			url: '/storeAreaType/index?type=all',
-			props: { label: 'name', value: 'id' },
-			translation: true,
-		},
+		addDisplay: true,
+		editDisplay: true,
+		hide: true,
+		dict: { url: '/storeAreaType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
+		formType: 'select',
 	},
 	{
 		title: '经营模式',
-		dataIndex: 'business_type',
-		formType: 'select',
+		dataIndex: 'business_type_id',
+		width: 100,
 		search: true,
-		dict: {
-			url: '/storeBusinessType/index?type=all',
-			props: { label: 'name', value: 'id' },
-			translation: true,
-		},
+		addDisplay: true,
+		editDisplay: true,
+		hide: true,
+		dict: { url: '/storeBusinessType/index?type=all&client_group_id={{key}}', props: { label: 'name', value: 'id' }, translation: true },
+		formType: 'select',
+	},
+	{
+		title: '营销区域',
+		dataIndex: 'store_area_type',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+	},
+	{
+		title: '经营模式',
+		dataIndex: 'store_business_type',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
 	},
 	{
 		title: '订单号',
@@ -471,7 +515,7 @@ const columns = reactive([
 		title: '订单日期*',
 		dataIndex: 'check_time',
 		searchFormType: 'range',
-		showTime: true,
+		showTime: false,
 		formType: 'date',
 		search: true,
 		width: 200,
@@ -492,15 +536,11 @@ const columns = reactive([
 	},
 	{
 		title: '订单金额',
-		dataIndex: 'total_amount',
+		dataIndex: 'pay_amount',
 	},
 	{
 		title: '优惠金额',
 		dataIndex: 'coupon_amount',
-	},
-	{
-		title: '支付金额',
-		dataIndex: 'pay_amount',
 	},
 	{
 		title: '结算类型',
@@ -513,7 +553,7 @@ const columns = reactive([
 		dataIndex: 'pay_status',
 		formType: 'select',
 		hide: true,
-		search: true,
+		search: false,
 		editDisplay: false,
 		dict: { name: 'bizSettleMethod', props: { label: 'label', value: 'value' }, translation: true },
 	},
@@ -540,7 +580,7 @@ const columns = reactive([
 		dataIndex: 'delivery_status',
 		formType: 'select',
 		dict: { name: 'bizDeliveryStatus', props: { label: 'label', value: 'value' }, translation: true },
-		search: true,
+		search: false,
 	},
 	// {
 	// 	title: '录单人',

@@ -4,7 +4,7 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- 表格按钮后置扩展 -->
       <template #tableAfterButtons>
-        <a-button type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择工艺
+        <a-button v-if="sysInfoStore.info.is_team_leader" type="outline" @click="modifyShow"><template #icon><icon-code /></template>选择工艺
         </a-button>
       </template>
     </ma-crud>
@@ -125,8 +125,8 @@ const crud = reactive({
   operationColumn: true,
   operationColumnWidth: 160,
   add: { show: sysInfoStore.info.is_admin, api: api.save, auth: ['/pricingCraft/save'] },
-  edit: { show: true, api: api.update, auth: ['/pricingCraft/update'] },
-  delete: { show: true, api: api.delete, auth: ['/pricingCraft/destroy'] },
+  edit: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.update, auth: ['/pricingCraft/update'] },
+  delete: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.delete, auth: ['/pricingCraft/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingCraft/recovery'] },
   formOption: { width: 800 },
 })

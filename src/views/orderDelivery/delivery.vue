@@ -600,7 +600,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '客方必填' }],
   },
   {
-    title: '发货计划',
+    title: '发货计划*',
     dataIndex: 'delivery_time',
     search: true,
     searchFormType: 'range',

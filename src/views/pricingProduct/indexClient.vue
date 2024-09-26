@@ -57,9 +57,9 @@ const crud = reactive({
   rowSelection: { showCheckedAll: true },
   operationColumn: !sysInfoStore.info.is_client,
   operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/pricingProduct/save'] },
-  edit: { show: true, api: api.update, auth: ['/pricingProduct/update'] },
-  delete: { show: true, api: api.delete, auth: ['/pricingProduct/destroy'] },
+  add: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.save, auth: ['/pricingProduct/save'] },
+  edit: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.update, auth: ['/pricingProduct/update'] },
+  delete: { show: sysInfoStore.info.is_team_leader ? true : false, api: api.delete, auth: ['/pricingProduct/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/pricingProduct/recovery'] },
   formOption: { width: 800 },
 })

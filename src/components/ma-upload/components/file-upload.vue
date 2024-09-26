@@ -20,12 +20,12 @@
 		</a-upload>
 	</div>
 	<!-- 单文件 -->
-	<div class="mt-2 file-list" v-if="!config.multiple && currentItem?.url && config.showList">
+	<div class="mt-2 mb-10 file-list" v-if="!config.multiple && currentItem?.url && config.showList">
 		<a-button class="delete" @click="removeSignFile()">
 			<template #icon><icon-delete /></template>
 		</a-button>
 		<div class="file-item">
-			{{ currentItem.name }}
+			{{ currentItem.url }}
 		</div>
 	</div>
 
@@ -65,11 +65,11 @@ const uploadFileHandler = async (options) => {
 		currentItem.value = options.fileItem
 	}
 	const file = options.fileItem.file
-	if (file.size > config.size) {
-		Message.warning(file.name + ' ' + t('upload.sizeLimit'))
-		currentItem.value = {}
-		return
-	}
+	// if (file.size > config.size) {
+	// 	Message.warning(file.name + ' ' + t('upload.sizeLimit'))
+	// 	currentItem.value = {}
+	// 	return
+	// }
 
 	const requestData = {
 		...config.requestData,

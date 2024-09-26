@@ -5,7 +5,7 @@
         <a-checkbox v-if="scene !== 'index'" :value="order.id"><span v-if="scene !== 'create'">订单编号:<span
               class="pl-2">{{ order.code }}</span></span></a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 font-bold text-center" v-if="scene !== 'create' && order.store_name"><span
+          <span class="pr-4 font-bold text-center" v-if="scene === 'index' && order.store_name"><span
               class="pr-2">订单编号:</span>{{ order.code }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_name">{{ order.store_name }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{ order.store_area_type }}</span>
@@ -22,12 +22,12 @@
     </template>
     <template #extra>
       <a-button type="primary" @click="expandAll" size="mini" style="margin-right: 1rem">{{ tableExpand ? '收起' :
-          '展开' }}全部</a-button>
+        '展开' }}全部</a-button>
       <a-button type="primary" v-if="scene === 'create'" status="success" size="mini" @click="handleSubmit"
         style="margin-right: 1rem">提交审订</a-button>
       <a-button type="primary" v-if="scene === 'check'" status="success" size="mini" @click="handleSubmitCheck"
         style="margin-right: 1rem">发起提交</a-button>
-      <a-button type="primary" v-if="scene !== 'index'" status="danger" size="mini"
+      <a-button type="primary" v-if="order.status < 50" status="danger" size="mini"
         @click="handleDeleteOrder">删除订单</a-button>
     </template>
     <div v-if="scene === 'index'" class="flex flex-row gap-2 pb-3 font-bold align-center" style="font-size: 12px">
@@ -81,71 +81,76 @@
       <!--      <a-typography-title :heading="6">商品列表</a-typography-title>-->
       <a-button type="primary" v-if="scene === 'create'" status="success" @click="addNew" size="mini">新增商品</a-button>
       <div class="flex flex-row gap-2 align-center">
-        <span v-if="scene === 'check'" class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">来源:
+        <span v-if="scene === 'check'" class="font-bold"
+          style="font-size: 12px; padding-top: 0.125rem; color: black">来源:
           <span style="font-size: 12px; padding-left: 0.125rem; color: black">{{ order.source }}</span>
         </span>
         <span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">订单备注:</span>
         <a-input size="mini" :disabled="scene === 'index'" v-model="order.remark" style="width: 800px"
           @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+        <span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black" v-if="scene === 'check'">
+          <span class="pl-1 text-black">卡券名称:</span>
+          <span class="pl-3 text-black">{{ order.coupon_name }}</span>
+        </span>
       </div>
     </div>
     <a-table size="mini" :data="goods" column-resizable :bordered="{ cell: true }" :pagination="false" ref="tableRef"
       hide-expand-button-on-empty :scroll="{ x: 2000, y: 2000 }">
       <template #columns>
-        <a-table-column title="产品名称" data-index="product_id" :width="300">
+        <a-table-column title="产品名称" data-index="product_id" :width="210">
           <template #cell="{ record, column, index }">
             <span v-if="record.row_type === 'craft'"></span>
             <product-id-select size="mini" v-else v-model="record.product_id" :disabled="disableProductEdit(record)"
               @change="onProductChanged($event, record)" />
           </template>
         </a-table-column>
-        <a-table-column title="产品级别" data-index="product_grade_id" :width="100">
+        <a-table-column title="产品级别" data-index="product_grade_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
           <!--            <product-grade-select v-model="record.product_grade_id" :disabled="true" />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productGrade']">{{ renderDictValue('productGrade',
-          record.product_grade_id) }}</span>
+              record.product_grade_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="画面类型" data-index="product_picture_type_id" :width="100">
+        <a-table-column title="画面类型" data-index="product_picture_type_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
           <!--            <product-picture-type-select v-model="record.product_picture_type_id" :disabled="true" />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productPictureType']">{{ renderDictValue('productPictureType',
-          record.product_picture_type_id) }}</span>
+              record.product_picture_type_id) }}</span>
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="源文件" data-index="associated_file" :width="300">
+        <a-table-column title="源文件" data-index="associated_file" :width="200">
           <template #cell="{ record, column, index }">
             <span v-if="record.row_type === 'craft'"></span>
             <associated-file-select size="mini" v-else v-model="record.associated_file" :disabled="!record.editable" />
           </template>
         </a-table-column>
-        <a-table-column title="宽度CM" data-index="width" :width="120">
+        <a-table-column title="宽度CM" data-index="width" :width="80">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.width"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
           </template>
         </a-table-column>
-        <a-table-column title="高度CM" data-index="height" :width="120">
+        <a-table-column title="高度CM" data-index="height" :width="80">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.height"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
           </template>
         </a-table-column>
-        <a-table-column title="数量" data-index="nums" :width="120">
+        <a-table-column title="数量" data-index="nums" :width="70">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.nums"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
           </template>
         </a-table-column>
-        <a-table-column v-if="scene === 'create'" title="工艺" data-index="craft_id">
+        <a-table-column title="工艺" data-index="craft_id" :width="110">
           <template #cell="{ record, column, index }">
-            <a-button v-if="record.row_type === 'goods'" size="mini" status="success" shape="circle"
+            <a-button v-if="record.row_type === 'goods' && scene === 'create'" size="mini" status="success" shape="circle"
               @click="addCraft(record)">
               <icon-plus />
             </a-button>
@@ -154,7 +159,7 @@
               :product-id="record.product_id" />
           </template>
         </a-table-column>
-        <a-table-column title="计价方式" data-index="pricing_type_id" :width="100">
+        <a-table-column title="计价方式" data-index="pricing_type_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
           <!--            <pricing-type-select v-model="record.pricing_type_id" :disabled="true" />-->
           <!--          </template>-->
@@ -164,7 +169,7 @@
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="计量单位" data-index="pricing_unit_id" :width="100">
+        <a-table-column title="计量单位" data-index="pricing_unit_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
           <!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled="true" />-->
           <!--          </template>-->
@@ -174,7 +179,7 @@
             <span v-else>加载中</span>
           </template>
         </a-table-column>
-        <a-table-column title="单价" data-index="unit_price">
+        <a-table-column title="单价" data-index="unit_price" :width="80">
           <!--          <template #cell="{ record, column, index }">-->
           <!--            <a-input v-model="record.unit_price" :disabled="true" />-->
           <!--          </template>-->
@@ -182,7 +187,7 @@
             <span>{{ record.unit_price && record.unit_price != '0.00' ? record.unit_price : '' }}</span>
           </template>
         </a-table-column>
-        <a-table-column v-if="scene === 'check'" title="金额" data-index="amount" />
+        <a-table-column v-if="scene === 'check' || scene === 'index'" title="金额" data-index="amount" />
         <a-table-column v-if="scene !== 'index'" title="操作" fixed="right" :width="100">
           <template #cell="{ record, column }">
             <div style="display: flex; flex-direction: row; gap: 10px">
@@ -467,7 +472,7 @@ function onDeleteGoodsOrCraft(record) {
 
 function onSubmitGoodsOrCraft(record) {
   if (typeof (record.key) === 'string' && record.key.includes('tmpAdd')) {
-    if (!record.width || !record.height || !record.nums || !record.product_id) {
+    if (record.width === null || record.height === null || !record.nums || !record.product_id) {
       Message.error('请选择产品，填写宽度、高度、数量');
       return;
     }

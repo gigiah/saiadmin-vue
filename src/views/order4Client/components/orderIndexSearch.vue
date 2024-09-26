@@ -1,9 +1,28 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import storeAreaApi from '@/api/storeAreaType';
 import storeApi from '@/api/store';
 
-const searchForm = ref({});
+const getDefaultDates = () => {
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  // 格式化日期为 'YYYY-MM-DD' 的形式
+  function formatDate(date) {
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    return [
+      date.getFullYear(),
+      month > 9 ? month : '0' + month,
+      day > 9 ? day : '0' + day
+    ].join('-');
+  }
+  return [formatDate(today), formatDate(tomorrow)];
+}
+
+const searchForm = ref({
+  create_time: getDefaultDates()
+});
 
 const emit = defineEmits(['search', 'reset']);
 
@@ -16,17 +35,17 @@ const handleSearch = () => {
   emit('search', searchForm.value);
 }
 
-const areaFieldNames = {value: 'id', label: 'name'}
+const areaFieldNames = { value: 'id', label: 'name' }
 const areaOptions = ref([])
-const storeFieldNames = {value: 'id', label: 'name'}
+const storeFieldNames = { value: 'id', label: 'name' }
 const storeOptions = ref([])
 
 onMounted(() => {
-  storeAreaApi.getPageList({type: 'all'}).then(res => {
+  storeAreaApi.getPageList({ type: 'all' }).then(res => {
     console.log(res.data);
     areaOptions.value = res.data;
   })
-  storeApi.getPageList({type: 'all'}).then(res => {
+  storeApi.getPageList({ type: 'all' }).then(res => {
     storeOptions.value = res.data;
   })
 })
@@ -43,12 +62,14 @@ onMounted(() => {
       </a-col>
       <a-col :span="6">
         <a-form-item label="营销区域" class="!mb-0" field="store_area_type">
-          <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames" :options="areaOptions" allow-clear allow-search />
+          <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames"
+            :options="areaOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
       <a-col :span="6">
         <a-form-item label="门店名称" class="!mb-0" field="store_id">
-          <a-select size="mini" v-model="searchForm.store_id" placeholder="请输入门店名称" :field-names="storeFieldNames" :options="storeOptions" allow-clear allow-search />
+          <a-select size="mini" v-model="searchForm.store_id" placeholder="请输入门店名称" :field-names="storeFieldNames"
+            :options="storeOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
       <a-col :span="6">

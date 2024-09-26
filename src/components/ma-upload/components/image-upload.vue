@@ -1,5 +1,5 @@
 <template>
-	<div class="upload-image flex">
+	<div class="flex upload-image">
 		<!-- 单图 -->
 		<div :class="'image-list ' + (config.rounded ? 'rounded-full' : '')" v-if="!config.multiple && currentItem?.url && config.showList">
 			<a-button class="delete" @click="removeSignImage()">
@@ -29,7 +29,7 @@
 			<template #upload-button>
 				<slot name="customer">
 					<div :class="'upload-skin ' + (config.rounded ? 'rounded-full' : 'rounded-sm')" v-if="!props.modelValue || config.multiple">
-						<div class="icon text-3xl"><component :is="config.icon" /></div>
+						<div class="text-3xl icon"><component :is="config.icon" /></div>
 						<div class="title">
 							{{ config.title === 'buttonText' ? $t('upload.buttonText') : config.title }}
 						</div>
@@ -65,11 +65,11 @@ const uploadImageHandler = async (options) => {
 		currentItem.value = options.fileItem
 	}
 	const file = options.fileItem.file
-	if (file.size > config.size) {
-		Message.warning(file.name + ' ' + t('upload.sizeLimit'))
-		currentItem.value = {}
-		return
-	}
+	// if (file.size > config.size) {
+	// 	Message.warning(file.name + ' ' + t('upload.sizeLimit'))
+	// 	currentItem.value = {}
+	// 	return
+	// }
 	const requestData = {
 		...config.requestData,
 		mode: config.uploadMode,

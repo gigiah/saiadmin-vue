@@ -90,6 +90,7 @@ const columns = reactive([
     dict: { name: 'bizCouponDiscountType', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
     commonRules: [{ required: true, message: '减免类型必填' }],
+    extra: '面积按平方米',
   },
   {
     title: '产品',

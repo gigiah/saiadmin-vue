@@ -34,13 +34,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <a-form :model="searchForm" class="ma-content-block pt-4 pr-4 pl-4">
+  <a-form :model="searchForm" class="pt-4 pl-4 pr-4 ma-content-block">
     <a-row>
-      <a-col :span="8">
+      <!-- <a-col :span="8">
         <a-form-item label="订单号" class="!mb-0" field="code">
           <a-input size="mini" v-model="searchForm.code" placeholder="请输入订单号" allow-clear />
         </a-form-item>
-      </a-col>
+      </a-col> -->
       <a-col :span="8">
         <a-form-item label="营销区域" class="!mb-0" field="store_area_type">
           <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames" :options="areaOptions" allow-clear allow-search />
@@ -58,7 +58,7 @@ onMounted(() => {
 <!--      </a-col>-->
     </a-row>
   </a-form>
-  <div class="ma-content-block flex items-center justify-center pt-4 gap-4">
+  <div class="flex items-center justify-center gap-4 pt-4 ma-content-block">
     <a-button type="primary" size="mini" @click="handleSearch">查询</a-button>
     <a-button size="mini" @click="handleReset">
       <template #icon>
