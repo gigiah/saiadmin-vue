@@ -130,19 +130,19 @@
             <associated-file-select size="mini" v-else v-model="record.associated_file" :disabled="!record.editable" />
           </template>
         </a-table-column>
-        <a-table-column title="宽度CM" data-index="width" :width="80">
+        <a-table-column title="宽度CM" data-index="width" :width="120">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.width"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
           </template>
         </a-table-column>
-        <a-table-column title="高度CM" data-index="height" :width="80">
+        <a-table-column title="高度CM" data-index="height" :width="120">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.height"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
           </template>
         </a-table-column>
-        <a-table-column title="数量" data-index="nums" :width="70">
+        <a-table-column title="数量" data-index="nums" :width="120">
           <template #cell="{ record, column, index }">
             <a-input-number size="mini" v-model="record.nums"
               :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
