@@ -2,6 +2,10 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- switch -->
+      <template #status="{ record }">
+        <a-switch :disabled="sysInfoStore.info.is_client || !sysInfoStore.info.is_team_leader" :checked-value="1" unchecked-value="2" @change="changeStatus($event, record.id)" :default-checked="record.status == 1" />
+      </template>
     </ma-crud>
   </div>
 </template>
@@ -10,7 +14,7 @@
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/pricingProduct'
 import productApi from '@/api/product'
-import { Message } from '@arco-design/web-vue'
+import { Message, Modal } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
@@ -39,6 +43,33 @@ const selectItem = (id) => {
     }
   })
   return obj
+}
+
+const changeStatus = async (status, id) => {
+  Modal.info({
+    title: '提示',
+    content: '确认吗？',
+    simple: false,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: async () => {
+      api.changeStatus({
+        'id': id,
+        'value': status,
+      }).then(res => {
+        if (res.code == 200) {
+          Message.success(res.message)
+        } else {
+          Message.error(res.message)
+        }
+        crudRef.value.refresh()
+      })
+    },
+    onCancel: async () => {
+      console.log('cancel')
+      crudRef.value.refresh()
+    }
+  })
 }
 
 const crud = reactive({
@@ -251,6 +282,19 @@ const columns = reactive([
     returnType: 'url',
     multiple: false,
     commonRules: [{ required: false, message: '详情图必填' }],
+  },
+  {
+    title: '启用状态',
+    dataIndex: 'status',
+    width: 180,
+    search: true,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    // commonRules: [{ required: false, message: '必填' }],
   },
   {
     title: '创建者',

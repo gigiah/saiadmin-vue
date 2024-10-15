@@ -65,6 +65,30 @@ const columns = reactive([
     commonRules: [{ required: true, message: '名称必填' }],
   },
   {
+    title: '地址类型',
+    dataIndex: 'type',
+    width: 180,
+    search: false,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    formType: 'select',
+    dict: {
+      data: [
+        {
+          label: "门店",
+          value: "store"
+        },
+        {
+          label: "仓库",
+          value: "warehouse"
+        }
+      ],
+      translation: true
+    },
+    commonRules: [{ required: true, message: '地址类型必填' }],
+  },
+  {
     title: '联系人',
     dataIndex: 'contact',
     width: 180,

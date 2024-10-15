@@ -179,7 +179,12 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '价格体系必填' }],
+    multiple: true,
+    editDefaultValue: async (record) => {
+      const response = await api.read(record.id)
+      return response.data.list.map((item) => item.id)
+    },
+    // commonRules: [{ required: true, message: '价格体系必填' }],
   },
   {
     title: '创建者',

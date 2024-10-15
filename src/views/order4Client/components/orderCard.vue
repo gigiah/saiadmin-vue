@@ -17,6 +17,8 @@
           <span class="pr-2 font-bold text-center">收货地址:</span>
           <consignee-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini"
             @change="onStoreChanged" />
+          <span class="pl-2"><a-input disabled="true" readonly="true" size="mini" v-model="order.consignee_address"
+              style="width: 500px" /></span>
         </div>
       </div>
     </template>
@@ -150,8 +152,8 @@
         </a-table-column>
         <a-table-column title="工艺" data-index="craft_id" :width="110">
           <template #cell="{ record, column, index }">
-            <a-button v-if="record.row_type === 'goods' && scene === 'create'" size="mini" status="success" shape="circle"
-              @click="addCraft(record)">
+            <a-button v-if="record.row_type === 'goods' && scene === 'create'" size="mini" status="success"
+              shape="circle" @click="addCraft(record)">
               <icon-plus />
             </a-button>
             <pricing-craft-select size="mini" v-if="record.row_type === 'craft'" v-model="record.craft_id"
