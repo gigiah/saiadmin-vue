@@ -75,7 +75,7 @@ const onAddCouponOk = () => {
 
 onMounted(() => {
   getOrders();
-  bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
+  bizDict.flushDict('store', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
   bizDict.fetchPricingProduct4Search('', '', 'client');
 })
 

@@ -16,6 +16,9 @@ const crudRef = ref()
 
 const crud = reactive({
   api: api.getPageList,
+  requestParams: {
+    warehouse_type: 'warehouse'
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,

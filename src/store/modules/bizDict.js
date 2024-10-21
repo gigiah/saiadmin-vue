@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { request } from '@/utils/request'
+import warehouseAddress from '@/api/warehouseAddress'
 
 const useBizDictStore = defineStore('bizDict', {
 	state: () => ({}),
@@ -9,7 +10,7 @@ const useBizDictStore = defineStore('bizDict', {
 				this.fetchDict(name)
 			})
 		},
-		fetchDict(name) {
+		fetchDict(name, params = {}) {
 			request({
 				url: `${name}/index?type=all`,
 				method: 'get',
@@ -23,6 +24,28 @@ const useBizDictStore = defineStore('bizDict', {
 					})
 				} else {
 					console.log(`fetch ${name} dict failed`)
+				}
+			})
+		},
+		fetchOrderWarehouse(storeId = 0) {
+			request({
+				url: `/warehouseAddress/index?type=all&store_id=${storeId}`,
+				method: 'get',
+			}).then((resp) => {
+				if (resp.code === 200) {
+					const data = resp.data.map((item) => {
+						return { label: item.name, value: item.id }
+					})
+					if (storeId) {
+						this.$patch({
+							[storeId + '_warehouseAddress']: data,
+						})
+					}
+					this.$patch({
+						warehouseAddress: data,
+					})
+				} else {
+					console.error(`fetch fetchOrderWarehouse dict failed`)
 				}
 			})
 		},

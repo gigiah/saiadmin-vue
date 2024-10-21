@@ -66,7 +66,7 @@ const columns = reactive([
   },
   {
     title: '地址类型',
-    dataIndex: 'type',
+    dataIndex: 'warehouse_type',
     width: 180,
     search: false,
     addDisplay: false,

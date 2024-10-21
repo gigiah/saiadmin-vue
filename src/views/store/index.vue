@@ -137,7 +137,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    commonRules: [{ required: false, message: '联系人必填' }],
+    commonRules: [{ required: true, message: '联系人必填' }],
   },
   {
     title: '手机号',
@@ -148,7 +148,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    commonRules: [{ required: false, message: '手机号必填' }],
+    commonRules: [{ required: true, message: '手机号必填' }],
   },
   {
     title: '微信号',
@@ -159,7 +159,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    commonRules: [{ required: false, message: '微信号必填' }],
+    commonRules: [{ required: true, message: '微信号必填' }],
   },
   {
     title: '结算方式',

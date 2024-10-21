@@ -100,8 +100,8 @@
 							@click="toggleSearch"><icon-search /></a-button></a-tooltip>
 					<!-- <a-tooltip content="打印表格"><a-button shape="circle"
 							@click="printTable"><icon-printer /></a-button></a-tooltip> -->
-					<a-tooltip content="设置"><a-button shape="circle"
-							@click="tableSetting"><icon-settings /></a-button></a-tooltip>
+					<!-- <a-tooltip content="设置"><a-button shape="circle"
+							@click="tableSetting"><icon-settings /></a-button></a-tooltip> -->
 				</a-space>
 			</div>
 			<div ref="crudContentRef">
