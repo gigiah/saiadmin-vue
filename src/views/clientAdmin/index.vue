@@ -49,9 +49,14 @@ onMounted(() => {
 })
 
 const changeStatus = async (status, id) => {
-	const response = await user.changeStatus({ id, status })
-	if (response.code === 200) {
-		Message.success(response.message)
+	if (id === sysInfoStore.info.sys_user_id) {
+		Message.error('不可修改自己')
+		return false
+	} else {
+		const response = await user.changeStatus({ id, status })
+		if (response.code === 200) {
+			Message.success(response.message)
+		}
 	}
 }
 

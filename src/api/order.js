@@ -32,6 +32,15 @@ export default {
     })
   },
 
+  //快递面单
+  expressBillPrint (params = {}) {
+    return request({
+      url: '/order/expressBillPrint',
+      method: 'post',
+      params
+    })
+  },
+
   /**
    * 数据列表
    * @returns

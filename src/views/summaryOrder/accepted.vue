@@ -4,7 +4,7 @@
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <!-- switch -->
       <template #finish_status="{ record }">
-        <a-switch :checked-value="1" unchecked-value="2" @change="changeFinishStatus($event, record.id)" />
+        <a-switch :checked-value="1" unchecked-value="2" v-model="record.finish_status" @change="changeFinishStatus($event, record.id)" />
       </template>
       <!-- 操作前置扩展 -->
       <template #operationBeforeExtend="{ record }">

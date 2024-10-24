@@ -82,7 +82,7 @@ const columns = reactive([
     editDisplay: true,
     hide: false,
     formType: 'input',
-    maxLength: 12,
+    maxLength: 16,
     commonRules: [{ required: true, message: '名称必填' }],
   },
   {

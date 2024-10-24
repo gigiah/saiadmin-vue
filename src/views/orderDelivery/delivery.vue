@@ -208,6 +208,19 @@ watch(labelPrintVisible, (newValue) => {
   }
 });
 
+const printExpress = (id) => {
+  let orderIds = []
+  orderIds.push(id)
+
+  api.expressBillPrint({ order_ids: orderIds })
+    .then(res => {
+      console.log(res)
+      const blob = new Blob([res.data], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+    })
+}
+
 const printLabel = (id) => {
   let orderIds = []
   orderIds.push(id)
@@ -693,7 +706,7 @@ const columns = reactive([
     long: false,
     onClick: async () => {
       let orderId = crudRef.value.crudFormRef.form.id
-      printLabel(orderId)
+      printExpress(orderId)
     },
   },
 ])

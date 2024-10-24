@@ -46,6 +46,7 @@ onMounted(() => {
 })
 
 function getOrders(params = {}) {
+  params.menu = 'customerService';
   orderApi.orderTree({
     status: [50, 60, 70, 90], // 0: 录入中
     ...params

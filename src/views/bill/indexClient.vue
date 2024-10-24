@@ -3,7 +3,7 @@
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
       <template #operationBeforeExtend="{ record }">
-        <a-space v-if="!record.manual_excel" size="mini">
+        <a-space v-if="record.manual_excel" size="mini">
           <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
         </a-space>
         <a-space size="mini" v-if="record.fapiao_method != 0">
@@ -34,14 +34,10 @@ const viewItems = (record) => {
 }
 
 const downloadManualExcel = async (record) => {
-  console.log(record)
-  Message.info('对账单下载中，请稍后')
-  const response = await api.downloadBillExcel({ id: record.id })
-  if (response) {
-    tool.download(response, record.name + '结算对账单.xlsx')
-    Message.success('开始下载')
+  if (!record.manual_excel) {
+    Message.error('暂无结算单')
   } else {
-    Message.error('下载失败')
+    window.location.href = record.manual_excel
   }
 }
 

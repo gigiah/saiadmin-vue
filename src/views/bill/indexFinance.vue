@@ -11,7 +11,7 @@
           :default-checked="record.checkout_status == 1" :disabled="record.checkout_status == 1" />
       </template>
       <template #operationBeforeExtend="{ record }">
-        <a-space v-if="!record.manual_excel" size="mini">
+        <a-space v-if="record.manual_excel" size="mini">
           <a-link @click="downloadManualExcel(record)"><icon-to-bottom />结算对账单</a-link>
         </a-space>
         <a-space size="mini">

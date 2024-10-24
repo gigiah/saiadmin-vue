@@ -51,7 +51,7 @@ const useBizDictStore = defineStore('bizDict', {
 		},
 		fetchPricingProduct4Search(range = '', role = '', type = '') {
 			request({
-				url: `/pricingProduct/index4Search?range=${range}&role=${role}&type=${type}`,
+				url: `/pricingProduct/index4Search?status=1&range=${range}&role=${role}&type=${type}`,
 				method: 'get',
 			}).then((resp) => {
 				if (resp.code === 200) {
@@ -68,7 +68,7 @@ const useBizDictStore = defineStore('bizDict', {
 		},
 		fetchPricingCraft4Search(product_id = '', range = '') {
 			request({
-				url: `/pricingCraft/index4Search?range=${range}&product_id=${product_id}`,
+				url: `/pricingCraft/index4Search?status=1&range=${range}&product_id=${product_id}`,
 				method: 'get',
 			}).then((resp) => {
 				if (resp.code === 200) {
