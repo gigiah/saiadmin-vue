@@ -43,7 +43,10 @@ const downloadManualExcel = async (record) => {
 
 const crud = reactive({
   api: api.getPageList,
-  requestParams: {  client_group_id: sysInfoStore.info.client_group_id },
+  requestParams: {
+    client_group_id: sysInfoStore.info.client_group_id,
+    client_sys_id: sysInfoStore.info.sys_user_id
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   searchColNumber: 3,
@@ -57,14 +60,14 @@ const crud = reactive({
   recovery: { show: false, api: api.recovery },
   formOption: { width: 800 },
   beforeOpenEdit: (formData) => {
-		console.log('beforeOpenEditColumns', columns)
-		console.log('beforeOpenEditForm', formData)
-    if(formData.type == 1){
+    console.log('beforeOpenEditColumns', columns)
+    console.log('beforeOpenEditForm', formData)
+    if (formData.type == 1) {
       Message.error('现结账单不可选择')
       return false;
     }
-		return true
-	},
+    return true
+  },
 })
 
 const columns = reactive([
@@ -85,7 +88,7 @@ const columns = reactive([
     dataIndex: 'type',
     width: 100,
     search: true,
-    addDisplay: true, 
+    addDisplay: true,
     addDefaultValue: 1,
     editDisplay: true,
     hide: false,
@@ -120,7 +123,7 @@ const columns = reactive([
   // },
   {
     title: '结算金额',
-    dataIndex: 'bill_total',
+    dataIndex: 'final_total',
     width: 180,
     search: false,
     addDisplay: true,

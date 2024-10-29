@@ -47,7 +47,8 @@ const downloadFile = async (record) => {
 }
 
 const open = (row) => {
-  console.log(row)
+  console.log('row: ', row)
+  billId.value = row.id
   billType.value = row.type
   billTotal.value = row.final_total
   fapiaoMethod.value = row.fapiao_method//1=人工 2=按店

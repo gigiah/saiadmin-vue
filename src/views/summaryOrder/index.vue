@@ -59,10 +59,10 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 160,
+  operationColumnWidth: 110,
   add: { show: false, api: api.save, auth: ['/summaryOrder/save'] },
   edit: { show: true, api: api.update, auth: ['/summaryOrder/update'] },
-  delete: { show: true, api: api.delete, auth: ['/summaryOrder/destroy'] },
+  delete: { show: false, api: api.delete, auth: ['/summaryOrder/destroy'] },
   recovery: { show: true, api: api.recovery, auth: ['/summaryOrder/recovery'] },
   formOption: {
     width: '850px',

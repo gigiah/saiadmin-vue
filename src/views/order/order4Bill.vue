@@ -532,7 +532,7 @@ const columns = reactive([
 	// },
 	{
 		title: '运费',
-		dataIndex: 'freight',
+		dataIndex: 'freight_avg',
 	},
 	{
 		title: '订单金额',

@@ -6,8 +6,10 @@ import storeApi from '@/api/store';
 
 const getDefaultDates = () => {
   const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 3);
+  const start = new Date();
+  const end = new Date();
+  start.setDate(today.getDate() - 3);
+  end.setDate(today.getDate() + 1);
   // 格式化日期为 'YYYY-MM-DD' 的形式
   function formatDate(date) {
     let month = date.getMonth() + 1;
@@ -18,7 +20,7 @@ const getDefaultDates = () => {
       day > 9 ? day : '0' + day
     ].join('-');
   }
-  return [formatDate(today), formatDate(tomorrow)];
+  return [formatDate(start), formatDate(end)];
 }
 
 const searchForm = ref({
