@@ -22,25 +22,25 @@ const crud = reactive({
   searchColNumber: 3,
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
-  operationColumn: sysInfoStore.info.is_admin ? true : false,
+  operationColumn: sysInfoStore.info?.is_admin ? true : false,
   operationColumnWidth: 160,
   add: {
-    show: sysInfoStore.info.is_admin ? true : false,
+    show: sysInfoStore.info?.is_admin ? true : false,
     api: api.save,
     // auth: ['/clientGroup/save']
   },
   edit: {
-    show: sysInfoStore.info.is_admin ? true : false,
+    show: sysInfoStore.info?.is_admin ? true : false,
     api: api.update,
     // auth: ['/clientGroup/update']
   },
   delete: {
-    show: sysInfoStore.info.is_admin ? true : false,
+    show: sysInfoStore.info?.is_admin ? true : false,
     api: api.delete,
     // auth: ['/clientGroup/destroy']
   },
   recovery: {
-    show: sysInfoStore.info.is_admin ? true : false,
+    show: sysInfoStore.info?.is_admin ? true : false,
     api: api.recovery,
     // auth: ['/clientGroup/recovery']
   },

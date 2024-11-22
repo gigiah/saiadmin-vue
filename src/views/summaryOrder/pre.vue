@@ -98,7 +98,7 @@ const changeAcceptedStatus = async (status, id) => {
 const confirmProduceModal = (record) => {
   console.log('sysInfoStore', sysInfoStore.info)
   console.log('record', record)
-  if (!sysInfoStore.info.is_admin) {
+  if (!sysInfoStore.info?.is_admin ? true : false) {
     if (record.accept_status == 2) {
       Message.error('非受理状态无法推送')
       return false;
@@ -145,7 +145,7 @@ const crud = reactive({
     width: '850px',
   },
   beforeOpenEdit: (params) => {
-    if (!sysInfoStore.info.is_admin) {
+    if (!sysInfoStore.info?.is_admin ? true : false) {
       if (sysInfoStore.info.sys_user_id != params.accept_sys_id) {
         Message.error('非受理人无法编辑')
         return false;

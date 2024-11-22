@@ -29,19 +29,19 @@
         <!-- 这里是要打印的内容 -->
         <table v-for="item in orderTreeData" :key="item.id" style="margin-bottom: 30px;">
           <tr>
-            <td colspan="5" class="code">{{ item.orderLabelNo }}</td>
+            <td colspan="7" class="code">{{ item.orderLabelNo }}</td>
           </tr>
           <tr>
-            <td colspan="5" class="title">客户简称：{{ item.client }}</td>
+            <td colspan="7" class="title">客户简称：{{ item.client }}</td>
           </tr>
           <tr>
-            <td colspan="5" class="title">门店名称：{{ item.store }}</td>
+            <td colspan="7" class="title">门店名称：{{ item.store }}</td>
           </tr>
           <tr>
-            <td colspan="5" class="title">营销区域：{{ item.storeArea }}</td>
+            <td colspan="7" class="title">营销区域：{{ item.storeArea }}</td>
           </tr>
           <tr>
-            <td colspan="5" class="title">价格体系：{{ item.storePricing }}</td>
+            <td colspan="7" class="title">价格体系：{{ item.storePricing }}</td>
           </tr>
           <!-- <tr>
             <td colspan="2">{{ item.client }}</td>
@@ -50,14 +50,16 @@
             <td>{{ item.storePricing }}</td>
           </tr> -->
           <!-- <tr>
-            <td colspan="5" style="height: 20px;"></td>
+            <td colspan="7" style="height: 20px;"></td>
           </tr> -->
           <tr>
-            <td width="36%">产品名称</td>
+            <td width="20%">产品名称</td>
             <td width="10%">宽</td>
             <td width="10%">高</td>
-            <td width="8%">数量</td>
-            <td width="36%">制作选项</td>
+            <td width="10%">数量</td>
+            <td width="20%">制作选项</td>
+            <td width="20%">文件名称</td>
+            <td width="10%">标识符</td>
           </tr>
           <tr v-for="itemGoods in item.goods" :key="itemGoods.id">
             <td>{{ itemGoods.name }}</td>
@@ -65,6 +67,8 @@
             <td>{{ itemGoods.height }}</td>
             <td>{{ itemGoods.nums }}</td>
             <td>{{ itemGoods.craftDesc }}</td>
+            <td>{{ itemGoods.associatedFileName }}</td>
+            <td>{{ itemGoods.identify }}</td>
           </tr>
         </table>
       </div>
@@ -156,7 +160,7 @@ const openPrintWindow = async () => {
       width: 1em;
     }
     table {
-      width: 360px;
+      width: 100%;
       border-collapse: collapse;
       font-size: 9px;
     }
@@ -262,7 +266,9 @@ const transformData = (data) => {
         width: parseFloat(good.width),
         height: parseFloat(good.height),
         nums: good.nums,
-        craftDesc: good.craft_desc || ''
+        craftDesc: good.craft_desc || '',
+        identify: good.identify,
+        associatedFileName: good.associated_file_name || '',
       };
       // 将处理后的商品添加到订单的商品列表中
       transformedOrder.goods.push(transformedGood);
@@ -503,10 +509,10 @@ const deleteByForm = (id, table) => {
 
 const crud = reactive({
   api: api.orderTree4Delivery,
-  requestParams: { 
+  requestParams: {
     status: currentStatus,
     show_children: 1,
-   },
+  },
   recycleApi: api.getRecyclePageList,
   showIndex: false,
   pageLayout: 'fixed',

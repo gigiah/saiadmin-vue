@@ -28,7 +28,7 @@ const open = (row) => {
 const sysInfoStore = useSysInfoStore()
 let role_code = ''
 let dept_id = 0
-if (!sysInfoStore.info.is_admin) {
+if (!sysInfoStore.info?.is_admin ? true : false) {
   role_code = sysInfoStore.info.role_codes[0]
   dept_id = sysInfoStore.info.dept_id
 }
@@ -37,7 +37,7 @@ let showOperation = true
 if (sysInfoStore.info.is_client || !sysInfoStore.info.is_team_leader) {
   showOperation = false
 }
-if (sysInfoStore.info.is_admin === true) {
+if (sysInfoStore.info?.is_admin ? true : false === true) {
   showOperation = true
 }
 
@@ -95,7 +95,7 @@ const columns = reactive([
     dataIndex: 'type',
     formType: 'radio',
     addDefaultValue: 'team',
-    // disabled: sysInfoStore.info.is_admin,
+    // disabled: sysInfoStore.info?.is_admin ? true : false,
     width: 100,
     dict: {
       name: 'bizClientServiceType',
@@ -126,8 +126,8 @@ const columns = reactive([
     hide: false,
     addDefaultValue: role_code,
     editDefaultValue: role_code,
-    disabled: sysInfoStore.info.is_admin ? false : true,
-    // disabled: sysInfoStore.info.is_admin ? false : true,
+    disabled: sysInfoStore.info?.is_admin ? true : false ? false : true,
+    // disabled: sysInfoStore.info?.is_admin ? true : false ? false : true,
     dict: { name: 'bizClientServiceRole', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '跟进角色必填' }],

@@ -1,5 +1,5 @@
 <template>
-  <a-select :key="myKey" v-bind="props" :options="bizDict.$state['pricingProduct4Search']" placeholder="请选择"></a-select>
+  <a-select :key="myKey" v-bind="props" allow-search="true" :options="bizDict.$state['pricingProduct4Search']" placeholder="请选择"></a-select>
 </template>
 
 <script setup>

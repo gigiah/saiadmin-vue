@@ -220,5 +220,29 @@ export default {
 		})
 	},
 
+  /**
+	 * 导出订单
+	 * @returns
+	 */
+	orderExport(data) {
+		return request({
+			url: '/order/orderExport',
+			method: 'post',
+			data,
+		})
+	},
+
+  /**
+	 * 导入订单
+	 * @returns
+	 */
+	orderImport(data) {
+		return request({
+			url: '/order/orderImport',
+			method: 'post',
+			data,
+		})
+	},
+
 
 }

@@ -601,4 +601,8 @@ function onStoreChanged(value) {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.arco-scrollbar-thumb-bar) {
+  margin: 18px 0 3px 0;
+}
+</style>

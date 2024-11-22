@@ -4,7 +4,7 @@
       <div class="flex flex-row align-center">
         <a-checkbox :value="order.id"><span class="pr-2">订单编号:</span>{{ order.code }}</a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 font-bold text-center">{{ order.check_time }}</span>
+          <span class="pr-4 font-bold text-center">{{ order.create_time }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_name">{{ order.store_name }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{ order.store_area_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{ order.store_business_type
@@ -797,4 +797,8 @@ const openFileModal = (record) => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.arco-scrollbar-thumb-bar) {
+  margin: 18px 0 3px 0;
+}
+</style>
