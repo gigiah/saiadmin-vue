@@ -611,6 +611,7 @@ const columns = reactive([
     dict: { url: '/clientGroup/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
     commonRules: [{ required: false, message: '客方必填' }],
+    cascaderItem: ['store_id'],
   },
   {
     title: '发货计划*',
@@ -656,10 +657,10 @@ const columns = reactive([
   {
     title: '门店',
     dataIndex: 'store_id',
-    search: false,
+    search: true,
     formType: 'select',
     dict: {
-      url: '/store/index?type=all',
+      url: '/store/index?type=all&client_group_id={{key}}',
       props: { label: 'name', value: 'id' },
       translation: true,
     },
@@ -679,6 +680,12 @@ const columns = reactive([
   //   title: '订单运费',
   //   dataIndex: 'freight',
   // },
+  {
+    title: '发货人',
+    dataIndex: 'order_deliver',
+    search: false,
+    width: 100,
+  },
   {
     title: '发货备注',
     dataIndex: 'delivery_remark',
