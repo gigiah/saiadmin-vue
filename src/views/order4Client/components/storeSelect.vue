@@ -7,7 +7,7 @@ const props = defineProps();
 </script>
 
 <template>
-  <a-select v-bind="props" :options="bizDict.$state['store']" placeholder="请选择"></a-select>
+  <a-select v-bind="props" :options="bizDict.$state['store']" placeholder="请选择" :allow-search="true"></a-select>
 </template>
 
 <style scoped>

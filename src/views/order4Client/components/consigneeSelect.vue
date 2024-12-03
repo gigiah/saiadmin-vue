@@ -1,6 +1,6 @@
 <template>
   <!-- <a-select v-bind="props" allow-search="true" :options="bizDict.$state['warehouseAddress']" placeholder="请选择"></a-select> -->
-  <a-select :key="myKey" v-bind="props" allow-search="true" :options="bizDict.$state[dictKey]"
+  <a-select :key="myKey" v-bind="props" :allow-search="true" :options="bizDict.$state[dictKey]"
     placeholder="请选择"></a-select>
 </template>
 
@@ -22,7 +22,7 @@ watch(() => bizDict.$state[dictKey], (newVal) => {
 });
 
 onMounted(() => {
-  console.log('storeId', props.storeId);
+  console.log('consignee select storeId', props.storeId);
   if (props.storeId) {
     dictKey = `${props.storeId}_warehouseAddress`;
     if (!bizDict.$state[dictKey] || bizDict.$state[dictKey].length === 0) {

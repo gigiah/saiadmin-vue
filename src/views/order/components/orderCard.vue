@@ -4,7 +4,7 @@
       <div class="flex flex-row align-center">
         <a-checkbox :value="order.id"><span class="pr-2">订单编号:</span>{{ order.code }}</a-checkbox>
         <div class="text-xs">
-          <span class="pr-4 font-bold text-center">{{ order.create_time }}</span>
+          <span class="pr-4 font-bold text-center">{{ order.check_time }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_name">{{ order.store_name }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{ order.store_area_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{ order.store_business_type
@@ -13,9 +13,11 @@
           <span class="pr-4 font-bold text-center" v-if="order.store_pricing_type">{{ order.store_pricing_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.settle_method">{{ settleMethodLabel }}</span>
           <span class="pr-2 font-bold text-center">收货地址:</span>
-          <consignee-select style="width: 150px" v-model="order.consignee_id" size="mini" @change="onStoreChanged" />
-          <span class="pl-2"><a-input disabled="true" readonly="true" size="mini" v-model="order.consignee_address"
-            style="width: 500px" /></span>
+          <consignee-select style="width: 150px" v-model="order.consignee_id" :storeId="order.store_id" size="mini" @change="onStoreChanged" />
+          <span class="pl-2">
+            <a-input disabled="true" readonly="true" size="mini" v-model="order.consignee_address"
+            style="width: 500px" />
+          </span>
         </div>
       </div>
     </template>

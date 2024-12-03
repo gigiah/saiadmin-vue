@@ -253,8 +253,8 @@ const transformData = (data) => {
       orderLabelNo: order.label_no,
       client: order.client_name,
       store: order.store_name,
-      storeArea: order.store_area_type_name,
-      storePricing: order.store_pricing_type_name,
+      storeArea: order.store_area_type_name ? order.store_area_type_name : order.store_area_type,
+      storePricing: order.store_pricing_type_name ? order.store_pricing_type_name : order.store_pricing_type,
       goods: []
     };
 
