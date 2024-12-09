@@ -54,12 +54,12 @@
           </tr> -->
           <tr>
             <td width="20%">产品名称</td>
-            <td width="10%">宽</td>
-            <td width="10%">高</td>
-            <td width="10%">数量</td>
-            <td width="20%">制作选项</td>
-            <td width="20%">文件名称</td>
-            <td width="10%">标识符</td>
+            <td width="7%">宽</td>
+            <td width="7%">高</td>
+            <td width="7%">数量</td>
+            <td width="15%">制作选项</td>
+            <td width="27%">文件名称</td>
+            <td width="17%">标识符</td>
           </tr>
           <tr v-for="itemGoods in item.goods" :key="itemGoods.id">
             <td>{{ itemGoods.name }}</td>

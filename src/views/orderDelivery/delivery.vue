@@ -656,9 +656,15 @@ const columns = reactive([
   // },
   {
     title: '门店',
+    dataIndex: 'store_name',
+    formType: 'input',
+  },
+  {
+    title: '门店',
     dataIndex: 'store_id',
     search: true,
     formType: 'select',
+    hide: true,
     dict: {
       url: '/store/index?type=all&client_group_id={{key}}',
       props: { label: 'name', value: 'id' },

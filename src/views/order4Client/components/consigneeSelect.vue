@@ -1,6 +1,6 @@
 <template>
   <!-- <a-select v-bind="props" allow-search="true" :options="bizDict.$state['warehouseAddress']" placeholder="请选择"></a-select> -->
-  <a-select :key="myKey" v-bind="props" :allow-search="true" :options="bizDict.$state[dictKey]"
+  <a-select :disabled="isDisabled" :key="myKey" v-bind="props" :allow-search="true" :options="bizDict.$state[dictKey]"
     placeholder="请选择"></a-select>
 </template>
 
@@ -11,6 +11,7 @@ import { onMounted, ref, watch } from "vue";
 const bizDict = useBizDictStore();
 const props = defineProps({
   storeId: { type: Number, default: 0 },
+  isDisabled: { type: Boolean, default: false }
 });
 
 let dictKey = 'warehouseAddress';
