@@ -89,7 +89,7 @@ const crudRef = ref()
 const deleteForms = ref([])
 const selecteds = ref([])
 const nextStage = ref('')
-const currentStatus = ref([50, 60, 70, 90])
+const currentStatus = ref([50, 60, 70, 80, 90])
 const requestParamsData = ref()
 const triggerPrinter = ref(false);
 

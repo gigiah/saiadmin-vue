@@ -7,6 +7,7 @@
         <div class="text-xs">
           <span class="pr-4 font-bold text-center" v-if="scene === 'index' && order.store_name"><span
               class="pr-2">订单编号:</span>{{ order.code }}</span>
+          <!-- <span class="pr-4 font-bold text-center">{{ order.check_time }}</span> -->
           <span class="pr-4 font-bold text-center" v-if="order.store_name">{{ order.store_name }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_area_type">{{ order.store_area_type }}</span>
           <span class="pr-4 font-bold text-center" v-if="order.store_business_type">{{ order.store_business_type
@@ -63,7 +64,7 @@
       </span>
       <span v-if="scene === 'index'" class="pt-0.5">
         <span class="pl-1 text-black">订单日期:</span>
-        <span class="pl-3 text-black">{{ order.create_time }}</span>
+        <span class="pl-3 text-black">{{ order.check_time }}</span>
       </span>
       <span v-if="scene === 'index'" class="pt-0.5">
         <span class="pl-1 text-black">订单金额:</span>

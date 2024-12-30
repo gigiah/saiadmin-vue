@@ -341,6 +341,8 @@ const orderStatusLabel = computed(() => {
   switch (props.order.status) {
     case 90:
       return '已开票';
+    case 80:
+      return '开票中';
     case 70:
       return '已发货';
     case 60:
@@ -699,7 +701,7 @@ function onFreightBlur() {
   }).then(value => {
     if (value.code === 200) {
       Message.success('更新成功');
-      emit('changed');
+      // emit('changed');
     }
   })
 }
