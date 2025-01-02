@@ -17,7 +17,7 @@
           <span class="pr-4 font-bold text-center" v-if="order.settle_method">{{ settleMethodLabel }}</span>
           <span class="pr-2 font-bold text-center">收货地址:</span>
           <consignee-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini"
-            @change="onStoreChanged" :storeId="order.store_id" />
+            @change="onStoreChanged" :storeId="order.store_id" :allow-diff-store="props.allowDiffStore" />
           <span class="pl-2"><a-input disabled="true" readonly="true" size="mini" v-model="order.consignee_address"
               style="width: 500px" /></span>
         </div>
@@ -237,7 +237,11 @@ const bizDict = useBizDictStore();
 
 const props = defineProps({
   order: Object,
-  scene: String
+  scene: String,
+  allowDiffStore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 watch(() => props.order, () => {

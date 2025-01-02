@@ -27,9 +27,9 @@ const useBizDictStore = defineStore('bizDict', {
 				}
 			})
 		},
-		fetchOrderWarehouse(storeId = 0) {
+		fetchOrderWarehouse(storeId = 0, allowDiffStore = 0) {
 			request({
-				url: `/warehouseAddress/index?type=all&store_id=${storeId}`,
+				url: `/warehouseAddress/index?type=all&store_id=${storeId}&allow_diff_store=${allowDiffStore}`,
 				method: 'get',
 			}).then((resp) => {
 				if (resp.code === 200) {

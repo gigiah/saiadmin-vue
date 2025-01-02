@@ -11,7 +11,7 @@
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
-        scene="index"></order-card>
+        scene="index" allow-diff-store="1"></order-card>
     </a-checkbox-group>
     <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess"
       @add-cancel="addStoreModalVisible = false" />

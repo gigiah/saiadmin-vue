@@ -578,7 +578,7 @@ function updateGoodsOrCraft(record) {
     if (value.code === 200) {
       Message.success('更新成功');
       record.editable = false;
-      emit('changed');
+      // emit('changed');
     }
   })
 }
@@ -587,7 +587,7 @@ function insertGoodsOrCraft(record) {
   orderApi.save(record).then(value => {
     if (value.code === 200) {
       Message.success('新增成功');
-      emit('changed');
+      // emit('changed');
     }
   })
 }
@@ -674,7 +674,7 @@ function onRemarkBlur() {
     if (value.code === 200) {
       tempRemark = props.order.remark;
       Message.success('更新成功');
-      emit('changed');
+      // emit('changed');
     }
   })
 }

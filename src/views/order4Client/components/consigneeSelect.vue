@@ -11,7 +11,8 @@ import { onMounted, ref, watch } from "vue";
 const bizDict = useBizDictStore();
 const props = defineProps({
   storeId: { type: Number, default: 0 },
-  isDisabled: { type: Boolean, default: false }
+  isDisabled: { type: Boolean, default: false },
+  allowDiffStore: { type: Number, default: 0 }
 });
 
 let dictKey = 'warehouseAddress';
@@ -22,12 +23,22 @@ watch(() => bizDict.$state[dictKey], (newVal) => {
   myKey.value += 1;
 });
 
+watch(() => props.storeId, (newVal) => {
+  console.log('watch consignee select storeId', newVal);
+  if (newVal) {
+    dictKey = `${newVal}_warehouseAddress`;
+    if (!bizDict.$state[dictKey] || bizDict.$state[dictKey].length === 0) {
+      bizDict.fetchOrderWarehouse(newVal, props.allowDiffStore);
+    }
+  }
+});
+
 onMounted(() => {
   console.log('consignee select storeId', props.storeId);
   if (props.storeId) {
     dictKey = `${props.storeId}_warehouseAddress`;
     if (!bizDict.$state[dictKey] || bizDict.$state[dictKey].length === 0) {
-      bizDict.fetchOrderWarehouse(props.storeId);
+      bizDict.fetchOrderWarehouse(props.storeId, props.allowDiffStore);
     }
   }
 })
