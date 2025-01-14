@@ -1,12 +1,12 @@
 <template>
 	<div class="justify-between p-4 ma-content-block lg:flex">
-		<div class="w-full h-full p-2 shadow lg:w-2/12">
+		<!-- <div class="w-full h-full p-2 shadow lg:w-2/12">
 			<ma-tree-slider v-model="sliderData" :search-placeholder="$t('maResource.searchResource')"
 				:field-names="{ title: 'label', key: 'value' }" @click="handlerClick" icon="icon-folder"
 				:selected-keys="['all']" />
-		</div>
+		</div> -->
 
-		<div class="w-full mt-5 lg:w-10/12 lg:ml-4 lg:mt-0">
+		<div class="w-full mt-5 lg:w-12/12 lg:ml-4 lg:mt-0">
 			<!-- CRUD 组件 -->
 			<ma-crud :options="crud" :columns="columns" ref="crudRef">
 				<!-- 表格按钮后置扩展 -->
@@ -154,6 +154,10 @@ const flushAll = () => {
 
 const getStoreMode = (mode) => {
 	return uploadConfig.storageMode[mode.toString()]
+}
+
+const handlerClick = () => {
+	return;
 }
 
 const crud = reactive({

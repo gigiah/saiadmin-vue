@@ -4,6 +4,10 @@ import clientGroupApi from '@/api/clientGroup';
 import storeAreaApi from '@/api/storeAreaType';
 import storeApi from '@/api/store';
 
+defineProps({
+  disabledBtn: Boolean
+})
+
 const getDefaultDates = () => {
   const today = new Date();
   const start = new Date();
@@ -135,7 +139,7 @@ const loadSearchForm = () => {
     </a-row>
   </a-form>
   <div class="flex items-center justify-center gap-4 pt-4 ma-content-block">
-    <a-button type="primary" size="mini" @click="handleSearch">查询</a-button>
+    <a-button type="primary" size="mini" @click="handleSearch" :disabled="disabledBtn">查询</a-button>
     <a-button size="mini" @click="handleReset">
       <template #icon>
         <icon-refresh />

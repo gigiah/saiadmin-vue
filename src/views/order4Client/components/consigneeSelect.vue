@@ -1,5 +1,5 @@
 <template>
-  <!-- <a-select v-bind="props" allow-search="true" :options="bizDict.$state['warehouseAddress']" placeholder="请选择"></a-select> -->
+  <!-- <a-select v-bind="props" :allow-search="true" :options="bizDict.$state['warehouseAddress']" placeholder="请选择"></a-select> -->
   <a-select :disabled="isDisabled" :key="myKey" v-bind="props" :allow-search="true" :options="bizDict.$state[dictKey]"
     placeholder="请选择"></a-select>
 </template>

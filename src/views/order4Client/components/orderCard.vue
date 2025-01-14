@@ -1,4 +1,5 @@
 <template>
+  <a-spin :loading="loading" tip="正在重新核算">
   <a-card size="small">
     <template #title>
       <div class="flex flex-row align-center">
@@ -18,7 +19,7 @@
           <span class="pr-2 font-bold text-center">收货地址:</span>
           <consignee-select style="width: 150px" :disabled="scene === 'index'" v-model="order.consignee_id" size="mini"
             @change="onStoreChanged" :storeId="order.store_id" :allow-diff-store="props.allowDiffStore" />
-          <span class="pl-2"><a-input disabled="true" readonly="true" size="mini" v-model="order.consignee_address"
+          <span class="pl-2"><a-input :disabled="true" :readonly="true" size="mini" v-model="order.consignee_address"
               style="width: 500px" /></span>
         </div>
       </div>
@@ -109,7 +110,7 @@
         </a-table-column>
         <a-table-column title="产品级别" data-index="product_grade_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
-          <!--            <product-grade-select v-model="record.product_grade_id" :disabled="true" />-->
+          <!--            <product-grade-select v-model="record.product_grade_id" :disabled=true />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productGrade']">{{ renderDictValue('productGrade',
@@ -119,7 +120,7 @@
         </a-table-column>
         <a-table-column title="画面类型" data-index="product_picture_type_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
-          <!--            <product-picture-type-select v-model="record.product_picture_type_id" :disabled="true" />-->
+          <!--            <product-picture-type-select v-model="record.product_picture_type_id" :disabled=true />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['productPictureType']">{{ renderDictValue('productPictureType',
@@ -164,7 +165,7 @@
         </a-table-column>
         <a-table-column title="计价方式" data-index="pricing_type_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
-          <!--            <pricing-type-select v-model="record.pricing_type_id" :disabled="true" />-->
+          <!--            <pricing-type-select v-model="record.pricing_type_id" :disabled=true />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['pricingType']">{{ renderDictValue('pricingType', record.pricing_type_id)
@@ -174,7 +175,7 @@
         </a-table-column>
         <a-table-column title="计量单位" data-index="pricing_unit_id" :width="90">
           <!--          <template #cell="{ record, column, index }">-->
-          <!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled="true" />-->
+          <!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled=true />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span v-if="bizDict.$state['pricingUnit']">{{ renderDictValue('pricingUnit', record.pricing_unit_id)
@@ -184,7 +185,7 @@
         </a-table-column>
         <a-table-column title="单价" data-index="unit_price" :width="80">
           <!--          <template #cell="{ record, column, index }">-->
-          <!--            <a-input v-model="record.unit_price" :disabled="true" />-->
+          <!--            <a-input v-model="record.unit_price" :disabled=true />-->
           <!--          </template>-->
           <template #cell="{ record, column, index }">
             <span>{{ record.unit_price && record.unit_price != '0.00' ? record.unit_price : '' }}</span>
@@ -216,6 +217,7 @@
       </template>
     </a-table>
   </a-card>
+  </a-spin>
 </template>
 <script setup>
 
@@ -234,6 +236,7 @@ import StoreSelect from "@/views/order4Client/components/storeSelect.vue";
 import ConsigneeSelect from "@/views/order4Client/components/consigneeSelect.vue";
 
 const bizDict = useBizDictStore();
+const loading = ref(false);
 
 const props = defineProps({
   order: Object,
@@ -243,6 +246,7 @@ const props = defineProps({
     default: 0,
   },
 });
+
 
 watch(() => props.order, () => {
   console.log('order changed');
@@ -310,7 +314,7 @@ const settleMethodLabel = computed(() => {
   }
 })
 
-const emit = defineEmits(['changed']);
+const emit = defineEmits(['beforeChange','changed', 'afterChange']);
 
 const goods = ref([]);
 const tableRef = ref();
@@ -490,21 +494,29 @@ function onSubmitGoodsOrCraft(record) {
 }
 
 function updateGoodsOrCraft(record) {
+  loading.value = true;
+  emit('beforeChange');
   orderApi.update(record.id, record).then(value => {
     if (value.code === 200) {
       Message.success('更新成功');
       record.editable = false;
       emit('changed');
     }
+    loading.value = false;
+    emit('afterChange');
   })
 }
 
 function insertGoodsOrCraft(record) {
+  loading.value = true;
+  emit('beforeChange');
   orderApi.save(record).then(value => {
     if (value.code === 200) {
       Message.success('新增成功');
       emit('changed');
     }
+    loading.value = false;
+    emit('afterChange');
   })
 }
 

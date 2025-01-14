@@ -1,6 +1,6 @@
 <template>
   <div>
-    <order-index-search @search="getOrders" />
+    <order-index-search @search="getOrders" :disabledBtn="disabledBtn" />
     <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" status="success" @click="onSubmitOrder"
@@ -8,7 +8,7 @@
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
-        scene="index"></order-card>
+        @beforeChange="changeBtnStatus(true)" @afterChange="changeBtnStatus(false)" scene="index"></order-card>
     </a-checkbox-group>
     <ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800"
       :column="submitModalColumn" :submit="submitSummary">
@@ -35,6 +35,8 @@ const addStoreModalVisible = ref(false);
 const checkedValues = ref([]);
 const submitDisabled = computed(() => checkedValues.value.length === 0);
 
+const disabledBtn = ref(false);
+
 const onCheckUpdate = (result) => {
   checkedValues.value = result;
 }
@@ -44,6 +46,10 @@ onMounted(() => {
   bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
   bizDict.fetchPricingProduct4Search('', 'admin');
 })
+
+function changeBtnStatus(status) {
+  disabledBtn.value = status;
+}
 
 function getOrders(params = {}) {
   params.menu = 'customerService';

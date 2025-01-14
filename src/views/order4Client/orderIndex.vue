@@ -11,7 +11,8 @@
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
-        scene="index" allow-diff-store="1"></order-card>
+        @beforeChange="changeBtnStatus(true)" @afterChange="changeBtnStatus(false)" scene="index"
+        allow-diff-store="1"></order-card>
     </a-checkbox-group>
     <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess"
       @add-cancel="addStoreModalVisible = false" />
@@ -40,11 +41,12 @@ const addStoreModalVisible = ref(false);
 const checkedValues = ref([]);
 const submitDisabled = computed(() => checkedValues.value.length === 0);
 
-
 const addCouponModalVisible = ref(false);
 const couponList = ref([]);
 const couponSelected = ref();
 const couponKey = ref(0);
+
+const disabledBtn = ref(false);
 
 const onAddCoupon = () => {
   addCouponModalVisible.value = true;
@@ -86,6 +88,10 @@ onMounted(() => {
   bizDict.flushDict('store', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
   bizDict.fetchPricingProduct4Search('', '', 'client');
 })
+
+function changeBtnStatus(status) {
+  disabledBtn.value = status;
+}
 
 function getOrders(params = {}) {
   params.menu = 'client';

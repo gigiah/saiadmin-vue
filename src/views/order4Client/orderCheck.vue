@@ -1,6 +1,6 @@
 <template>
   <div>
-    <order-check-search @search="getOrders" />
+    <order-check-search @search="getOrders" :disabledBtn="disabledBtn" />
     <div class="gap-4 p-4 ma-content-block lg:flex">
       <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
       <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>
@@ -8,7 +8,7 @@
       <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="check"></order-card>
+      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" @beforeChange="changeBtnStatus(true)" @afterChange="changeBtnStatus(false)" scene="check"></order-card>
     </a-checkbox-group>
     <add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
     <modal :visible="addCouponModalVisible" title="选择卡券" @ok="onAddCouponOk" @cancel="onAddCouponCancel">
@@ -36,6 +36,7 @@ const addStoreModalVisible = ref(false);
 const checkedValues = ref([]);
 const submitDisabled = computed(() => checkedValues.value.length === 0);
 
+const disabledBtn = ref(false);
 
 const addCouponModalVisible = ref(false);
 const couponList = ref([]);
@@ -82,6 +83,10 @@ onMounted(() => {
   bizDict.flushDict('store', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit');
   bizDict.fetchPricingProduct4Search();
 })
+
+function changeBtnStatus(status) {
+  disabledBtn.value = status;
+}
 
 function getOrders(params = {}) {
   orderApi.orderTree({

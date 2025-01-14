@@ -90,7 +90,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '营销区域必填' }],
+    commonRules: [{ required: sysInfoStore.info?.is_admin ? false : true, message: '营销区域必填' }],
   },
   {
     title: '经营模式',
@@ -102,7 +102,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storeBusinessType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '经营模式必填' }],
+    commonRules: [{ required: sysInfoStore.info?.is_admin ? false : true, message: '经营模式必填' }],
   },
   {
     title: '产品线',
@@ -114,7 +114,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storeProductType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '产品线必填' }],
+    commonRules: [{ required: sysInfoStore.info?.is_admin ? false : true, message: '产品线必填' }],
   },
   {
     title: '价格体系',
@@ -126,7 +126,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: true, message: '价格体系必填' }],
+    commonRules: [{ required: sysInfoStore.info?.is_admin ? false : true, message: '价格体系必填' }],
   },
   {
     title: '联系人',

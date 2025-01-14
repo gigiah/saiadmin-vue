@@ -8,10 +8,10 @@
         </a-space>
       </template>
     </ma-crud>
+    <a-modal @cancel="hideBizWechat" :width="350" :footer="false" :visible="visible">
+      <a-image width="300" :src="wechatImg" />
+    </a-modal>
   </div>
-  <a-modal @cancel="hideBizWechat" :width="350" :footer="false" :visible="visible">
-    <a-image width="300" :src="wechatImg" />
-  </a-modal>
 </template>
 
 <script setup>
