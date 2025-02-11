@@ -112,4 +112,16 @@ export default {
 			data,
 		})
 	},
+
+	/**
+	 * redoCode
+	 * @returns
+	 */
+	redoCode(data = {}) {
+		return request({
+			url: '/authLogin/redoCode',
+			method: 'post',
+			data,
+		})
+	},
 }
