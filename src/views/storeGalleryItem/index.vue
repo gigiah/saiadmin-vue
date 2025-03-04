@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="visible" :width="1400" :footer="false">
-    <template #title>相册内容</template>
+    <template #title>用品类型内容</template>
     <div class="justify-between p-4 ma-content-block lg:flex">
       <!-- CRUD 组件 -->
       <ma-crud :options="crud" :columns="columns" ref="crudRef">
@@ -61,7 +61,7 @@ const columns = reactive([
     commonRules: [{ required: true, message: '主键必填' }],
   },
   {
-    title: '相册',
+    title: '用品类型',
     dataIndex: 'gallery_id',
     width: 100,
     search: false,
@@ -71,7 +71,7 @@ const columns = reactive([
     hide: false,
     dict: { url: '/storeGallery/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
-    commonRules: [{ required: false, message: '相册ID必填' }],
+    commonRules: [{ required: false, message: '用品类型ID必填' }],
   },
   {
     title: '用品名称',
@@ -107,8 +107,37 @@ const columns = reactive([
     hide: false,
     dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'id' }, translation: true },
     formType: 'select',
+    cascaderItem: ['craft_ids'],
     commonRules: [{ required: true, message: '模板产品必填' }],
   },
+  {
+		title: '工艺',
+		dataIndex: 'craft_ids',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: true,
+    formType: 'select',
+    multiple: true,
+		dict: { url: '/pricingCraft/index4Search?status=1&product_pricing_id={{key}}', props: { label: 'name', value: 'craft_id' }, translation: true },
+    // commonRules: [{ required: false, message: '必填' }],
+    editDefaultValue: async (record) => {
+      const response = await api.read(record.id)
+      return response.data.craft_list.map((item) => item.id)
+    },
+	},
+  {
+		title: '工艺',
+		dataIndex: 'craft_names',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: false,
+    formType: 'input',
+    multiple: true,
+	},
   {
     title: '小程序预览图',
     dataIndex: 'preview_url',
@@ -125,7 +154,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '预览图必填' }],
   },
   {
-    title: '固定宽度',
+    title: '固定宽度CM',
     dataIndex: 'width',
     width: 180,
     search: false,
@@ -136,7 +165,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '固定宽度必填' }],
   },
   {
-    title: '固定高度',
+    title: '固定高度CM',
     dataIndex: 'height',
     width: 180,
     search: false,
@@ -145,17 +174,6 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     commonRules: [{ required: false, message: '固定高度必填' }],
-  },
-  {
-    title: '用品说明',
-    dataIndex: 'remark',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    formType: 'input',
-    commonRules: [{ required: false, message: '用品说明必填' }],
   },
   // {
   //   title: '产品线',
@@ -185,6 +203,17 @@ const columns = reactive([
       return response.data.list.map((item) => item.id)
     },
     // commonRules: [{ required: true, message: '价格体系必填' }],
+  },
+  {
+    title: '用品说明',
+    dataIndex: 'remark',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    commonRules: [{ required: false, message: '用品说明必填' }],
   },
   {
     title: '创建者',

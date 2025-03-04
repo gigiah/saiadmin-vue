@@ -2,6 +2,10 @@
   <div class="justify-between p-4 ma-content-block lg:flex">
     <!-- CRUD 组件 -->
     <ma-crud :options="crud" :columns="columns" ref="crudRef">
+      <!-- 操作列扩展 -->
+			<template #operationAfterExtend="{ record }">
+				<a-link @click="selectOperation('resetPassword', record)">重置密码</a-link>
+			</template>
     </ma-crud>
   </div>
 </template>
@@ -9,7 +13,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/store'
-import { Message } from '@arco-design/web-vue'
+import { Message, Modal } from '@arco-design/web-vue'
 import { useSysInfoStore } from '@/store'
 
 const crudRef = ref()
@@ -23,7 +27,7 @@ const crud = reactive({
   pageLayout: 'fixed',
   rowSelection: { showCheckedAll: true },
   operationColumn: true,
-  operationColumnWidth: 160,
+  operationColumnWidth: 220,
   add: { show: true, api: api.save, auth: ['/store/save'] },
   edit: { show: true, api: api.update, auth: ['/store/update'] },
   delete: { show: true, api: api.delete, auth: ['/store/destroy'] },
@@ -34,6 +38,25 @@ const crud = reactive({
 let storeSettleMethodDisable = false
 let storeDefaultSettleMethod = sysInfoStore.info.settle_method
 if (sysInfoStore.info.settle_method === 'current') storeSettleMethodDisable = true
+
+const resetPassword = (id) => {
+	api.initStorePassword({ id }).then((res) => res.code === 200 && Message.success(res.message))
+}
+
+const selectOperation = (value, record) => {
+	if (value === 'resetPassword') {
+		Modal.info({
+			title: '提示',
+			content: '确定将该用户密码重置为 123456 吗？',
+			simple: false,
+			onBeforeOk: (done) => {
+				resetPassword(record.id)
+				done(true)
+			},
+		})
+		return
+	}
+}
 
 const columns = reactive([
   {
@@ -196,6 +219,40 @@ const columns = reactive([
     hide: false,
     formType: 'input',
     commonRules: [{ required: false, message: '税号必填' }],
+  },
+  {
+    title: '门店账号',
+    dataIndex: 'login_account',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    formType: 'input',
+    // commonRules: [{ required: false, message: '税号必填' }],
+  },
+  {
+    title: '初始密码',
+    dataIndex: 'login_password',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: false,
+    hide: true,
+    formType: 'input',
+    // commonRules: [{ required: false, message: '税号必填' }],
+  },
+  {
+    title: '登录许可',
+    dataIndex: 'login_permit',
+    width: 180,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    // commonRules: [{ required: false, message: '税号必填' }],
   },
   {
     title: '人员ID',

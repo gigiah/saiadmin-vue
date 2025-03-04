@@ -100,4 +100,16 @@ export default {
     })
   },
 
+  /**
+	 * 初始化用户密码
+	 * @returns
+	 */
+	initStorePassword(data) {
+		return request({
+			url: '/store/initStorePassword',
+			method: 'post',
+			data,
+		})
+	},
+
 }

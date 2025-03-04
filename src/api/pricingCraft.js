@@ -4,6 +4,16 @@ import { request } from '@/utils/request.js'
  * 工艺价格模板 API接口
  */
 export default {
+	/**
+	 * 数据列表
+	 * @returns
+	 */
+	list(queryString) {
+		return request({
+			url: '/pricingCraft/list?' + queryString,
+			method: 'get',
+		})
+	},
 
 	/**
 	 * 数据列表

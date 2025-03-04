@@ -409,7 +409,7 @@ const columns = reactive([
     // commonRules: [{ required: false, message: '连锁模式权限必填' }],
   },
   {
-    title: '小程序相册权',
+    title: '小程序用品类型权',
     dataIndex: 'miniapp_usage',
     width: 100,
     search: false,
@@ -418,7 +418,7 @@ const columns = reactive([
     hide: false,
     dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
     formType: 'radio',
-    // commonRules: [{ required: false, message: '小程序相册权限必填' }],
+    // commonRules: [{ required: false, message: '小程序用品类型权限必填' }],
   },
   {
     title: '下单可用状态',

@@ -7,10 +7,10 @@
     <!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
     <!--    </div>-->
     <div class="pb-4 ma-content-block">
-      <order-index-search @search="getOrders" />
+      <order-index-search @search="getOrders" v-if="identity === 'client'" />
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-      <order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged"
+      <order-card v-for="(item, index) in orders" :order="item" :key="index" :identity="identity" @changed="onOrderChanged"
         @beforeChange="changeBtnStatus(true)" @afterChange="changeBtnStatus(false)" scene="index"
         allow-diff-store="1"></order-card>
     </a-checkbox-group>
@@ -33,6 +33,9 @@ import { Message, Modal } from "@arco-design/web-vue";
 import { request } from "@/utils/request";
 import couponItemApi from "@/api/couponItem";
 import OrderIndexSearch from "@/views/order4Client/components/orderIndexSearch.vue";
+import { useSysInfoStore } from '@/store';
+
+const sysInfoStore = useSysInfoStore()
 
 const stores = ref([]);
 const orders = ref([]);
@@ -45,6 +48,9 @@ const addCouponModalVisible = ref(false);
 const couponList = ref([]);
 const couponSelected = ref();
 const couponKey = ref(0);
+
+const identity = ref('client');
+if (sysInfoStore.info.is_store === true) identity.value = 'store';
 
 const disabledBtn = ref(false);
 

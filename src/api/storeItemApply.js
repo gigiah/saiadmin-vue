@@ -1,9 +1,44 @@
 import { request } from '@/utils/request.js'
 
 /**
- * 门店相册内容 API接口
+ * 我的申请 API接口
  */
 export default {
+	/**
+	 * 提交申请
+	 * @returns
+	 */
+	submitApply(params = {}) {
+		return request({
+			url: '/storeItemApply/submitApply',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
+	 * 保存申请
+	 * @returns
+	 */
+	saveApply(params = {}) {
+		return request({
+			url: '/storeItemApply/saveApply',
+			method: 'post',
+			data: params,
+		})
+	},
+
+	/**
+	 * 修改申请
+	 * @returns
+	 */
+	updateApply(params = {}) {
+		return request({
+			url: '/storeItemApply/updateApply',
+			method: 'post',
+			data: params,
+		})
+	},
 
 	/**
 	 * 数据列表
@@ -11,7 +46,7 @@ export default {
 	 */
 	getPageList(params = {}) {
 		return request({
-			url: '/storeGalleryItem/index',
+			url: '/storeItemApply/index',
 			method: 'get',
 			params,
 		})
@@ -23,7 +58,7 @@ export default {
 	 */
 	getRecyclePageList(params = {}) {
 		return request({
-			url: '/storeGalleryItem/recycle',
+			url: '/storeItemApply/recycle',
 			method: 'get',
 			params,
 		})
@@ -35,7 +70,7 @@ export default {
 	 */
 	save(params = {}) {
 		return request({
-			url: '/storeGalleryItem/save',
+			url: '/storeItemApply/save',
 			method: 'post',
 			data: params,
 		})
@@ -47,7 +82,7 @@ export default {
 	 */
 	read(id) {
 		return request({
-			url: '/storeGalleryItem/read/' + id,
+			url: '/storeItemApply/read/' + id,
 			method: 'get',
 		})
 	},
@@ -58,7 +93,7 @@ export default {
 	 */
 	delete(data) {
 		return request({
-			url: '/storeGalleryItem/destroy',
+			url: '/storeItemApply/destroy',
 			method: 'delete',
 			data,
 		})
@@ -70,7 +105,7 @@ export default {
 	 */
 	recovery(data) {
 		return request({
-			url: '/storeGalleryItem/recovery',
+			url: '/storeItemApply/recovery',
 			method: 'post',
 			data,
 		})
@@ -82,7 +117,7 @@ export default {
 	 */
 	update(id, data = {}) {
 		return request({
-			url: '/storeGalleryItem/update/' + id,
+			url: '/storeItemApply/update/' + id,
 			method: 'put',
 			data,
 		})
@@ -94,7 +129,7 @@ export default {
 	 */
 	changeStatus(data = {}) {
 		return request({
-			url: '/storeGalleryItem/changeStatus',
+			url: '/storeItemApply/changeStatus',
 			method: 'post',
 			data,
 		})

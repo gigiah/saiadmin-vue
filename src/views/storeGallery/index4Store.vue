@@ -15,7 +15,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/storeGallery'
-import storeGalleryItem from '@/views/storeGalleryItem/index.vue'
+import storeGalleryItem from '@/views/storeGalleryItem/index4Store.vue'
 import { Message } from '@arco-design/web-vue'
 
 const crudRef = ref()
@@ -31,7 +31,7 @@ const crud = reactive({
   showIndex: false,
   searchColNumber: 3,
   pageLayout: 'fixed',
-  rowSelection: { showCheckedAll: true },
+  rowSelection: { showCheckedAll: false },
   operationColumn: true,
   operationColumnWidth: 160,
   add: { show: true, api: api.save, auth: ['/storeGallery/save'] },
@@ -65,37 +65,37 @@ const columns = reactive([
     maxLength: 12,
     commonRules: [{ required: true, message: '名称必填' }],
   },
-  {
-    title: '营销区域',
-    dataIndex: 'area_type_ids',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    multiple: true,
-    editDefaultValue: async (record) => {
-      const response = await api.read(record.id)
-      return response.data.area_list.map((item) => item.id)
-    },
-    commonRules: [{ required: true, message: '营销区域必填' }],
-  },
-  {
-    title: '用品类型封面',
-    dataIndex: 'cover_url',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'upload',
-    type: 'image',
-    returnType: 'url',
-    multiple: false,
-    commonRules: [{ required: false, message: '用品类型封面必填' }],
-  },
+  // {
+  //   title: '营销区域',
+  //   dataIndex: 'area_type_ids',
+  //   width: 100,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   dict: { url: '/storeAreaType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+  //   formType: 'select',
+  //   multiple: true,
+  //   editDefaultValue: async (record) => {
+  //     const response = await api.read(record.id)
+  //     return response.data.area_list.map((item) => item.id)
+  //   },
+  //   commonRules: [{ required: true, message: '营销区域必填' }],
+  // },
+  // {
+  //   title: '用品类型封面',
+  //   dataIndex: 'cover_url',
+  //   width: 180,
+  //   search: false,
+  //   addDisplay: true,
+  //   editDisplay: true,
+  //   hide: false,
+  //   formType: 'upload',
+  //   type: 'image',
+  //   returnType: 'url',
+  //   multiple: false,
+  //   commonRules: [{ required: false, message: '用品类型封面必填' }],
+  // },
   {
     title: '备注',
     dataIndex: 'remark',
