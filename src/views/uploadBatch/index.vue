@@ -13,7 +13,7 @@
 				</a-button>
 			</template>
 			<template v-if="isStore == true" #operationAfterExtend="{ record }">
-				<a-link @click="downloadZip(record)">下载</a-link>
+				<a-link @click="downloadBatch(record)">下载</a-link>
 			</template>
 		</ma-crud>
 	</div>
@@ -57,22 +57,87 @@ const getDiskVol = () => {
 		}
 	})
 }
-
 const isStore = sysInfoStore.info.is_store ? true : false
 
-const downloadZip = () => {
-	Message.info('暂未实现')
+//批量下载文件
+async function downloadFile(url, filename) {
+	try {
+		const response = await fetch(url, {
+			method: 'GET',
+			mode: 'cors', // 确保跨域请求正确处理
+		})
+		if (!response.ok) {
+			throw new Error(`Failed to fetch ${url}`)
+		}
+		const blob = await response.blob()
+		const blobUrl = window.URL.createObjectURL(blob)
+		const link = document.createElement('a')
+		link.href = blobUrl
+		link.download = filename
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+		window.URL.revokeObjectURL(blobUrl)
+	} catch (error) {
+		console.error('Error downloading file:', error)
+	}
+}
+
+function getFileExtension(url) {
+	return url.split('.').pop().split(/\#|\?/)[0]
+}
+
+function downloadFilesInBatches(fileUrls, batchSize = 5) {
+	let batchStart = 0
+
+	async function processBatch() {
+		while (batchStart < fileUrls.length) {
+			const batch = fileUrls.slice(batchStart, batchStart + batchSize)
+			const downloadPromises = batch.map(({ url, filename }) => downloadFile(url, filename))
+
+			// Await the completion of all downloads in the current batch
+			await Promise.all(downloadPromises)
+
+			// Move to the next batch
+			batchStart += batchSize
+		}
+	}
+
+	processBatch()
+		.then(() => console.log('All files downloaded.'))
+		.catch((error) => console.error('Error downloading files:', error))
+}
+
+const downloadBatch = (record) => {
+	console.log('record', record)
+	let data = record
+	const fileUrls = []
+	// 添加 source_file
+	fileUrls.push({
+		url: data.source_file,
+		filename: data.title, // 使用原始 title 包含扩展名
+	})
+	// 添加 preview_image
+	const previewExtension = getFileExtension(data.preview_image)
+	fileUrls.push({
+		url: data.preview_image,
+		filename: `preview-${data.title.split('.').slice(0, -1).join('.')}.${previewExtension}`,
+	})
+	// 添加 link_file_list
+	data.link_file_list.forEach((file) => {
+		const extension = getFileExtension(file.value)
+		fileUrls.push({
+			url: file.value,
+			filename: `${file.label}.${extension}`,
+		})
+	})
+	console.log('fileUrls', fileUrls)
+	downloadFilesInBatches(fileUrls, fileUrls.length) // 根据需要调整批次大小
 }
 
 onMounted(() => {
 	getDiskVol()
 })
-
-// const updateUploadNname = (val) => {
-//   console.log('updateUploadNname', val)
-//   let baseName = val.split('.').slice(0, -1).join('.');
-//   uploadData.value.title = baseName
-// }
 
 const crud = reactive({
 	api: api.getPageList,

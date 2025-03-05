@@ -643,7 +643,7 @@ const columns = reactive([
 		hide: true,
 	},
 	{
-		title: '识别符',
+		title: '画面内容',
 		dataIndex: 'identify',
 		hide: true,
 	},

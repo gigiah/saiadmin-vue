@@ -141,7 +141,7 @@
               <associated-file-select size="mini" v-else v-model="record.associated_file" disabled />
             </template>
           </a-table-column>
-          <a-table-column title="识别符" data-index="identify" :width="100">
+          <a-table-column title="画面内容" data-index="identify" :width="100">
             <template #cell="{ record, column, index }">
               <span v-if="record.row_type === 'craft'"></span>
               <a-input size="mini" v-else v-model="record.identify" :disabled="!record.editable" />
@@ -207,7 +207,7 @@
           <a-table-column title="操作" fixed="right" :width="140">
             <template #cell="{ record, column }">
               <div style="display: flex; flex-direction: row; gap: 10px">
-                <a-button v-if="!record.editable && scene === 'create'" shape="circle" status="danger" size="mini"
+                <a-button v-if="!record.editable && scene === 'create' || scene === 'confirm'" shape="circle" status="danger" size="mini"
                   @click="onDeleteGoodsOrCraft(record)">
                   <icon-delete />
                 </a-button>

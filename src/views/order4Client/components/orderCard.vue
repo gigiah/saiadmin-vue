@@ -95,7 +95,9 @@
 						<span style="font-size: 12px; padding-left: 0.125rem; color: black">{{ order.source }}</span>
 					</span>
 					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">订单备注:</span>
-					<a-input size="mini" :disabled="scene === 'index' || identity === 'store'" v-model="order.remark" style="width: 800px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+					<a-input size="mini" :disabled="scene === 'index' || identity === 'store'" v-model="order.remark" style="width: 500px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">发货备注:</span>
+					<a-input size="mini" :disabled="scene === 'index' || identity === 'store'" v-model="order.delivery_remark" style="width: 500px" @focus="onDeliveryRemarkFocus" @blur="onDeliveryRemarkBlur" @pressEnter="onDeliveryRemarkBlur" />
 					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black" v-if="scene === 'check'">
 						<span class="pl-1 text-black">卡券名称:</span>
 						<span class="pl-3 text-black">{{ order.coupon_name }}</span>
@@ -151,7 +153,7 @@
 					</a-table-column>
 					<a-table-column title="工艺" data-index="craft_id" :width="110">
 						<template #cell="{ record, column, index }">
-							<a-button v-if="record.row_type === 'goods' && scene === 'create'" size="mini" status="success" shape="circle" @click="addCraft(record)">
+							<a-button v-if="record.row_type === 'goods' && (scene === 'create' ||  scene === 'check')" size="mini" status="success" shape="circle" @click="addCraft(record)">
 								<icon-plus />
 							</a-button>
 							<pricing-craft-select
@@ -194,7 +196,7 @@
 					<a-table-column v-if="scene !== 'index' && identity !== 'store'" title="操作" fixed="right" :width="100">
 						<template #cell="{ record, column }">
 							<div style="display: flex; flex-direction: row; gap: 10px">
-								<a-button v-if="!record.editable && scene === 'create'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
+								<a-button v-if="!record.editable && scene === 'create' || scene === 'check'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
 									<icon-delete />
 								</a-button>
 								<a-button v-if="!record.editable && record.row_type === 'goods'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">
@@ -602,11 +604,9 @@ function expandAll() {
 }
 
 let tempRemark = props.order.remark
-
 function onRemarkFocus() {
 	tempRemark = props.order.remark
 }
-
 function onRemarkBlur() {
 	if (tempRemark === props.order.remark) {
 		return
@@ -621,6 +621,30 @@ function onRemarkBlur() {
 		.then((value) => {
 			if (value.code === 200) {
 				tempRemark = props.order.remark
+				Message.success('更新成功')
+				emit('changed')
+			}
+		})
+}
+
+let tempDeliveryRemark = props.order.delivery_remark
+function onDeliveryRemarkFocus() {
+	tempDeliveryRemark = props.order.delivery_remark
+}
+function onDeliveryRemarkBlur() {
+	if (tempDeliveryRemark === props.order.delivery_remark) {
+		return
+	}
+	orderApi
+		.update(props.order.id, {
+			row_type: 'order',
+			store_id: props.order.store_id,
+			consignee_id: props.order.consignee_id,
+			delivery_remark: props.order.delivery_remark,
+		})
+		.then((value) => {
+			if (value.code === 200) {
+				tempDeliveryRemark = props.order.delivery_remark
 				Message.success('更新成功')
 				emit('changed')
 			}

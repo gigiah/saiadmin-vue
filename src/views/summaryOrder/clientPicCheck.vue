@@ -211,7 +211,7 @@ const columns = reactive([
     commonRules: [{ required: false, message: '文件名必填' }],
   },
   // {
-  //   title: '识别符',
+  //   title: '画面内容',
   //   dataIndex: 'identify',
   //   width: 180,
   //   search: false,
@@ -220,7 +220,7 @@ const columns = reactive([
   //   hide: false,
   //   disabled: true,
   //   formType: 'input',
-  //   commonRules: [{ required: false, message: '识别符必填' }],
+  //   commonRules: [{ required: false, message: '画面内容必填' }],
   // },
   {
     title: '产品名称',

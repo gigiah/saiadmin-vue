@@ -7,7 +7,7 @@
     <!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
     <!--    </div>-->
     <div class="pb-4 ma-content-block">
-      <order-index-search @search="getOrders" v-if="identity === 'client'" />
+      <order-index-search @search="getOrders" :identity="identity" />
     </div>
     <a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
       <order-card v-for="(item, index) in orders" :order="item" :key="index" :identity="identity" @changed="onOrderChanged"
