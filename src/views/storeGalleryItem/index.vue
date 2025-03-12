@@ -1,116 +1,128 @@
 <template>
-  <a-modal v-model:visible="visible" :width="1400" :footer="false">
-    <template #title>用品类型内容</template>
-    <div class="justify-between p-4 ma-content-block lg:flex">
-      <!-- CRUD 组件 -->
-      <ma-crud :options="crud" :columns="columns" ref="crudRef">
-      </ma-crud>
-    </div>
-  </a-modal>
+	<a-modal v-model:visible="visible" :width="1400" :footer="false">
+		<template #title>用品类型内容</template>
+		<div class="justify-between p-4 ma-content-block lg:flex">
+			<!-- CRUD 组件 -->
+			<ma-crud :options="crud" :columns="columns" ref="crudRef"> </ma-crud>
+		</div>
+	</a-modal>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/storeGalleryItem'
+import pricingProductApi from '@/api/pricingProduct'
 import { Message } from '@arco-design/web-vue'
-
 
 const visible = ref(false)
 const crudRef = ref()
 const galleryId = ref()
 
 const open = (row) => {
-  galleryId.value = row.id
-  visible.value = true
-  crudRef.value.requestData()
+	galleryId.value = row.id
+	visible.value = true
+	crudRef.value.requestData()
+}
+
+const selectItem = async (id) => {
+	let obj = {}
+	await pricingProductApi.read4Unit({ id: id }).then((res) => {
+		obj = res.data
+	})
+	return obj
 }
 
 const crud = reactive({
-  api: api.getPageList,
-  beforeRequest: params => {
-    params.gallery_id = galleryId
-  },
-  recycleApi: api.getRecyclePageList,
-  showIndex: false,
-  searchColNumber: 3,
-  pageLayout: 'fixed',
-  rowSelection: { showCheckedAll: true },
-  operationColumn: true,
-  operationColumnWidth: 160,
-  add: { show: true, api: api.save, auth: ['/storeGalleryItem/save'] },
-  edit: { show: true, api: api.update, auth: ['/storeGalleryItem/update'] },
-  delete: { show: true, api: api.delete, auth: ['/storeGalleryItem/destroy'] },
-  recovery: { show: true, api: api.recovery, auth: ['/storeGalleryItem/recovery'] },
-  formOption: { width: 800 },
-  beforeOpenAdd: () => {
-    columns[1].addDefaultValue = Number.parseInt(galleryId.value)
-    return true
-  },
+	api: api.getPageList,
+	beforeRequest: (params) => {
+		params.gallery_id = galleryId
+	},
+	recycleApi: api.getRecyclePageList,
+	showIndex: false,
+	searchColNumber: 3,
+	pageLayout: 'fixed',
+	rowSelection: { showCheckedAll: true },
+	operationColumn: true,
+	operationColumnWidth: 160,
+	add: { show: true, api: api.save, auth: ['/storeGalleryItem/save'] },
+	edit: { show: true, api: api.update, auth: ['/storeGalleryItem/update'] },
+	delete: { show: true, api: api.delete, auth: ['/storeGalleryItem/destroy'] },
+	recovery: { show: true, api: api.recovery, auth: ['/storeGalleryItem/recovery'] },
+	formOption: { width: 800 },
+	beforeOpenAdd: () => {
+		columns[1].addDefaultValue = Number.parseInt(galleryId.value)
+		return true
+	},
 })
 
 const columns = reactive([
-  {
-    title: '主键',
-    dataIndex: 'id',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    formType: 'input',
-    commonRules: [{ required: true, message: '主键必填' }],
-  },
-  {
-    title: '用品类型',
-    dataIndex: 'gallery_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    editDisabled: true,
-    hide: false,
-    dict: { url: '/storeGallery/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    commonRules: [{ required: false, message: '用品类型ID必填' }],
-  },
-  {
-    title: '用品名称',
-    dataIndex: 'name',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    maxLength: 16,
-    commonRules: [{ required: true, message: '名称必填' }],
-  },
-  {
-    title: '源文件',
-    dataIndex: 'associated_file',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/uploadBatch/index?type=all', props: { label: 'title', value: 'id' }, translation: true },
-    formType: 'select',
-    commonRules: [{ required: true, message: '源文件必填' }],
-  },
-  {
-    title: '产品名称',
-    dataIndex: 'product_pricing_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    cascaderItem: ['craft_ids'],
-    commonRules: [{ required: true, message: '模板产品必填' }],
-  },
-  {
+	{
+		title: '主键',
+		dataIndex: 'id',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: true,
+		formType: 'input',
+		commonRules: [{ required: true, message: '主键必填' }],
+	},
+	{
+		title: '用品类型',
+		dataIndex: 'gallery_id',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		editDisabled: true,
+		hide: false,
+		dict: { url: '/storeGallery/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+		formType: 'select',
+		commonRules: [{ required: false, message: '用品类型ID必填' }],
+	},
+	{
+		title: '用品名称',
+		dataIndex: 'name',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		maxLength: 16,
+		commonRules: [{ required: true, message: '名称必填' }],
+	},
+	{
+		title: '源文件',
+		dataIndex: 'associated_file',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		dict: { url: '/uploadBatch/index?type=all', props: { label: 'title', value: 'id' }, translation: true },
+		formType: 'select',
+		commonRules: [{ required: true, message: '源文件必填' }],
+	},
+	{
+		title: '产品名称',
+		dataIndex: 'product_pricing_id',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		dict: { url: '/pricingProduct/index4Search', props: { label: 'name', value: 'id' }, translation: true },
+		formType: 'select',
+		cascaderItem: ['craft_ids'],
+		commonRules: [{ required: true, message: '模板产品必填' }],
+		control: (val, maFormObject) => {
+			pricingProductApi.read4Unit({ id: val }).then((res) => {
+				if (res.data) maFormObject.pricing_unit_name = res.data.pricing_unit_name
+			})
+		},
+	},
+	{
 		title: '工艺',
 		dataIndex: 'craft_ids',
 		width: 180,
@@ -118,16 +130,15 @@ const columns = reactive([
 		addDisplay: true,
 		editDisplay: true,
 		hide: true,
-    formType: 'select',
-    multiple: true,
+		formType: 'select',
+		multiple: true,
 		dict: { url: '/pricingCraft/index4Search?status=1&product_pricing_id={{key}}', props: { label: 'name', value: 'craft_id' }, translation: true },
-    // commonRules: [{ required: false, message: '必填' }],
-    editDefaultValue: async (record) => {
-      const response = await api.read(record.id)
-      return response.data.craft_list.map((item) => item.id)
-    },
+		editDefaultValue: async (record) => {
+			const response = await api.read(record.id)
+			return response.data.craft_list.map((item) => item.id)
+		},
 	},
-  {
+	{
 		title: '工艺',
 		dataIndex: 'craft_names',
 		width: 180,
@@ -135,134 +146,160 @@ const columns = reactive([
 		addDisplay: false,
 		editDisplay: false,
 		hide: false,
-    formType: 'input',
-    multiple: true,
+		formType: 'input',
+		multiple: true,
 	},
-  {
-    title: '小程序预览图',
-    dataIndex: 'preview_url',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'upload',
-    type: 'image',
-    returnType: 'url',
-    multiple: false,
-    extra: '仅用于小程序用品预览，请确保与源文件内容相符！图片宽高建议在1200像素内，超出将不能完整显示。',
-    commonRules: [{ required: false, message: '预览图必填' }],
-  },
-  {
-    title: '固定宽度CM',
-    dataIndex: 'width',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: false, message: '固定宽度必填' }],
-  },
-  {
-    title: '固定高度CM',
-    dataIndex: 'height',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: false, message: '固定高度必填' }],
-  },
-  // {
-  //   title: '产品线',
-  //   dataIndex: 'product_type_id',
-  //   width: 100,
-  //   search: false,
-  //   addDisplay: true,
-  //   editDisplay: true,
-  //   hide: false,
-  //   dict: { url: '/storeProductType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-  //   formType: 'select',
-  //   commonRules: [{ required: true, message: '产品线必填' }],
-  // },
-  {
-    title: '价格体系',
-    dataIndex: 'pricing_type_id',
-    width: 100,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
-    formType: 'select',
-    multiple: true,
-    editDefaultValue: async (record) => {
-      const response = await api.read(record.id)
-      return response.data.list.map((item) => item.id)
-    },
-    // commonRules: [{ required: true, message: '价格体系必填' }],
-  },
-  {
-    title: '用品说明',
-    dataIndex: 'remark',
-    width: 180,
-    search: false,
-    addDisplay: true,
-    editDisplay: true,
-    hide: false,
-    formType: 'input',
-    commonRules: [{ required: false, message: '用品说明必填' }],
-  },
-  {
-    title: '创建者',
-    dataIndex: 'created_by',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    formType: 'input',
-    commonRules: [{ required: false, message: '创建者必填' }],
-  },
-  {
-    title: '更新者',
-    dataIndex: 'updated_by',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    formType: 'input',
-    commonRules: [{ required: false, message: '更新者必填' }],
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'create_time',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    searchFormType: 'range',
-    showTime: true,
-    formType: 'date',
-    commonRules: [{ required: false, message: '创建时间必填' }],
-  },
-  {
-    title: '修改时间',
-    dataIndex: 'update_time',
-    width: 180,
-    search: false,
-    addDisplay: false,
-    editDisplay: false,
-    hide: true,
-    searchFormType: 'range',
-    showTime: true,
-    formType: 'date',
-    commonRules: [{ required: false, message: '修改时间必填' }],
-  },
+	{
+		title: '小程序预览图',
+		dataIndex: 'preview_url',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'upload',
+		type: 'image',
+		returnType: 'url',
+		multiple: false,
+		extra: '仅用于小程序用品预览，请确保与源文件内容相符！图片宽高建议在1200像素内，超出将不能完整显示。',
+		commonRules: [{ required: false, message: '预览图必填' }],
+	},
+	{
+		title: 'PC端预览图',
+		dataIndex: 'preview_pc_url',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'upload',
+		type: 'image',
+		returnType: 'url',
+		multiple: false,
+		extra: '仅用于PC端用品预览，请确保与源文件内容相符！图片大小限制在2MB以内。',
+		commonRules: [{ required: false, message: 'PC预览图必填' }],
+	},
+	{
+		title: '固定宽度CM',
+		dataIndex: 'width',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		commonRules: [{ required: false, message: '固定宽度必填' }],
+	},
+	{
+		title: '固定高度CM',
+		dataIndex: 'height',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		commonRules: [{ required: false, message: '固定高度必填' }],
+	},
+	{
+		title: '计量单位',
+		dataIndex: 'pricing_unit_name',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		disabled: true,
+		formType: 'input',
+	},
+	// {
+	//   title: '产品线',
+	//   dataIndex: 'product_type_id',
+	//   width: 100,
+	//   search: false,
+	//   addDisplay: true,
+	//   editDisplay: true,
+	//   hide: false,
+	//   dict: { url: '/storeProductType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+	//   formType: 'select',
+	//   commonRules: [{ required: true, message: '产品线必填' }],
+	// },
+	{
+		title: '价格体系',
+		dataIndex: 'pricing_type_id',
+		width: 100,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		dict: { url: '/storePricingType/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+		formType: 'select',
+		multiple: true,
+		editDefaultValue: async (record) => {
+			const response = await api.read(record.id)
+			return response.data.list.map((item) => item.id)
+		},
+		// commonRules: [{ required: true, message: '价格体系必填' }],
+	},
+	{
+		title: '用品说明',
+		dataIndex: 'remark',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		formType: 'input',
+		commonRules: [{ required: false, message: '用品说明必填' }],
+	},
+	{
+		title: '创建者',
+		dataIndex: 'created_by',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: true,
+		formType: 'input',
+		commonRules: [{ required: false, message: '创建者必填' }],
+	},
+	{
+		title: '更新者',
+		dataIndex: 'updated_by',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: true,
+		formType: 'input',
+		commonRules: [{ required: false, message: '更新者必填' }],
+	},
+	{
+		title: '创建时间',
+		dataIndex: 'create_time',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: true,
+		searchFormType: 'range',
+		showTime: true,
+		formType: 'date',
+		commonRules: [{ required: false, message: '创建时间必填' }],
+	},
+	{
+		title: '修改时间',
+		dataIndex: 'update_time',
+		width: 180,
+		search: false,
+		addDisplay: false,
+		editDisplay: false,
+		hide: true,
+		searchFormType: 'range',
+		showTime: true,
+		formType: 'date',
+		commonRules: [{ required: false, message: '修改时间必填' }],
+	},
 ])
 
 defineExpose({ open })

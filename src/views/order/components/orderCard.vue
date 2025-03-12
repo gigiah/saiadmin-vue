@@ -141,7 +141,7 @@
               <associated-file-select size="mini" v-else v-model="record.associated_file" disabled />
             </template>
           </a-table-column>
-          <a-table-column title="画面内容" data-index="identify" :width="100">
+          <a-table-column title="画面内容" data-index="identify" :width="250">
             <template #cell="{ record, column, index }">
               <span v-if="record.row_type === 'craft'"></span>
               <a-input size="mini" v-else v-model="record.identify" :disabled="!record.editable" />

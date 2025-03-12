@@ -30,6 +30,9 @@ const visible = ref(false)
 const crudRef = ref()
 const galleryId = ref()
 
+const lockWidth = ref(false)
+const lockHeight = ref(false)
+
 const open = (row) => {
 	galleryId.value = row.id
 	visible.value = true
@@ -57,15 +60,30 @@ const getCraftSelection = async (craft_ids) => {
 const applyPanel = async (record) => {
 	let _craftIds = ''
 	Object.keys(record).forEach((key) => {
+		if (key == 'width') {
+			if (record[key] > 0) {
+				lockWidth.value = true
+			} else {
+				lockWidth.value = false
+			}
+		}
+		if (key == 'height') {
+			if (record[key] > 0) {
+				lockHeight.value = true
+			} else {
+				lockHeight.value = false
+			}
+		}
 		if (key !== 'craft_ids') {
 			modalRef.value.form[key] = record[key]
 		} else {
+			modalRef.value.form[key] = record[key]
 			_craftIds = buildCraftIds(record[key])
 		}
 	})
 	modalRef.value.form['count'] = '0'
 	modalRef.value.form['identify'] = ''
-	modalRef.value.form['craft_ids'] = ''
+	// modalRef.value.form['craft_ids'] = ''
 	await getCraftSelection(_craftIds)
 	modalVisible.value = true
 }
@@ -198,7 +216,7 @@ const columns = reactive([
 	},
 	{
 		title: 'PC预览图',
-		dataIndex: 'preview_url',
+		dataIndex: 'preview_pc_url',
 		width: 100,
 		search: false,
 		addDisplay: true,
@@ -428,6 +446,7 @@ const applyColumn = reactive([
 		editDisplay: true,
 		hide: true,
 		formType: 'input',
+		disabled: lockWidth,
 		commonRules: [{ required: false, message: '宽度必填' }],
 	},
 	{
@@ -439,6 +458,7 @@ const applyColumn = reactive([
 		editDisplay: true,
 		hide: true,
 		formType: 'input',
+		disabled: lockHeight,
 		commonRules: [{ required: false, message: '高度必填' }],
 	},
 	{

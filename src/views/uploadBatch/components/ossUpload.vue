@@ -6,8 +6,10 @@ import { Message } from '@arco-design/web-vue'
 const props = defineProps<{
 	limit?: number
 	disabled?: boolean
-  maxSize?: number
+	maxSize?: number
 }>()
+
+const defaultMaxSize = props.maxSize || 100000 // 默认大小为 10000MB
 
 const emits = defineEmits<{ 'update:modelValue': [value: FileItem[]] }>()
 
@@ -22,11 +24,19 @@ function handleRemove(idx: number) {
 	fileItem.value.splice(idx, 1)
 	emits('update:modelValue', fileItem.value)
 }
+
+function beforeUpload(file) {
+	const isLt2M = file.size / 1024 / 1024 < defaultMaxSize
+	if (!isLt2M) {
+		Message.error('文件大小不能超过 ' + props.maxSize + 'MB!')
+	}
+	return isLt2M
+}
 </script>
 
 <template>
 	<div class="w-full">
-		<a-upload :limit="limit" v-model="fileItem" :show-file-list="false" :disabled="disabled" :auto-upload="false" @change="handleChange" />
+		<a-upload @before-upload="beforeUpload" :limit="limit" v-model="fileItem" :show-file-list="false" :disabled="disabled" :auto-upload="false" @change="handleChange" />
 		<div class="flex flex-col w-full gap-1">
 			<div class="flex items-center justify-between p-2 bg-blue-100" v-for="(file, idx) in fileItem">
 				<span class="overflow-hidden overflow-ellipsis">{{ file.name }}</span>

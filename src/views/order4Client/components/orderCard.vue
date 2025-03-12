@@ -95,9 +95,25 @@
 						<span style="font-size: 12px; padding-left: 0.125rem; color: black">{{ order.source }}</span>
 					</span>
 					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">订单备注:</span>
-					<a-input size="mini" :disabled="scene === 'index' || identity === 'store'" v-model="order.remark" style="width: 500px" @focus="onRemarkFocus" @blur="onRemarkBlur" @pressEnter="onRemarkBlur" />
+					<a-input
+						size="mini"
+						:disabled="scene === 'index' || identity === 'store'"
+						v-model="order.remark"
+						style="width: 500px"
+						@focus="onRemarkFocus"
+						@blur="onRemarkBlur"
+						@pressEnter="onRemarkBlur"
+					/>
 					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black">发货备注:</span>
-					<a-input size="mini" :disabled="scene === 'index' || identity === 'store'" v-model="order.delivery_remark" style="width: 500px" @focus="onDeliveryRemarkFocus" @blur="onDeliveryRemarkBlur" @pressEnter="onDeliveryRemarkBlur" />
+					<a-input
+						size="mini"
+						:disabled="scene === 'index' || identity === 'store'"
+						v-model="order.delivery_remark"
+						style="width: 500px"
+						@focus="onDeliveryRemarkFocus"
+						@blur="onDeliveryRemarkBlur"
+						@pressEnter="onDeliveryRemarkBlur"
+					/>
 					<span class="font-bold" style="font-size: 12px; padding-top: 0.125rem; color: black" v-if="scene === 'check'">
 						<span class="pl-1 text-black">卡券名称:</span>
 						<span class="pl-3 text-black">{{ order.coupon_name }}</span>
@@ -136,6 +152,12 @@
 							<associated-file-select size="mini" v-else v-model="record.associated_file" :disabled="!record.editable" />
 						</template>
 					</a-table-column>
+					<a-table-column title="画面内容" data-index="identify" :width="250">
+						<template #cell="{ record, column, index }">
+							<span v-if="record.row_type === 'craft'"></span>
+							<a-input size="mini" v-else v-model="record.identify" :disabled="!record.editable" />
+						</template>
+					</a-table-column>
 					<a-table-column title="宽度CM" data-index="width" :width="120">
 						<template #cell="{ record, column, index }">
 							<a-input-number size="mini" v-model="record.width" :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
@@ -153,7 +175,7 @@
 					</a-table-column>
 					<a-table-column title="工艺" data-index="craft_id" :width="110">
 						<template #cell="{ record, column, index }">
-							<a-button v-if="record.row_type === 'goods' && (scene === 'create' ||  scene === 'check')" size="mini" status="success" shape="circle" @click="addCraft(record)">
+							<a-button v-if="record.row_type === 'goods' && (scene === 'create' || scene === 'check')" size="mini" status="success" shape="circle" @click="addCraft(record)">
 								<icon-plus />
 							</a-button>
 							<pricing-craft-select
@@ -196,7 +218,7 @@
 					<a-table-column v-if="scene !== 'index' && identity !== 'store'" title="操作" fixed="right" :width="100">
 						<template #cell="{ record, column }">
 							<div style="display: flex; flex-direction: row; gap: 10px">
-								<a-button v-if="!record.editable && scene === 'create' || scene === 'check'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
+								<a-button v-if="(!record.editable && scene === 'create') || scene === 'check'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
 									<icon-delete />
 								</a-button>
 								<a-button v-if="!record.editable && record.row_type === 'goods'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">

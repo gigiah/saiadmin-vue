@@ -42,18 +42,18 @@ const getCraftSelection = async (craft_ids) => {
 	}))
 }
 const applyPanel = async (record) => {
+	console.log('record', record)
 	let _craftIds = ''
 	Object.keys(record).forEach((key) => {
 		modalRef.value.form[key] = record[key]
+		console.log('key', key)
 	})
 	_craftIds = buildCraftIds(record['item_craft_ids'])
 	await getCraftSelection(_craftIds)
 	modalVisible.value = true
 }
 const applySubmit = (formData) => {
-	console.log(formData)
 	api.updateApply(formData).then((res) => {
-		console.log('res', res)
 		if (res.code == 200) {
 			Message.success('保存成功')
 			crudRef.value.refresh()
@@ -407,16 +407,13 @@ const applyColumn = reactive([
 		search: false,
 		addDisplay: true,
 		editDisplay: true,
-		hide: true,
 		formType: 'select',
 		multiple: true,
-		// disabled: true,
 		dict: { data: craftSelection, translation: true },
-		// dict: { url: '/pricingCraft/list?craft_ids=' + craftSelectIds, props: { label: 'name', value: 'id' }, translation: true },
-		// dict: { url: '/craft/index?type=all', props: { label: 'name', value: 'id' }, translation: true },
+		// dict: { url: '/pricingCraft/index4Search', props: { label: 'name', value: 'craft_id' }, translation: true },
 		// editDefaultValue: async (record) => {
-		// 	const response = await api.read(record.id)
-		// 	return response.data.craft_list.map((item) => item.id)
+			// const response = await api.read(record.id)
+			// return response.data.craft_list.map((item) => item.id)
 		// },
 	},
 	{

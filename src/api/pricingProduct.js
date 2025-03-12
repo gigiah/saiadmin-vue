@@ -76,6 +76,18 @@ export default {
 	},
 
 	/**
+	 * 读取数据
+	 * @returns
+	 */
+	read4Unit(params = {}) {
+		return request({
+			url: '/pricingProduct/read4Unit',
+			method: 'get',
+			params,
+		})
+	},
+
+	/**
 	 * 软删除数据
 	 * @returns
 	 */
