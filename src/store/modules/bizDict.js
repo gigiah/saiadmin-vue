@@ -66,9 +66,9 @@ const useBizDictStore = defineStore('bizDict', {
 				}
 			})
 		},
-		fetchPricingCraft4Search(product_id = '', range = '') {
+		fetchPricingCraft4Search(product_id = '', range = '', client_group_id = '') {
 			request({
-				url: `/pricingCraft/index4Search?status=1&range=${range}&product_id=${product_id}`,
+				url: `/pricingCraft/index4Search?status=1&range=${range}&product_id=${product_id}&client_group_id=${client_group_id}`,
 				method: 'get',
 			}).then((resp) => {
 				if (resp.code === 200) {

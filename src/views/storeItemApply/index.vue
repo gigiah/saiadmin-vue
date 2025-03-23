@@ -4,7 +4,10 @@
 		<ma-crud :options="crud" :columns="columns" ref="crudRef" @selection-change="selectChange">
 			<!-- 表格前置扩展 -->
 			<template #tableBeforeButtons>
-				<a-button @click="submitApply()" type="primary" status="warning"><icon-check />提交</a-button>
+				<a-button @click="submitApply()" type="primary" status="warning"><icon-check />提交</a-button>				
+			</template>
+			<template #tableAfterButtons>
+				<view>每次提交均生成独立订单，请检查后集中提交</view>
 			</template>
 			<!-- 操作前置扩展 -->
 			<template #operationBeforeExtend="{ record }">
@@ -227,7 +230,7 @@ const columns = reactive([
 	},
 	{
 		title: 'PC预览图',
-		dataIndex: 'preview_url',
+		dataIndex: 'preview_pc_url',
 		width: 120,
 		search: false,
 		addDisplay: true,
@@ -270,7 +273,8 @@ const columns = reactive([
 		addDisplay: true,
 		editDisplay: true,
 		hide: false,
-		formType: 'input',
+		formType: 'input-number',
+		min: 1,
 		commonRules: [{ required: false, message: '数量必填' }],
 	},
 	{
@@ -418,7 +422,7 @@ const applyColumn = reactive([
 	},
 	{
 		title: 'PC预览图',
-		dataIndex: 'preview_url',
+		dataIndex: 'preview_pc_url',
 		width: 100,
 		search: false,
 		addDisplay: true,
@@ -474,7 +478,7 @@ const applyColumn = reactive([
 		addDisplay: true,
 		editDisplay: true,
 		hide: true,
-		formType: 'input',
+		formType: 'input-number',
 		defaultValue: '0',
 		commonRules: [{ required: false, message: '数量必填' }],
 	},

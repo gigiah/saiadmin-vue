@@ -176,6 +176,7 @@ const columns = reactive([
 		type: 'image',
 		returnType: 'url',
 		multiple: false,
+		maxSize: 2,
 		extra: '仅用于PC端用品预览，请确保与源文件内容相符！图片大小限制在2MB以内。',
 		commonRules: [{ required: false, message: 'PC预览图必填' }],
 	},

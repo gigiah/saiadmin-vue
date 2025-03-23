@@ -21,6 +21,7 @@
 import { ref, reactive, computed } from 'vue'
 import api from '@/api/storeGalleryItem'
 import applyApi from '@/api/storeItemApply'
+import pricingProductApi from '@/api/pricingProduct'
 import pricingCraftApi from '@/api/pricingCraft'
 import { Message, Modal } from '@arco-design/web-vue'
 import MaFormModal from '@/components/ma-form-modal/index.vue'
@@ -395,6 +396,11 @@ const applyColumn = reactive([
 		formType: 'select',
 		// cascaderItem: ['craft_ids'],
 		commonRules: [{ required: true, message: '模板产品必填' }],
+		control: (val, maFormObject) => {
+			pricingProductApi.read4Unit({ id: val }).then((res) => {
+				if (res.data) maFormObject.pricing_unit_name = res.data.pricing_unit_name
+			})
+		},
 	},
 	{
 		title: '工艺',
@@ -411,7 +417,7 @@ const applyColumn = reactive([
 	},
 	{
 		title: 'PC预览图',
-		dataIndex: 'preview_url',
+		dataIndex: 'preview_pc_url',
 		width: 100,
 		search: false,
 		addDisplay: true,
@@ -469,9 +475,20 @@ const applyColumn = reactive([
 		addDisplay: true,
 		editDisplay: true,
 		hide: true,
-		formType: 'input',
-		defaultValue: '0',
+		formType: 'input-number',
+		min: 1,
 		commonRules: [{ required: false, message: '数量必填' }],
+	},
+	{
+		title: '计量单位',
+		dataIndex: 'pricing_unit_name',
+		width: 180,
+		search: false,
+		addDisplay: true,
+		editDisplay: true,
+		hide: false,
+		disabled: true,
+		formType: 'input',
 	},
 	{
 		title: '画面内容',

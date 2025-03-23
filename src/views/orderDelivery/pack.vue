@@ -28,6 +28,9 @@
 						<td colspan="7" class="code">{{ item.orderLabelNo }}</td>
 					</tr>
 					<tr>
+						<td colspan="7" class="title delivery-remark">发货备注：{{ item.deliveryRemark }}</td>
+					</tr>
+					<tr>
 						<td colspan="7" class="title">客户简称：{{ item.client }}</td>
 					</tr>
 					<tr>
@@ -168,6 +171,9 @@ const openPrintWindow = async () => {
       font-weight: bolder;
       text-align: left;
     }
+	.delivery-remark{
+      	font-size: 16px;
+	}
     th, td {
       border: 1px solid #000;
       padding: 2px;
@@ -248,6 +254,7 @@ const transformData = (data) => {
 			orderLabelNo: order.label_no,
 			client: order.client_name,
 			store: order.store_name,
+			deliveryRemark: order.delivery_remark,
 			// storeArea: order.store_area_type_name ? order.store_area_type_name : order.store_area_type,
 			// storePricing: order.store_pricing_type_name ? order.store_pricing_type_name : order.store_pricing_type,
 			storeArea: order.store_area_type,
@@ -860,6 +867,10 @@ table {
 
 .title {
 	font-weight: bolder;
+}
+
+.delivery-remark{
+	font-size: 32px;
 }
 
 th,

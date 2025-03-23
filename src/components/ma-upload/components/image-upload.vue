@@ -19,6 +19,7 @@
 
 		<a-upload
 			:custom-request="uploadImageHandler"
+			@before-upload="beforeUpload"
 			:show-file-list="false"
 			:multiple="config.multiple"
 			:accept="config.accept ?? '.jpg,jpeg,.gif,.png,.svg,.bpm'"
@@ -51,6 +52,7 @@ const { t } = useI18n()
 
 const props = defineProps({
 	modelValue: { type: [String, Number, Array], default: () => {} },
+	maxSize: { type: Number, default: 999999 }, //MB
 })
 const emit = defineEmits(['update:modelValue'])
 const config = inject('config')
@@ -91,6 +93,14 @@ const uploadImageHandler = async (options) => {
 			emit('update:modelValue', files)
 		}
 	}
+}
+
+const beforeUpload = (file) => {
+	const isLt2M = file.size / 1024 / 1024 < props.maxSize
+	if (!isLt2M) {
+		Message.error('文件大小不能超过 ' + props.maxSize + 'MB!')
+	}
+	return isLt2M
 }
 
 const removeSignImage = () => {

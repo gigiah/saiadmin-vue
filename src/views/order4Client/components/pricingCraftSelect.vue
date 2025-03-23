@@ -12,6 +12,10 @@ const props = defineProps({
     required: false
   },
   searchAllRange: false,
+  clientGroupId: {
+    type: Number,
+    required: false
+  },
 });
 const myKey = ref(0);
 
@@ -24,10 +28,11 @@ watch(() => bizDict.$state[dictKey], (newVal) => {
 
 onMounted(() => {
   console.log('productId', props.productId);
+  console.log('props', props);
   if (props.productId) {
     dictKey = `${props.productId}_pricingCraft4Search`;
     if (!bizDict.$state[dictKey] || bizDict.$state[dictKey].length === 0) {
-      bizDict.fetchPricingCraft4Search(props.productId, props.searchAllRange ? 'all' : '');
+      bizDict.fetchPricingCraft4Search(props.productId, props.searchAllRange ? 'all' : '', props.clientGroupId);
     }
   }
   // if (!bizDict.$state['pricingCraft4Search'] || bizDict.$state['pricingCraft4Search'].length === 0) {

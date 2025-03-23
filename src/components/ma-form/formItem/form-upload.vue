@@ -21,6 +21,7 @@
 				:fileType="props.component.fileType"
 				:showList="props.component.showList"
 				:requestData="props.component.requestData"
+				:maxSize="props.component.maxSize"
 			>
 			</ma-upload>
 		</slot>

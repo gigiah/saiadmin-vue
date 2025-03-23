@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<ma-image-upload v-if="props.type === 'image'" v-model="file" />
+		<ma-image-upload v-if="props.type === 'image'" v-model="file" :max-size="props.maxSize" />
 		<ma-file-upload v-if="props.type === 'file'" v-model="file" @getUploadName="(value) => emit('getUploadName', value)"  />
 		<ma-chunk-upload v-if="props.type === 'chunk'" v-model="file" />
 	</div>
@@ -36,6 +36,7 @@ const props = defineProps({
 	fileType: { type: String, default: 'button' },
 	showList: { type: Boolean, default: true },
 	requestData: { type: Object, default: {} },
+	maxSize: { type: Number, default: 999999 },
 })
 
 if (!['id', 'url', 'hash'].includes(props.returnType)) {
