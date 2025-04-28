@@ -13,19 +13,35 @@ defineProps({
 
 const getDefaultDates = () => {
   const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-  // 格式化日期为 'YYYY-MM-DD' 的形式
-  function formatDate(date) {
+  const start = new Date();
+  const end = new Date();
+
+  // 设置 start 为3天前的0点
+  start.setDate(today.getDate() - 3);
+  start.setHours(0, 0, 0, 0); // 设置时间为 0 点
+
+  // 设置 end 为当天的23:59:59
+  end.setHours(23, 59, 59, 999); // 设置时间为 23:59:59
+
+  // 格式化日期为 'YYYY-MM-DD HH:mm:ss' 的形式
+  function formatDateTime(date) {
     let month = date.getMonth() + 1;
     let day = date.getDate();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
     return [
       date.getFullYear(),
       month > 9 ? month : '0' + month,
       day > 9 ? day : '0' + day
-    ].join('-');
+    ].join('-') + ' ' +
+    [hours > 9 ? hours : '0' + hours,
+     minutes > 9 ? minutes : '0' + minutes,
+     seconds > 9 ? seconds : '0' + seconds
+    ].join(':');
   }
-  return [formatDate(today), formatDate(tomorrow)];
+
+  return [formatDateTime(start), formatDateTime(end)];
 }
 
 const searchForm = ref({
@@ -80,9 +96,9 @@ onMounted(() => {
             :options="storeOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="7">
         <a-form-item label="起止日期*" class="!mb-0" field="create_time">
-          <a-range-picker size="mini" v-model="searchForm.create_time" allow-clear />
+					<a-range-picker size="mini" v-model="create_time" allow-clear show-time format="YYYY-MM-DD HH:mm:ss" :time-picker-props="{ defaultValue: ['00:00:00', '23:59:59'] }"/>
         </a-form-item>
       </a-col>
     </a-row>

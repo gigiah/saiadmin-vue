@@ -209,7 +209,7 @@ const columns = reactive([
 		search: false,
 		addDisplay: true,
 		editDisplay: true,
-		hide: false,
+		hide: true,
 		disabled: true,
 		formType: 'input',
 	},

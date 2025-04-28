@@ -42,7 +42,7 @@ const visible = ref(false)
 const getCraft = () => {
   let requestApi = null
   requestApi = craftApi
-  requestApi.getPageList({ type: 'all' })
+  requestApi.getPageList({ type: 'all', scene: 'market' })
     .then(res => {
       res.data.forEach(function (item) {
         craft.value.push(item)

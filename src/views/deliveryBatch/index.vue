@@ -129,6 +129,16 @@ const columns = reactive([
     commonRules: [{ required: false, message: '批次号必填' }],
   },
   {
+    title: '订单号',
+    dataIndex: 'orderNos',
+    width: 180,
+    search: true,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    formType: 'input',
+  },
+  {
     title: '运单金额',
     dataIndex: 'freight_total',
     width: 120,

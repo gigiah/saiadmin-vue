@@ -89,6 +89,9 @@
 					<span class="text-black">运费:</span>
 					<a-input-number style="width: 80px; margin-left: 20px" size="mini" class="pl-3" v-model="order.freight_avg" @blur="onFreightBlur" />
 				</span>
+				<span v-if="scene === 'index' || scene === 'confirm'" class="pt-0.5 flex flex-row items-center">
+					<a-switch v-model="order.auto_input_freight" checked-value="1" unchecked-value="2" @change="onAutoFreight" />
+				</span>
 				<span class="pt-0.5">
 					<span class="pl-1 text-black">订单金额:</span>
 					<span class="pl-3 text-black">{{ order.pay_amount }}</span>
@@ -153,12 +156,12 @@
 							<a-input size="mini" v-else v-model="record.identify" :disabled="!record.editable" />
 						</template>
 					</a-table-column>
-					<a-table-column title="宽度cm" data-index="width" :width="120">
+					<a-table-column title="宽度cm" data-index="width" :width="110">
 						<template #cell="{ record, column, index }">
 							<a-input-number size="mini" v-model="record.width" disabled :min="0" :step="1" />
 						</template>
 					</a-table-column>
-					<a-table-column title="高度cm" data-index="height" :width="120">
+					<a-table-column title="高度cm" data-index="height" :width="110">
 						<template #cell="{ record, column, index }">
 							<a-input-number size="mini" v-model="record.height" disabled :min="0" :step="1" />
 						</template>
@@ -185,7 +188,7 @@
 							/>
 						</template>
 					</a-table-column>
-					<a-table-column title="计价方式" data-index="pricing_type_id" :width="100">
+					<a-table-column title="计价方式" data-index="pricing_type_id" :width="90">
 						<!--          <template #cell="{ record, column, index }">-->
 						<!--            <pricing-type-select v-model="record.pricing_type_id" :disabled=true />-->
 						<!--          </template>-->
@@ -194,7 +197,7 @@
 							<span v-else>加载中</span>
 						</template>
 					</a-table-column>
-					<a-table-column title="计量单位" data-index="pricing_unit_id" :width="100">
+					<a-table-column title="计量单位" data-index="pricing_unit_id" :width="90">
 						<!--          <template #cell="{ record, column, index }">-->
 						<!--            <pricing-unit-select v-model="record.pricing_unit_id" :disabled=true />-->
 						<!--          </template>-->
@@ -203,9 +206,10 @@
 							<span v-else>加载中</span>
 						</template>
 					</a-table-column>
-					<a-table-column title="单价" data-index="unit_price">
+					<a-table-column title="单价" data-index="unit_price" :width="100">
 						<template #cell="{ record, column, index }">
-							<a-input v-model="record.unit_price" :disabled="record.pricing_type_id !== 9 || scene === 'index' || !record.editable" />
+							<a-input v-if="scene === 'confirm'" v-model="record.unit_price" :disabled="!record.editable || record.allow_edit_price === false" />
+							<a-input v-else v-model="record.unit_price" :disabled="record.pricing_type_id !== 9 || !record.editable" />
 						</template>
 						<!-- <template #cell="{ record, column, index }">
             <span>{{ record.unit_price ? record.unit_price : '' }}</span>
@@ -218,7 +222,7 @@
 								<a-button v-if="(!record.editable && scene === 'create') || scene === 'confirm'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
 									<icon-delete />
 								</a-button>
-								<a-button v-if="!record.editable && record.row_type === 'goods'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">
+								<a-button v-if="!record.editable && scene === 'confirm'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">
 									<icon-edit />
 								</a-button>
 								<a-button v-if="record.editable" type="primary" status="success" size="mini" shape="circle" @click="onSubmitGoodsOrCraft(record)">
@@ -598,6 +602,11 @@ function onSubmitGoodsOrCraft(record) {
 function updateGoodsOrCraft(record) {
 	loading.value = true
 	emit('beforeChange')
+	if (props.scene === 'confirm') {
+		record.edit_type = 'unit_price'
+	} else {
+		record.edit_type = 'nums'
+	}
 	orderApi.update(record.id, record).then((value) => {
 		if (value.code === 200) {
 			Message.success('更新成功')
@@ -715,6 +724,21 @@ function onRemarkBlur() {
 				tempRemark = props.order.remark
 				Message.success('更新成功')
 				// emit('changed');
+			}
+		})
+}
+
+function onAutoFreight() {
+	orderApi
+		.update(props.order.id, {
+			row_type: 'order',
+			store_id: props.order.store_id,
+			consignee_id: props.order.consignee_id,
+			auto_input_freight: props.order.auto_input_freight,
+		})
+		.then((value) => {
+			if (value.code === 200) {
+				Message.success('更新成功')
 			}
 		})
 }

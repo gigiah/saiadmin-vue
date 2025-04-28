@@ -1,46 +1,56 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import clientGroupApi from '@/api/clientGroup';
-import storeAreaApi from '@/api/storeAreaType';
-import storeApi from '@/api/store';
+import { onMounted, ref, watch } from 'vue'
+import clientGroupApi from '@/api/clientGroup'
+import storeAreaApi from '@/api/storeAreaType'
+import storeApi from '@/api/store'
 
 defineProps({
-  disabledBtn: Boolean
+	disabledBtn: Boolean,
 })
 
 const getDefaultDates = () => {
-  const today = new Date();
-  const start = new Date();
-  const end = new Date();
-  start.setDate(today.getDate() - 3);
-  end.setDate(today.getDate() + 1);
-  // 格式化日期为 'YYYY-MM-DD' 的形式
-  function formatDate(date) {
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-    return [
-      date.getFullYear(),
-      month > 9 ? month : '0' + month,
-      day > 9 ? day : '0' + day
-    ].join('-');
-  }
-  return [formatDate(start), formatDate(end)];
+	const today = new Date()
+	const start = new Date()
+	const end = new Date()
+
+	// 设置 start 为3天前的0点
+	start.setDate(today.getDate() - 3)
+	start.setHours(0, 0, 0, 0) // 设置时间为 0 点
+
+	// 设置 end 为当天的23:59:59
+	end.setHours(23, 59, 59, 999) // 设置时间为 23:59:59
+
+	// 格式化日期为 'YYYY-MM-DD HH:mm:ss' 的形式
+	function formatDateTime(date) {
+		let month = date.getMonth() + 1
+		let day = date.getDate()
+		let hours = date.getHours()
+		let minutes = date.getMinutes()
+		let seconds = date.getSeconds()
+		return (
+			[date.getFullYear(), month > 9 ? month : '0' + month, day > 9 ? day : '0' + day].join('-') +
+			' ' +
+			[hours > 9 ? hours : '0' + hours, minutes > 9 ? minutes : '0' + minutes, seconds > 9 ? seconds : '0' + seconds].join(':')
+		)
+	}
+
+	return [formatDateTime(start), formatDateTime(end)]
 }
 
 const searchForm = ref({
-  create_time: getDefaultDates(),
-});
+	create_time: getDefaultDates(),
+})
 
-const emit = defineEmits(['search', 'reset']);
+const emit = defineEmits(['search', 'reset'])
 
 const handleReset = () => {
-  searchForm.value = {};
-  emit('reset');
+	searchForm.value = {}
+	emit('reset')
 }
 
 const handleSearch = () => {
-  emit('search', searchForm.value);
-  loadSearchForm();
+	emit('search', searchForm.value)
+	loadSearchForm()
 }
 
 const clientGrpFieldNames = { value: 'id', label: 'name' }
@@ -50,32 +60,34 @@ const areaOptions = ref([])
 const storeFieldNames = { value: 'id', label: 'name' }
 const storeOptions = ref([])
 
-
 onMounted(() => {
-  loadSearchForm();
+	loadSearchForm()
 })
 
 const loadSearchForm = () => {
-  clientGroupApi.getPageList({ type: 'all' }).then(res => {
-    console.log(res.data);
-    clientGrpOptions.value = res.data;
-  });
-  if (!searchForm.value.client_group_id) return;
-  storeAreaApi.getPageList({
-    type: 'all',
-    client_group_id: searchForm.value.client_group_id
-  }).then(res => {
-    console.log(res.data);
-    areaOptions.value = res.data;
-  });
-  storeApi.getPageList({
-    type: 'all',
-    client_group_id: searchForm.value.client_group_id
-  }).then(res => {
-    storeOptions.value = res.data;
-  });
+	clientGroupApi.getPageList({ type: 'all' }).then((res) => {
+		console.log(res.data)
+		clientGrpOptions.value = res.data
+	})
+	if (!searchForm.value.client_group_id) return
+	storeAreaApi
+		.getPageList({
+			type: 'all',
+			client_group_id: searchForm.value.client_group_id,
+		})
+		.then((res) => {
+			console.log(res.data)
+			areaOptions.value = res.data
+		})
+	storeApi
+		.getPageList({
+			type: 'all',
+			client_group_id: searchForm.value.client_group_id,
+		})
+		.then((res) => {
+			storeOptions.value = res.data
+		})
 }
-
 </script>
 
 <!--order/orderIndex-->
@@ -87,64 +99,105 @@ const loadSearchForm = () => {
 <!--支付状态=pay_status, 枚举 1=已支付 2=未支付, null=全部-->
 <!--起止日期=create_time, type=dateTimeRange-->
 
-
 <template>
-  <a-form :model="searchForm" class="pt-4 pl-4 pr-4 ma-content-block">
-    <a-row>
-      <!-- <a-col :span="8">
+	<a-form :model="searchForm" class="pt-4 pl-4 pr-4 ma-content-block">
+		<a-row>
+			<!-- <a-col :span="8">
         <a-form-item label="品牌名称" class="!mb-0" field="code">
           <a-input size="mini" v-model="searchForm.brand_name" placeholder="请输入品牌名称" allow-clear />
         </a-form-item>
       </a-col> -->
-      <a-col :span="6">
-        <a-form-item label="客户*" class="!mb-0" field="client_group_id">
-          <a-select size="mini" v-model="searchForm.client_group_id" placeholder="请选择客户名称"
-            :field-names="clientGrpFieldNames" :options="clientGrpOptions" allow-clear allow-search />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="营销区域" class="!mb-0" field="store_area_type">
-          <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames"
-            :options="areaOptions" allow-clear allow-search />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="门店名称" class="!mb-0" field="store_id">
-          <a-select size="mini" v-model="searchForm.store_id" placeholder="请选择门店名称" :field-names="storeFieldNames"
-            :options="storeOptions" allow-clear allow-search />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="订单号" class="!mb-0" field="code">
-          <a-input size="mini" v-model="searchForm.code" placeholder="请输入订单号" allow-clear />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="发货状态" class="!mb-0" field="delivery_status">
-          <a-select size="mini" v-model="searchForm.delivery_status" placeholder="请选择发货状态"
-            :options="[{ label: '已发货', value: 1 }, { label: '未发货', value: 2 }]" allow-clear />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="支付状态" class="!mb-0" field="pay_status">
-          <a-select size="mini" v-model="searchForm.pay_status" placeholder="请选择支付状态"
-            :options="[{ label: '已支付', value: 1 }, { label: '未支付', value: 2 }]" allow-clear />
-        </a-form-item>
-      </a-col>
-      <a-col :span="6">
-        <a-form-item label="起止日期*" class="!mb-0" field="create_time">
-          <a-range-picker size="mini" v-model="searchForm.create_time" />
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-  <div class="flex items-center justify-center gap-4 pt-4 ma-content-block">
-    <a-button type="primary" size="mini" @click="handleSearch" :disabled="disabledBtn">查询</a-button>
-    <a-button size="mini" @click="handleReset">
-      <template #icon>
-        <icon-refresh />
-      </template>
-      <template #default>重置</template>
-    </a-button>
-  </div>
+			<a-col :span="6">
+				<a-form-item label="客户*" class="!mb-0" field="client_group_id">
+					<a-select
+						size="mini"
+						v-model="searchForm.client_group_id"
+						placeholder="请选择客户名称"
+						:field-names="clientGrpFieldNames"
+						:options="clientGrpOptions"
+						allow-clear
+						allow-search
+					/>
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="营销区域" class="!mb-0" field="store_area_type">
+					<a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames" :options="areaOptions" allow-clear allow-search />
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="门店名称" class="!mb-0" field="store_id">
+					<a-select size="mini" v-model="searchForm.store_id" placeholder="请选择门店名称" :field-names="storeFieldNames" :options="storeOptions" allow-clear allow-search />
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="订单号" class="!mb-0" field="code">
+					<a-input size="mini" v-model="searchForm.code" placeholder="请输入订单号" allow-clear />
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="发货状态" class="!mb-0" field="delivery_status">
+					<a-select
+						size="mini"
+						v-model="searchForm.delivery_status"
+						placeholder="请选择发货状态"
+						:options="[
+							{ label: '已发货', value: 1 },
+							{ label: '未发货', value: 2 },
+						]"
+						allow-clear
+					/>
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="支付状态" class="!mb-0" field="pay_status">
+					<a-select
+						size="mini"
+						v-model="searchForm.pay_status"
+						placeholder="请选择支付状态"
+						:options="[
+							{ label: '已支付', value: 1 },
+							{ label: '未支付', value: 2 },
+						]"
+						allow-clear
+					/>
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="起止日期*" class="!mb-0" field="create_time">
+					<a-range-picker
+						size="mini"
+						v-model="create_time"
+						:allow-clear="true"
+						show-time
+						format="YYYY-MM-DD HH:mm:ss"
+						:time-picker-props="{ defaultValue: ['00:00:00', '23:59:59'] }"
+					/>
+				</a-form-item>
+			</a-col>
+			<a-col :span="6">
+				<a-form-item label="汇总状态" class="!mb-0" field="pay_status">
+					<a-select
+						size="mini"
+						v-model="searchForm.summary_status"
+						placeholder="请选择汇总状态"
+						:options="[
+							{ label: '已汇总', value: 1 },
+							{ label: '未汇总', value: 2 },
+						]"
+						allow-clear
+					/>
+				</a-form-item>
+			</a-col>
+		</a-row>
+	</a-form>
+	<div class="flex items-center justify-center gap-4 pt-4 ma-content-block">
+		<a-button type="primary" size="mini" @click="handleSearch" :disabled="disabledBtn">查询</a-button>
+		<a-button size="mini" @click="handleReset">
+			<template #icon>
+				<icon-refresh />
+			</template>
+			<template #default>重置</template>
+		</a-button>
+	</div>
 </template>

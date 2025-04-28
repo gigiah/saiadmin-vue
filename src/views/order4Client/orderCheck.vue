@@ -6,18 +6,26 @@
 			<a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>
 			<a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>
 			<a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
+			<a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部提交</a-button>
+			<a-button status="danger" size="mini" @click="onDeleteBatchAll" :disabled="false">全部删除</a-button>
+			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28"></a-select>
+		</div>
+		<div v-if="identity === 'store'" class="gap-4 p-4 ma-content-block lg:flex">
+			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28" @change="getOrders()" ></a-select>
 		</div>
 		<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-			<order-card
-				v-for="(item, index) in orders"
-				:order="item"
-				:key="index"
-        :identity="identity"
-				@changed="onOrderChanged"
-				@beforeChange="changeBtnStatus(true)"
-				@afterChange="changeBtnStatus(false)"
-				scene="check"
-			></order-card>
+			<a-spin :loading="loading" tip="数据正在加载中...">
+				<order-card
+					v-for="(item, index) in orders"
+					:order="item"
+					:key="index"
+					:identity="identity"
+					@changed="onOrderChanged"
+					@beforeChange="changeBtnStatus(true)"
+					@afterChange="changeBtnStatus(false)"
+					scene="check"
+				></order-card>
+			</a-spin>
 		</a-checkbox-group>
 		<add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
 		<modal :visible="addCouponModalVisible" title="选择卡券" @ok="onAddCouponOk" @cancel="onAddCouponCancel">
@@ -39,6 +47,15 @@ import couponItemApi from '@/api/couponItem'
 import OrderCheckSearch from '@/views/order4Client/components/orderCheckSearch.vue'
 import { useSysInfoStore } from '@/store'
 
+const pageSizeOptions = [
+	{ label: '1条', value: 1 },
+	{ label: '5条', value: 5 },
+	{ label: '10条', value: 10 },
+	{ label: '20条', value: 20 },
+]
+const pageSize = ref(10)
+const loading = ref(false)
+
 const sysInfoStore = useSysInfoStore()
 
 const stores = ref([])
@@ -55,8 +72,8 @@ const couponList = ref([])
 const couponSelected = ref()
 const couponKey = ref(0)
 
-const identity = ref('client');
-if (sysInfoStore.info.is_store === true) identity.value = 'store';
+const identity = ref('client')
+if (sysInfoStore.info.is_store === true) identity.value = 'store'
 
 const onAddCoupon = () => {
 	addCouponModalVisible.value = true
@@ -106,6 +123,8 @@ function changeBtnStatus(status) {
 }
 
 function getOrders(params = {}) {
+	loading.value = true
+	params.limit = pageSize.value
 	orderApi
 		.orderTree({
 			status: 10, // 0: 录入中
@@ -113,6 +132,9 @@ function getOrders(params = {}) {
 		})
 		.then((res) => {
 			orders.value = res.data
+		})
+		.finally(() => {
+			loading.value = false
 		})
 }
 
@@ -145,6 +167,49 @@ function onSubmitOrder() {
 				.then((value) => {
 					if (value.code === 200) {
 						Message.success('提交成功')
+						checkedValues.value = []
+						getOrders()
+					}
+				})
+		},
+	})
+}
+
+function onSubmitOrderAll() {
+	Modal.confirm({
+		title: '确认提交生产',
+		content: '是否确认全部提交生产？',
+		onOk: () => {
+			orderApi
+				.handleOrderChange({
+					all: true,
+					value: '审批中',
+					beforeStatus: '审订中',
+				})
+				.then((value) => {
+					if (value.code === 200) {
+						Message.success('提交成功')
+						checkedValues.value = []
+						getOrders()
+					}
+				})
+		},
+	})
+}
+
+function onDeleteBatchAll() {
+	Modal.confirm({
+		title: '确认删除',
+		content: '是否确认删除全部的订单？',
+		onOk: () => {
+			orderApi
+				.handleDelete({
+					all: true,
+					value: '审订中',
+				})
+				.then((value) => {
+					if (value.code === 200) {
+						Message.success('删除成功')
 						checkedValues.value = []
 						getOrders()
 					}

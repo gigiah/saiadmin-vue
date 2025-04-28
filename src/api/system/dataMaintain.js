@@ -1,6 +1,15 @@
 import { request } from '@/utils/request.js'
 
 export default {
+
+	flushCache(data = {}) {
+		return request({
+			url: '/core/system/flushCache',
+			method: 'post',
+			data,
+		})
+	},
+
 	/**
 	 * 获取数据表分页列表
 	 * @returns

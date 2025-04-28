@@ -170,7 +170,7 @@
 					</a-table-column>
 					<a-table-column title="数量" data-index="nums" :width="120">
 						<template #cell="{ record, column, index }">
-							<a-input-number size="mini" v-model="record.nums" :disabled="!record.editable || record.row_type === 'craft'" :min="0" :step="1" />
+							<a-input-number type="number" size="mini" v-model="record.nums" :disabled="!record.editable || record.row_type === 'craft'" :min="1" :step="1" />
 						</template>
 					</a-table-column>
 					<a-table-column title="工艺" data-index="craft_id" :width="110">
