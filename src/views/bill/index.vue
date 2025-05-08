@@ -1,5 +1,9 @@
 <template>
+<<<<<<< HEAD
 	<a-spin :loading="loading" tip="数据正在下载中...">
+=======
+	<a-spin :loading="loading" tip="数据正在下载中">
+>>>>>>> pro
 		<div class="justify-between p-4 ma-content-block lg:flex">
 			<!-- CRUD 组件 -->
 			<ma-crud :options="crud" :columns="columns" ref="crudRef">
@@ -42,8 +46,13 @@ const loading = ref(false)
 const exportBill = async (record) => {
 	loading.value = true
 	let res = await api.exportBillExcel({ id: record.id })
+<<<<<<< HEAD
 	loading.value = false
 	window.location.href = res.data.filePath
+=======
+	window.location.href = res.data.filePath
+	loading.value = false
+>>>>>>> pro
 }
 
 const downloadManualExcel = async (record) => {
