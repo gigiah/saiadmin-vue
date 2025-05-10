@@ -107,7 +107,7 @@ const loadSearchForm = () => {
           <a-input size="mini" v-model="searchForm.brand_name" placeholder="请输入品牌名称" allow-clear />
         </a-form-item>
       </a-col> -->
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="客户*" class="!mb-0" field="client_group_id">
 					<a-select
 						size="mini"
@@ -120,22 +120,22 @@ const loadSearchForm = () => {
 					/>
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="营销区域" class="!mb-0" field="store_area_type">
 					<a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames" :options="areaOptions" allow-clear allow-search />
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="门店名称" class="!mb-0" field="store_id">
 					<a-select size="mini" v-model="searchForm.store_id" placeholder="请选择门店名称" :field-names="storeFieldNames" :options="storeOptions" allow-clear allow-search />
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="订单号" class="!mb-0" field="code">
 					<a-input size="mini" v-model="searchForm.code" placeholder="请输入订单号" allow-clear />
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="发货状态" class="!mb-0" field="delivery_status">
 					<a-select
 						size="mini"
@@ -149,7 +149,12 @@ const loadSearchForm = () => {
 					/>
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
+				<a-form-item label="源文件" class="!mb-0" field="associated_file_name">
+					<a-input size="mini" v-model="searchForm.associated_file_name" placeholder="请输入源文件" allow-clear />
+				</a-form-item>
+			</a-col>
+			<!-- <a-col :span="5">
 				<a-form-item label="支付状态" class="!mb-0" field="pay_status">
 					<a-select
 						size="mini"
@@ -162,20 +167,20 @@ const loadSearchForm = () => {
 						allow-clear
 					/>
 				</a-form-item>
-			</a-col>
-			<a-col :span="6">
+			</a-col> -->
+			<a-col :span="5">
 				<a-form-item label="起止日期*" class="!mb-0" field="create_time">
 					<a-range-picker
 						size="mini"
-						v-model="create_time"
+						v-model="searchForm.create_time"
 						:allow-clear="true"
 						show-time
 						format="YYYY-MM-DD HH:mm:ss"
-						:time-picker-props="{ defaultValue: ['00:00:00', '23:59:59'] }"
+						:default-value="searchForm.create_time"
 					/>
 				</a-form-item>
 			</a-col>
-			<a-col :span="6">
+			<a-col :span="5">
 				<a-form-item label="汇总状态" class="!mb-0" field="pay_status">
 					<a-select
 						size="mini"

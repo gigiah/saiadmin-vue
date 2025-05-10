@@ -1,25 +1,38 @@
 <template>
-	<div>
-		<order-index-search @search="getOrders" :disabledBtn="disabledBtn" />
-		<div class="gap-4 p-4 ma-content-block lg:flex">
-			<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
-			<a-button type="primary" size="mini" status="success" @click="onSubmitOrder" :disabled="submitDisabled">汇总</a-button>
-			<a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部汇总</a-button>
-			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28"></a-select>
+	<div style="width: 100%">
+		<div class="order-header">
+			<order-index-search @search="getOrders" :disabledBtn="disabledBtn" />
+			<div class="gap-4 p-4 ma-content-block lg:flex">
+				<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
+				<a-button type="primary" size="mini" status="success" @click="onSubmitOrder" :disabled="submitDisabled">汇总</a-button>
+				<a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部汇总</a-button>
+				<a-pagination
+					:current="currentPage"
+					:total="pageTotal"
+					:page-size="pageSize"
+					:page-size-options="pageSizeOptions"
+					:show-page-size="true"
+					simple
+					@change="setPage"
+					@page-size-change="setPageSize"
+				/>
+			</div>
 		</div>
-		<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-			<a-spin :loading="loading" tip="数据正在加载中...">
-				<order-card
-					v-for="(item, index) in orders"
-					:order="item"
-					:key="index"
-					@changed="onOrderChanged"
-					@beforeChange="changeBtnStatus(true)"
-					@afterChange="changeBtnStatus(false)"
-					scene="index"
-				></order-card>
-			</a-spin>
-		</a-checkbox-group>
+		<div class="order-content">
+			<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
+				<a-spin class="flex flex-col gap-2" :loading="loading" tip="数据正在加载中...">
+					<order-card
+						v-for="(item, index) in orders"
+						:order="item"
+						:key="index"
+						@changed="onOrderChanged"
+						@beforeChange="changeBtnStatus(true)"
+						@afterChange="changeBtnStatus(false)"
+						scene="index"
+					></order-card>
+				</a-spin>
+			</a-checkbox-group>
+		</div>
 		<ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800" :column="submitModalColumn" :submit="submitSummary"></ma-form-modal>
 		<ma-form-modal
 			ref="submitAllModalRef"
@@ -43,14 +56,10 @@ import { Message, Modal } from '@arco-design/web-vue'
 import MaFormModal from '@/components/ma-form-modal/index.vue'
 import OrderIndexSearch from '@/views/order/components/orderIndexSearch.vue'
 
-const pageSizeOptions = [
-	{ label: '1条', value: 1 },
-	{ label: '5条', value: 5 },
-	{ label: '10条', value: 10 },
-	{ label: '20条', value: 20 },
-]
+const pageSizeOptions = [1, 5, 10, 20]
 const pageSize = ref(10)
-
+const currentPage = ref(1)
+const pageTotal = ref(1)
 const loading = ref(false)
 const queryParams = ref({})
 
@@ -70,7 +79,7 @@ const onCheckUpdate = (result) => {
 }
 
 onMounted(() => {
-	getOrders()
+	// getOrders()
 	bizDict.flushDict('store', 'warehouseAddress', 'productGrade', 'productPictureType', 'uploadBatch', 'pricingType', 'pricingUnit')
 	bizDict.fetchPricingProduct4Search('', 'admin')
 })
@@ -79,20 +88,52 @@ function changeBtnStatus(status) {
 	disabledBtn.value = status
 }
 
+function setPageSize(size) {
+	pageSize.value = size
+}
+
+function setPage(page) {
+	if (page === undefined || page === null || page === '' || page < 1) {
+		page = 1
+	}
+	currentPage.value = page
+}
+
 function getOrders(params = {}) {
 	loading.value = true
-	params.menu = 'customerService'
-	params.limit = pageSize.value
-	queryParams.value = params
-	console.log('queryParams', queryParams.value)
+	let query = {}
+	query = params
+	query.menu = 'customerService'
+	query.limit = pageSize.value
+	query.page = currentPage.value
+	// queryParams.value = params
+	// console.log('queryParams', queryParams.value)
+	// 检查 create_time 的日期范围是否超过 31 天
+	if (params.create_time && Array.isArray(params.create_time)) {
+		const startDate = new Date(params.create_time[0])
+		const endDate = new Date(params.create_time[1])
+		// 计算日期差
+		const dateDiff = (endDate - startDate) / (1000 * 60 * 60 * 24)
+		if (dateDiff > 31) {
+			loading.value = false
+			console.error('搜索时间超过31天')
+			Message.error('搜索时间不可超过31天')
+			return // 终止执行
+		}
+		query.create_time = params.create_time
+	}
 	orderApi
 		.orderTree({
-			status: [50, 60, 70, 80, 90], // 0: 录入中
-			...params,
+			status: [50, 60, 70, 80, 90],
+			...query,
 		})
 		.then((res) => {
 			loading.value = false
-			orders.value = res.data
+			orders.value = res.data.data
+			pageTotal.value = res.data.total
+			if (res.data.total <= 0) {
+				pageTotal.value = 1
+			}
 		})
 		.finally(() => {
 			loading.value = false
@@ -198,7 +239,7 @@ const submitSummaryAll = async (formData) => {
 		onOk: () => {
 			loading.value = true
 			let data = queryParams.value
-			data.all = true;
+			data.all = true
 			data.summaryBatchCode = formData.summary_batch_code
 			summaryOrderApi
 				.handleOrderSummary(data)
@@ -230,4 +271,16 @@ const submitModalColumn = reactive([
 ])
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-header {
+	position: fixed;
+	top: 95px;
+	z-index: 999;
+	width: 100%;
+}
+
+.order-content {
+	width: 100%;
+	margin-top: 190px;
+}
+</style>

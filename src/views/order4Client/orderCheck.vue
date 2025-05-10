@@ -1,32 +1,54 @@
 <template>
-	<div>
-		<order-check-search v-if="identity === 'client'" @search="getOrders" :disabledBtn="disabledBtn" />
-		<div v-if="identity === 'client'" class="gap-4 p-4 ma-content-block lg:flex">
-			<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
-			<a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>
-			<a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>
-			<a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
-			<a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部提交</a-button>
-			<a-button status="danger" size="mini" @click="onDeleteBatchAll" :disabled="false">全部删除</a-button>
-			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28"></a-select>
+	<div style="width: 100%">
+		<div class="order-header">
+			<order-check-search v-if="identity === 'client'" @search="getOrders" :disabledBtn="disabledBtn" />
+			<div v-if="identity === 'client'" class="gap-4 p-4 ma-content-block lg:flex">
+				<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
+				<a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>
+				<a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>
+				<a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>
+				<!-- <a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部提交</a-button> -->
+				<!-- <a-button status="danger" size="mini" @click="onDeleteBatchAll" :disabled="false">全部删除</a-button> -->
+				<a-pagination
+					:current="currentPage"
+					:total="pageTotal"
+					:page-size="pageSize"
+					:page-size-options="pageSizeOptions"
+					:show-page-size="true"
+					simple
+					@change="setPage"
+					@page-size-change="setPageSize"
+				/>
+			</div>
+			<div v-if="identity === 'store'" class="gap-4 p-4 ma-content-block lg:flex">
+				<a-pagination
+					:current="currentPage"
+					:total="pageTotal"
+					:page-size="pageSize"
+					:page-size-options="pageSizeOptions"
+					:show-page-size="true"
+					simple
+					@change="setPage"
+					@page-size-change="setPageSize"
+				/>
+			</div>
 		</div>
-		<div v-if="identity === 'store'" class="gap-4 p-4 ma-content-block lg:flex">
-			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28" @change="getOrders()" ></a-select>
+		<div class="order-content">
+			<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
+				<a-spin class="flex flex-col gap-2" :loading="loading" tip="数据正在加载中...">
+					<order-card
+						v-for="(item, index) in orders"
+						:order="item"
+						:key="index"
+						:identity="identity"
+						@changed="onOrderChanged"
+						@beforeChange="changeBtnStatus(true)"
+						@afterChange="changeBtnStatus(false)"
+						scene="check"
+					></order-card>
+				</a-spin>
+			</a-checkbox-group>
 		</div>
-		<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-			<a-spin :loading="loading" tip="数据正在加载中...">
-				<order-card
-					v-for="(item, index) in orders"
-					:order="item"
-					:key="index"
-					:identity="identity"
-					@changed="onOrderChanged"
-					@beforeChange="changeBtnStatus(true)"
-					@afterChange="changeBtnStatus(false)"
-					scene="check"
-				></order-card>
-			</a-spin>
-		</a-checkbox-group>
 		<add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
 		<modal :visible="addCouponModalVisible" title="选择卡券" @ok="onAddCouponOk" @cancel="onAddCouponCancel">
 			<a-select :key="couponKey" v-model="couponSelected" placeholder="请选择" :options="couponList" />
@@ -47,13 +69,10 @@ import couponItemApi from '@/api/couponItem'
 import OrderCheckSearch from '@/views/order4Client/components/orderCheckSearch.vue'
 import { useSysInfoStore } from '@/store'
 
-const pageSizeOptions = [
-	{ label: '1条', value: 1 },
-	{ label: '5条', value: 5 },
-	{ label: '10条', value: 10 },
-	{ label: '20条', value: 20 },
-]
+const pageSizeOptions = [1, 5, 10, 20]
 const pageSize = ref(10)
+const currentPage = ref(1)
+const pageTotal = ref(1)
 const loading = ref(false)
 
 const sysInfoStore = useSysInfoStore()
@@ -122,16 +141,36 @@ function changeBtnStatus(status) {
 	disabledBtn.value = status
 }
 
-function getOrders(params = {}) {
+function setPage(page) {
+	if (page === undefined || page === null || page === '' || page < 1) {
+		page = 1
+	}
+	currentPage.value = page
+}
+
+function setPageSize(size) {
+	pageSize.value = size
+}
+
+function getOrders(params) {
+	console.log('params', params)
 	loading.value = true
-	params.limit = pageSize.value
+	let query = {}
+	query = params
+	query.limit = pageSize.value
+	query.page = currentPage.value
 	orderApi
 		.orderTree({
-			status: 10, // 0: 录入中
-			...params,
+			status: 10,
+			...query,
 		})
 		.then((res) => {
-			orders.value = res.data
+			pageTotal.value = res.data.total
+			orders.value = res.data.data
+			if (res.data.total <= 0) {
+				pageTotal.value = 1
+			}
+			loading.value = false
 		})
 		.finally(() => {
 			loading.value = false
@@ -267,4 +306,16 @@ function onSelectAll() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-header {
+	position: fixed;
+	top: 95px;
+	z-index: 999;
+	width: 100%;
+}
+
+.order-content {
+	width: 100%;
+	margin-top: 160px;
+}
+</style>

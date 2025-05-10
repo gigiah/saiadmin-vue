@@ -102,6 +102,16 @@ const crud = reactive({
 
 const columns = reactive([
   {
+    title: '工艺ID',
+    dataIndex: 'craft_id',
+    width: 80,
+    search: false,
+    addDisplay: false,
+    editDisplay: false,
+    hide: false,
+    formType: 'input',
+  },
+  {
     title: '主键',
     dataIndex: 'id',
     width: 180,
@@ -130,7 +140,7 @@ const columns = reactive([
     title: '工艺',
     dataIndex: 'craft_id',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: true,
     editDisplay: true,
     addDisabled: false,

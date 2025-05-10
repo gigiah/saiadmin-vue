@@ -171,7 +171,7 @@ const columns = reactive([
     title: '工艺',
     dataIndex: 'craft_id',
     width: 100,
-    search: false,
+    search: true,
     addDisplay: true,
     editDisplay: true,
     hide: false,

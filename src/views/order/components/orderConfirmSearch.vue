@@ -71,30 +71,30 @@ const loadSearchForm = () => {
 <template>
   <a-form :model="searchForm" class="pt-4 pl-4 pr-4 ma-content-block">
     <a-row>
-      <!-- <a-col :span="6">
+      <!-- <a-col :span="5">
         <a-form-item label="品牌名称" class="!mb-0" field="code">
           <a-input size="mini" v-model="searchForm.brand_name" placeholder="请输入品牌名称" allow-clear />
         </a-form-item>
       </a-col> -->
-      <a-col :span="6">
+      <a-col :span="5">
         <a-form-item label="客户*" class="!mb-0" field="client_group_id">
           <a-select size="mini" v-model="searchForm.client_group_id" placeholder="请选择客户名称"
             :field-names="clientGrpFieldNames" :options="clientGrpOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="5">
         <a-form-item label="营销区域" class="!mb-0" field="store_area_type">
           <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames"
             :options="areaOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="5">
         <a-form-item label="经营类型" class="!mb-0" field="store_business_type">
           <a-select size="mini" v-model="searchForm.store_business_type" placeholder="请选择经营类型"
             :field-names="bizFieldNames" :options="bizOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="5">
         <a-form-item label="价格体系" class="!mb-0" field="store_pricing_type">
           <a-select size="mini" v-model="searchForm.store_pricing_type" placeholder="请选择价格体系"
             :field-names="pricingFieldNames" :options="pricingOptions" allow-clear allow-search />

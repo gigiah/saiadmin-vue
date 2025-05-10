@@ -180,7 +180,7 @@ const columns = reactive([
 		title: '产品',
 		dataIndex: 'product_id',
 		width: 200,
-		search: false,
+		search: true,
 		addDisplay: true,
 		editDisplay: true,
 		hide: false,

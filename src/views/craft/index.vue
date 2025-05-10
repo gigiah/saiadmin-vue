@@ -47,13 +47,13 @@ const crud = reactive({
 
 const columns = reactive([
   {
-    title: '主键',
+    title: 'ID',
     dataIndex: 'id',
-    width: 180,
+    width: 50,
     search: false,
     addDisplay: false,
     editDisplay: false,
-    hide: true,
+    hide: false,
     formType: 'input',
     commonRules: [{ required: true, message: '主键必填' }],
   },

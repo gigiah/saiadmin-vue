@@ -222,7 +222,7 @@
 								<a-button v-if="(!record.editable && scene === 'create') || scene === 'confirm'" shape="circle" status="danger" size="mini" @click="onDeleteGoodsOrCraft(record)">
 									<icon-delete />
 								</a-button>
-								<a-button v-if="!record.editable && scene === 'confirm'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">
+								<a-button v-if="record.row_type === 'goods'" size="mini" status="warning" shape="circle" @click="onEditGoodsOrCraft(record)">
 									<icon-edit />
 								</a-button>
 								<a-button v-if="record.editable" type="primary" status="success" size="mini" shape="circle" @click="onSubmitGoodsOrCraft(record)">

@@ -1,19 +1,32 @@
 <template>
-	<div>
-		<order-confirm-search @search="getOrders" />
-		<div class="gap-4 p-4 ma-content-block lg:flex">
-			<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
-			<a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">通过</a-button>
-			<a-button type="primary" size="mini" status="danger" @click="onDeleteBatch" :disabled="submitDisabled">打回</a-button>
-			<a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部通过</a-button>
-			<a-button status="danger" size="mini" @click="onDeleteBatchAll" :disabled="false">全部打回</a-button>
-			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28"></a-select>
+	<div style="width: 100%">
+		<div class="order-header">
+			<order-confirm-search @search="getOrders" />
+			<div class="gap-4 p-4 ma-content-block lg:flex">
+				<a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>
+				<a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">通过</a-button>
+				<a-button type="primary" size="mini" status="danger" @click="onDeleteBatch" :disabled="submitDisabled">打回</a-button>
+				<!-- <a-button status="danger" size="mini" @click="onSubmitOrderAll" :disabled="false">全部通过</a-button> -->
+				<!-- <a-button status="danger" size="mini" @click="onDeleteBatchAll" :disabled="false">全部打回</a-button> -->
+				<a-pagination
+					:current="currentPage"
+					:total="pageTotal"
+					:page-size="pageSize"
+					:page-size-options="pageSizeOptions"
+					:show-page-size="true"
+					simple
+					@change="setPage"
+					@page-size-change="setPageSize"
+				/>
+			</div>
 		</div>
-		<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-			<a-spin :loading="loading" tip="数据正在加载中...">
-				<order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="confirm"></order-card>
-			</a-spin>
-		</a-checkbox-group>
+		<div class="order-content">
+			<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
+				<a-spin class="flex flex-col gap-2" :loading="loading" tip="数据正在加载中...">
+					<order-card v-for="(item, index) in orders" :order="item" :key="index" @changed="onOrderChanged" scene="confirm"></order-card>
+				</a-spin>
+			</a-checkbox-group>
+		</div>
 	</div>
 </template>
 
@@ -26,13 +39,10 @@ import { useBizDictStore } from '@/store'
 import { Message, Modal } from '@arco-design/web-vue'
 import OrderConfirmSearch from '@/views/order/components/orderConfirmSearch.vue'
 
-const pageSizeOptions = [
-	{ label: '1条', value: 1 },
-	{ label: '5条', value: 5 },
-	{ label: '10条', value: 10 },
-	{ label: '20条', value: 20 },
-]
+const pageSizeOptions = [1, 5, 10, 20]
 const pageSize = ref(10)
+const currentPage = ref(1)
+const pageTotal = ref(1)
 const loading = ref(false)
 
 const stores = ref([])
@@ -52,14 +62,36 @@ onMounted(() => {
 	bizDict.fetchPricingProduct4Search('', 'admin')
 })
 
+function setPage(page) {
+	if (page === undefined || page === null || page === '' || page < 1) {
+		page = 1
+	}
+	currentPage.value = page
+}
+
+function setPageSize(size) {
+	pageSize.value = size
+}
+
 function getOrders(params = {}) {
+	console.log('params', params)
+	loading.value = true
+	let query = {}
+	query = params
+	query.limit = pageSize.value
+	query.page = currentPage.value
 	orderApi
 		.orderTree({
-			status: 40, // 0: 录入中
-			...params,
+			status: 40,
+			...query,
 		})
 		.then((res) => {
-			orders.value = res.data
+			orders.value = res.data.data
+			pageTotal.value = res.data.total
+			if (res.data.total <= 0) {
+				pageTotal.value = 1
+			}
+			loading.value = false
 		})
 }
 
@@ -150,7 +182,7 @@ function onDeleteBatchAll() {
 		content: '是否确认打回全部的订单？',
 		onOk: () => {
 			orderApi
-			.handleOrderChange({
+				.handleOrderChange({
 					all: true,
 					value: '审批中',
 					beforeStatus: '审订中',
@@ -191,4 +223,16 @@ function onSelectAll() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-header {
+	position: fixed;
+	top: 95px;
+	z-index: 999;
+	width: 100%;
+}
+
+.order-content {
+	width: 100%;
+	margin-top: 160px;
+}
+</style>

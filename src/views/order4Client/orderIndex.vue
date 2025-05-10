@@ -1,32 +1,45 @@
 <template>
-	<div>
+	<div style="width: 100%">
 		<!--    <div class="gap-4 p-4 ma-content-block lg:flex">-->
 		<!--      <a-button type="primary" size="mini" @click="onSelectAll">{{ isSelectAll ? '全部取消' : '选择全部' }}</a-button>-->
 		<!--      <a-button type="primary" size="mini" status="warning" @click="onAddCoupon">选择卡券</a-button>-->
 		<!--      <a-button type="primary" size="mini" @click="onSubmitOrder" :disabled="submitDisabled">提交生产</a-button>-->
 		<!--      <a-button type="primary" size="mini" @click="onDeleteBatch" :disabled="submitDisabled">批量删除</a-button>-->
 		<!--    </div>-->
-		<div class="pb-4 ma-content-block">
-			<order-index-search @search="getOrders" :identity="identity" />
+		<div class="order-header">
+			<div class="pb-4 ma-content-block">
+				<order-index-search @search="getOrders" :identity="identity" />
+			</div>
+			<div class="gap-4 p-4 ma-content-block lg:flex">
+				<a-pagination
+					:current="currentPage"
+					:total="pageTotal"
+					:page-size="pageSize"
+					:page-size-options="pageSizeOptions"
+					:show-page-size="true"
+					simple
+					@change="setPage"
+					@page-size-change="setPageSize"
+				/>
+			</div>
 		</div>
-		<div class="gap-4 p-4 ma-content-block lg:flex">
-			<a-select v-model="pageSize" :options="pageSizeOptions" class="h-7 w-28"></a-select>
+		<div class="order-content">
+			<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
+				<a-spin class="flex flex-col gap-2" :loading="loading" tip="数据正在加载中...">
+					<order-card
+						v-for="(item, index) in orders"
+						:order="item"
+						:key="index"
+						:identity="identity"
+						@changed="onOrderChanged"
+						@beforeChange="changeBtnStatus(true)"
+						@afterChange="changeBtnStatus(false)"
+						scene="index"
+						allow-diff-store="1"
+					></order-card>
+				</a-spin>
+			</a-checkbox-group>
 		</div>
-		<a-checkbox-group class="flex flex-col gap-2" v-model="checkedValues">
-			<a-spin :loading="loading" tip="数据正在加载中...">
-				<order-card
-					v-for="(item, index) in orders"
-					:order="item"
-					:key="index"
-					:identity="identity"
-					@changed="onOrderChanged"
-					@beforeChange="changeBtnStatus(true)"
-					@afterChange="changeBtnStatus(false)"
-					scene="index"
-					allow-diff-store="1"
-				></order-card>
-			</a-spin>
-		</a-checkbox-group>
 		<add-store-modal :visible="addStoreModalVisible" @add-success="handleAddStoreSuccess" @add-cancel="addStoreModalVisible = false" />
 		<modal :visible="addCouponModalVisible" title="选择卡券" @ok="onAddCouponOk" @cancel="onAddCouponCancel">
 			<a-select :key="couponKey" v-model="couponSelected" placeholder="请选择" :options="couponList" />
@@ -49,13 +62,10 @@ import { useSysInfoStore } from '@/store'
 
 const sysInfoStore = useSysInfoStore()
 
-const pageSizeOptions = [
-	{ label: '1条', value: 1 },
-	{ label: '5条', value: 5 },
-	{ label: '10条', value: 10 },
-	{ label: '20条', value: 20 },
-]
+const pageSizeOptions = [1, 5, 10, 20]
 const pageSize = ref(10)
+const currentPage = ref(1)
+const pageTotal = ref(1)
 const loading = ref(false)
 
 const stores = ref([])
@@ -122,17 +132,36 @@ function changeBtnStatus(status) {
 	disabledBtn.value = status
 }
 
-function getOrders(params = {}) {
+function setPage(page) {
+	if (page === undefined || page === null || page === '' || page < 1) {
+		page = 1
+	}
+	currentPage.value = page
+}
+
+function setPageSize(size) {
+	pageSize.value = size
+}
+
+function getOrders(params) {
+	console.log('params', params)
 	loading.value = true
-	params.limit = pageSize.value
-	params.menu = 'client'
+	let query = {}
+	query = params
+	query.limit = pageSize.value
+	query.page = currentPage.value
+	query.menu = 'client'
 	orderApi
 		.orderTree({
 			status: [40, 50, 60, 70, 80, 90],
-			...params,
+			...query,
 		})
 		.then((res) => {
-			orders.value = res.data
+			pageTotal.value = res.data.total
+			orders.value = res.data.data
+			if (res.data.total <= 0) {
+				pageTotal.value = 1
+			}
 			loading.value = false
 		})
 		.finally(() => {
@@ -226,4 +255,16 @@ function onSelectAll() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-header {
+	position: fixed;
+	top: 95px;
+	z-index: 999;
+	width: 100%;
+}
+
+.order-content {
+	width: 100%;
+	margin-top: 160px;
+}
+</style>
