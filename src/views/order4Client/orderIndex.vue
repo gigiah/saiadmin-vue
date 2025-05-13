@@ -80,6 +80,8 @@ const couponList = ref([])
 const couponSelected = ref()
 const couponKey = ref(0)
 
+const queryParams = ref({})
+
 const identity = ref('client')
 if (sysInfoStore.info.is_store === true) identity.value = 'store'
 
@@ -133,16 +135,18 @@ function changeBtnStatus(status) {
 }
 
 function setPage(page) {
+	console.log('setPage', page)
 	if (page === undefined || page === null || page === '' || page < 1) {
 		page = 1
 	}
 	currentPage.value = page
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function setPageSize(size) {
+	console.log('setPageSize', size)
 	pageSize.value = size
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function getOrders(params = {}) {
@@ -153,6 +157,7 @@ function getOrders(params = {}) {
 	query.limit = pageSize.value
 	query.page = currentPage.value
 	query.menu = 'client'
+	queryParams.value = query
 	orderApi
 		.orderTree({
 			status: [40, 50, 60, 70, 80, 90],

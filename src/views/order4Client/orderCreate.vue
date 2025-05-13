@@ -55,6 +55,7 @@ const pageSize = ref(10)
 const currentPage = ref(1)
 const pageTotal = ref(1)
 const loading = ref(false)
+const queryParams = ref({})
 
 const stores = ref([])
 const orders = ref([])
@@ -78,12 +79,12 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function setPageSize(size) {
 	pageSize.value = size
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function getOrders(params = {}) {
@@ -93,6 +94,7 @@ function getOrders(params = {}) {
 	query = params
 	query.limit = pageSize.value
 	query.page = currentPage.value
+	queryParams.value = query
 	orderApi
 		.orderTree({
 			status: [0], // 0: 录入中

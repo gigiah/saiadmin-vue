@@ -90,7 +90,7 @@ function changeBtnStatus(status) {
 
 function setPageSize(size) {
 	pageSize.value = size
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function setPage(page) {
@@ -98,7 +98,7 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
-	getOrders()
+	getOrders(queryParams.value)
 }
 
 function getOrders(params = {}) {
@@ -108,8 +108,7 @@ function getOrders(params = {}) {
 	query.menu = 'customerService'
 	query.limit = pageSize.value
 	query.page = currentPage.value
-	// queryParams.value = params
-	// console.log('queryParams', queryParams.value)
+	queryParams.value = params
 	// 检查 create_time 的日期范围是否超过 31 天
 	if (params.create_time && Array.isArray(params.create_time)) {
 		const startDate = new Date(params.create_time[0])
