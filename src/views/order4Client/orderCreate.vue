@@ -78,10 +78,12 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
+	getOrders()
 }
 
 function setPageSize(size) {
 	pageSize.value = size
+	getOrders()
 }
 
 function getOrders(params = {}) {

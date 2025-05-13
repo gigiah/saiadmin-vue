@@ -90,6 +90,7 @@ function changeBtnStatus(status) {
 
 function setPageSize(size) {
 	pageSize.value = size
+	getOrders()
 }
 
 function setPage(page) {
@@ -97,6 +98,7 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
+	getOrders()
 }
 
 function getOrders(params = {}) {

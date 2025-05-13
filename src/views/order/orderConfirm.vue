@@ -67,10 +67,12 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
+	getOrders()
 }
 
 function setPageSize(size) {
 	pageSize.value = size
+	getOrders()
 }
 
 function getOrders(params = {}) {
@@ -140,14 +142,15 @@ function onDeleteBatch() {
 		onOk: () => {
 			orderApi
 				.handleOrderChange({
-					ids: [props.order.id],
+					ids: checkedValues.value,
 					value: '审订中',
 					beforeStatus: '审批中',
 				})
 				.then((value) => {
 					if (value.code === 200) {
 						Message.success('提交成功')
-						emit('changed')
+						// emit('changed')
+						getOrders()
 					}
 				})
 		},

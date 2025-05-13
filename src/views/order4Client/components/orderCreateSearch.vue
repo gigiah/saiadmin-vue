@@ -36,22 +36,22 @@ onMounted(() => {
 <template>
   <a-form :model="searchForm" class="pt-4 pl-4 pr-4 ma-content-block">
     <a-row>
-      <!-- <a-col :span="5">
+      <!-- <a-col :span="6">
         <a-form-item label="订单号" class="!mb-0" field="code">
           <a-input size="mini" v-model="searchForm.code" placeholder="请输入订单号" allow-clear />
         </a-form-item>
       </a-col> -->
-      <a-col :span="5">
+      <a-col :span="6">
         <a-form-item label="营销区域" class="!mb-0" field="store_area_type">
           <a-select size="mini" v-model="searchForm.store_area_type" placeholder="请选择营销区域" :field-names="areaFieldNames" :options="areaOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-      <a-col :span="5">
+      <a-col :span="6">
         <a-form-item label="门店名称" class="!mb-0" field="store_id">
           <a-select size="mini" v-model="searchForm.store_id" placeholder="请输入门店名称" :field-names="storeFieldNames" :options="storeOptions" allow-clear allow-search />
         </a-form-item>
       </a-col>
-<!--      <a-col :span="5">-->
+<!--      <a-col :span="6">-->
 <!--        <a-form-item label="创建时间" class="!mb-0" field="createTime">-->
 <!--          <a-range-picker size="mini" v-model="searchForm.createTime" />-->
 <!--        </a-form-item>-->

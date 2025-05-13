@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import clientGroupApi from '@/api/clientGroup'
 import storeAreaApi from '@/api/storeAreaType'
 import storeApi from '@/api/store'
+import { Message, Modal } from '@arco-design/web-vue'
 
 defineProps({
 	disabledBtn: Boolean,
@@ -49,6 +50,10 @@ const handleReset = () => {
 }
 
 const handleSearch = () => {
+	if (!searchForm.value.client_group_id || !searchForm.value.create_time) {
+		Message.error('请选择客户和起止日期')
+		return
+	}
 	emit('search', searchForm.value)
 	loadSearchForm()
 }
@@ -69,7 +74,9 @@ const loadSearchForm = () => {
 		console.log(res.data)
 		clientGrpOptions.value = res.data
 	})
-	if (!searchForm.value.client_group_id) return
+	if (!searchForm.value.client_group_id) {
+		return
+	}
 	storeAreaApi
 		.getPageList({
 			type: 'all',
@@ -170,14 +177,7 @@ const loadSearchForm = () => {
 			</a-col> -->
 			<a-col :span="5">
 				<a-form-item label="起止日期*" class="!mb-0" field="create_time">
-					<a-range-picker
-						size="mini"
-						v-model="searchForm.create_time"
-						:allow-clear="true"
-						show-time
-						format="YYYY-MM-DD HH:mm:ss"
-						:default-value="searchForm.create_time"
-					/>
+					<a-range-picker size="mini" v-model="searchForm.create_time" :allow-clear="true" show-time format="YYYY-MM-DD HH:mm:ss" :default-value="searchForm.create_time" />
 				</a-form-item>
 			</a-col>
 			<a-col :span="5">

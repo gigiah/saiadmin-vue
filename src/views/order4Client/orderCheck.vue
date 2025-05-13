@@ -146,13 +146,15 @@ function setPage(page) {
 		page = 1
 	}
 	currentPage.value = page
+	getOrders()
 }
 
 function setPageSize(size) {
 	pageSize.value = size
+	getOrders()
 }
 
-function getOrders(params) {
+function getOrders(params = {}) {
 	console.log('params', params)
 	loading.value = true
 	let query = {}
