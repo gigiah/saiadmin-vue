@@ -762,7 +762,7 @@ function onDeliveryRemarkBlur() {
 			if (value.code === 200) {
 				tempDeliveryRemark = props.order.delivery_remark
 				Message.success('更新成功')
-				emit('changed')
+				// emit('changed')
 			}
 		})
 }
