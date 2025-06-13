@@ -8,28 +8,21 @@
 			</template>
 			<!-- 操作前置扩展 -->
 			<template #operationBeforeExtend="{ record }">
-				<a-link v-if="record.row_type === 'goods' && record.associated_file" @click="openFileModal(record)"
-					v-auth="[]">
-					<icon-eye />查看文件
-				</a-link>
+				<a-link v-if="record.row_type === 'goods' && record.associated_file" @click="openFileModal(record)" v-auth="[]"> <icon-eye />查看文件 </a-link>
 			</template>
 		</ma-crud>
 		<div>
-			<ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800"
-				:column="modalColumn" :submit="() => { }">
-			</ma-form-modal>
+			<ma-form-modal ref="modalRef" v-model:visible="visible" :hide-title="true" :width="800" :column="modalColumn" :submit="() => {}"> </ma-form-modal>
 		</div>
 		<div>
-			<ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800"
-				:column="submitModalColumn" :submit="submitSummary">
-			</ma-form-modal>
+			<ma-form-modal ref="submitModalRef" v-model:visible="submitVisible" :hide-title="true" :width="800" :column="submitModalColumn" :submit="submitSummary"> </ma-form-modal>
 		</div>
 	</div>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { judgeCode } from "@/utils/common";
+import { judgeCode } from '@/utils/common'
 import api from '@/api/order'
 import summaryOrderApi from '@/api/summaryOrder'
 import productApi from '@/api/product'
@@ -39,7 +32,7 @@ import pricingProductApi from '@/api/pricingProduct'
 import pricingCraftApi from '@/api/pricingCraft'
 import billApi from '@/api/bill'
 import { Message, Modal } from '@arco-design/web-vue'
-import MaFormModal from "@/components/ma-form-modal/index.vue"
+import MaFormModal from '@/components/ma-form-modal/index.vue'
 
 const crudRef = ref()
 const deleteForms = ref([])
@@ -55,60 +48,57 @@ const submitModalRef = ref()
 const submitVisible = ref(false)
 
 const orderShowIndex = {
-	'store_id': { 'addDisabled': false, 'editDisabled': true },
-	'consignee_id': { 'addDisabled': false, 'editDisabled': true },
-	'freight': { 'addDisabled': false, 'editDisabled': false },
+	store_id: { addDisabled: false, editDisabled: true },
+	consignee_id: { addDisabled: false, editDisabled: true },
+	freight: { addDisabled: false, editDisabled: false },
 }
 
 const goodsShowIndex = {
 	// 'store_id': { 'addDisabled': true, 'editDisabled': true },
-	'product_id': { 'addDisabled': false, 'editDisabled': true },
-	'associated_file': { 'addDisabled': false, 'editDisabled': true },
+	product_id: { addDisabled: false, editDisabled: true },
+	associated_file: { addDisabled: false, editDisabled: true },
 	// 'correct_file': { 'addDisabled': false, 'editDisabled': true },
-	'identify': { 'addDisabled': false, 'editDisabled': true },
-	'product_grade_id': { 'addDisabled': true, 'editDisabled': true },
-	'product_picture_type_id': { 'addDisabled': true, 'editDisabled': true },
-	'width': { 'addDisabled': false, 'editDisabled': true },
-	'height': { 'addDisabled': false, 'editDisabled': true },
-	'nums': { 'addDisabled': false, 'editDisabled': false },
-	'remark': { 'addDisabled': false, 'editDisabled': true },
-	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
-	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
-	'unit_price': { 'addDisabled': true, 'editDisabled': true },
-	'amount': { 'addDisabled': true, 'editDisabled': true },
+	identify: { addDisabled: false, editDisabled: true },
+	product_grade_id: { addDisabled: true, editDisabled: true },
+	product_picture_type_id: { addDisabled: true, editDisabled: true },
+	width: { addDisabled: false, editDisabled: true },
+	height: { addDisabled: false, editDisabled: true },
+	nums: { addDisabled: false, editDisabled: false },
+	remark: { addDisabled: false, editDisabled: true },
+	pricing_type_id: { addDisabled: true, editDisabled: true },
+	pricing_unit_id: { addDisabled: true, editDisabled: true },
+	unit_price: { addDisabled: true, editDisabled: true },
+	amount: { addDisabled: true, editDisabled: true },
 }
 
 const craftShowIndex = {
 	// 'product_id': { 'addDisabled': true, 'editDisabled': true },
-	'craft_id': { 'addDisabled': false, 'editDisabled': true },
-	'width': { 'addDisabled': true, 'editDisabled': true },
-	'height': { 'addDisabled': true, 'editDisabled': true },
-	'nums': { 'addDisabled': true, 'editDisabled': true },
-	'remark': { 'addDisabled': false, 'editDisabled': true },
-	'pricing_type_id': { 'addDisabled': true, 'editDisabled': true },
-	'pricing_unit_id': { 'addDisabled': true, 'editDisabled': true },
-	'unit_price': { 'addDisabled': true, 'editDisabled': true },
-	'amount': { 'addDisabled': true, 'editDisabled': true },
+	craft_id: { addDisabled: false, editDisabled: true },
+	width: { addDisabled: true, editDisabled: true },
+	height: { addDisabled: true, editDisabled: true },
+	nums: { addDisabled: true, editDisabled: true },
+	remark: { addDisabled: false, editDisabled: true },
+	pricing_type_id: { addDisabled: true, editDisabled: true },
+	pricing_unit_id: { addDisabled: true, editDisabled: true },
+	unit_price: { addDisabled: true, editDisabled: true },
+	amount: { addDisabled: true, editDisabled: true },
 }
 
 const getDefaultDates = () => {
-	const today = new Date();
-	const tomorrow = new Date();
-	tomorrow.setDate(today.getDate() + 3);
+	const today = new Date()
+	const tomorrow = new Date()
+	tomorrow.setDate(today.getDate() + 3)
 	// 格式化日期为 'YYYY-MM-DD' 的形式
 	function formatDate(date) {
-		let month = date.getMonth() + 1;
-		let day = date.getDate();
-		return [
-			date.getFullYear(),
-			month > 9 ? month : '0' + month,
-			day > 9 ? day : '0' + day
-		].join('-');
+		let month = date.getMonth() + 1
+		let day = date.getDate()
+		return [date.getFullYear(), month > 9 ? month : '0' + month, day > 9 ? day : '0' + day].join('-')
 	}
-	return [formatDate(today), formatDate(tomorrow)];
+	return [formatDate(today), formatDate(tomorrow)]
 }
 
 const selectChange = (val) => {
+	console.log('selectChange', val)
 	selecteds.value = val
 }
 
@@ -151,15 +141,17 @@ const submitBills = async () => {
 		okText: '确定',
 		cancelText: '取消',
 		onOk: async () => {
-			await billApi.handleCreateBill({
-				orderIds: orderIds,
-				requestParamsData: requestParamsData.value,
-			}).then(res => {
-				if (res.code == 200) {
-					Message.success('生成成功')
-					crudRef.value.refresh()
-				}
-			})
+			await billApi
+				.handleCreateBill({
+					orderIds: orderIds,
+					requestParamsData: requestParamsData.value,
+				})
+				.then((res) => {
+					if (res.code == 200) {
+						Message.success('生成成功')
+						crudRef.value.refresh()
+					}
+				})
 			crudRef.value.refresh()
 		},
 	})
@@ -171,15 +163,18 @@ const submitSummary = async (formData) => {
 	selecteds.value.forEach(function (id) {
 		if (judgeCode(id) === 'order') orderIds.push(id)
 	})
-	summaryOrderApi.handleOrderSummary({
-		orderIds: orderIds,
-		summaryBatchCode: formData.summary_batch_code
-	}).then(res => {
-		if (res.code == 200) {
-			Message.success('汇总成功')
-			crudRef.value.refresh()
-		}
-	})
+	summaryOrderApi
+		.handleOrderSummary({
+			clientGroupId: formData.client_group_id,
+			orderIds: orderIds,
+			summaryBatchCode: formData.summary_batch_code,
+		})
+		.then((res) => {
+			if (res.code == 200) {
+				Message.success('汇总成功')
+				crudRef.value.refresh()
+			}
+		})
 }
 
 const submitOrders = async () => {
@@ -215,13 +210,12 @@ const submitOrders = async () => {
 
 const openFileModal = (record) => {
 	console.log(record)
-	uploadBatchApi.read(record.associated_file)
-		.then(res => {
-			Object.keys(res.data).forEach((key) => {
-				modalRef.value.form[key] = res.data[key]
-			})
-			visible.value = true
+	uploadBatchApi.read(record.associated_file).then((res) => {
+		Object.keys(res.data).forEach((key) => {
+			modalRef.value.form[key] = res.data[key]
 		})
+		visible.value = true
+	})
 	return
 }
 
@@ -234,8 +228,7 @@ const openAdd = (record) => {
 		setColumnsValue('parent_id', record.id, 'add')
 		setColumnsValue('row_type', 'goods', 'add')
 		setColumnsValue('store_id', record.store_id, 'add')
-	}
-	else if (record.row_type == 'goods') {
+	} else if (record.row_type == 'goods') {
 		resetAddColumnsDisplay('craft')
 		setColumnsValue('parent_id', record.id, 'add')
 		setColumnsValue('row_type', 'craft', 'add')
@@ -278,11 +271,9 @@ const resetAddColumnsDisplay = (type) => {
 		let showIndex = {}
 		if (type == 'order') {
 			showIndex = orderShowIndex
-		}
-		else if (type == 'goods') {
+		} else if (type == 'goods') {
 			showIndex = goodsShowIndex
-		}
-		else if (type == 'craft') {
+		} else if (type == 'craft') {
 			showIndex = craftShowIndex
 		}
 		if (showIndex[columns[i].dataIndex]) {
@@ -306,11 +297,9 @@ const resetEditColumnsDisplay = (type) => {
 		let showIndex = {}
 		if (type == 'order') {
 			showIndex = orderShowIndex
-		}
-		else if (type == 'goods') {
+		} else if (type == 'goods') {
 			showIndex = goodsShowIndex
-		}
-		else if (type == 'craft') {
+		} else if (type == 'craft') {
 			showIndex = craftShowIndex
 		}
 		if (showIndex[columns[i].dataIndex]) {
@@ -331,7 +320,7 @@ const deleteByForm = (id, table) => {
 		if (item.id == id) {
 			deleteForms.value.push({
 				type: item.row_type,
-				id: item.id
+				id: item.id,
 			})
 		}
 		if (item.children) {
@@ -374,6 +363,13 @@ const crud = reactive({
 	afterSearch: (requestParams) => {
 		console.log('requestParams', requestParams)
 		requestParamsData.value = requestParams
+		// console.log('afterSearch selecteds clean before', selecteds.value)
+		// //将每个已选的清空
+		// selecteds.value = []
+		// crudRef.selecteds = []
+		// crudRef.value.selecteds = []
+		// crudRef.value.setSelecteds([])
+		// console.log('afterSearch selecteds clean after', selecteds.value)
 	},
 	//添加门店前操作
 	beforeOpenAdd: () => {
@@ -395,7 +391,7 @@ const crud = reactive({
 		console.log('beforeDeleteIds', ids)
 		console.log('beforeDeleteTableData', crudRef.value.getTableData())
 		deleteForms.value = []
-		ids.forEach(id => {
+		ids.forEach((id) => {
 			deleteByForm(id, crudRef.value.getTableData())
 		})
 		api.handleDelete(deleteForms.value)
@@ -410,7 +406,7 @@ const columns = reactive([
 		addDisplay: false,
 		editDisplay: false,
 		width: 50,
-		hide: true
+		hide: true,
 	},
 	{
 		title: '父级ID',
@@ -517,6 +513,7 @@ const columns = reactive([
 		searchFormType: 'range',
 		showTime: false,
 		formType: 'date',
+		showTime: true,
 		search: true,
 		width: 200,
 	},
@@ -601,10 +598,10 @@ const columns = reactive([
 		},
 		onChange: async (val) => {
 			if (val) {
-				const modalForm = crudRef.value.getFormData();
+				const modalForm = crudRef.value.getFormData()
 				if (!modalForm) {
-					Message.error('未找到表单对象');
-					return;
+					Message.error('未找到表单对象')
+					return
 				}
 				const resp = await pricingProductApi.read4Order({ id: val })
 				let item = resp.data
@@ -660,10 +657,10 @@ const columns = reactive([
 		},
 		onChange: async (val) => {
 			if (val) {
-				const modalForm = crudRef.value.getFormData();
+				const modalForm = crudRef.value.getFormData()
 				if (!modalForm) {
-					Message.error('未找到表单对象');
-					return;
+					Message.error('未找到表单对象')
+					return
 				}
 				const resp = await pricingCraftApi.read4Order({ id: val })
 				let item = resp.data
@@ -844,7 +841,6 @@ const submitModalColumn = reactive([
 		commonRules: [{ required: true, message: '批次号必填' }],
 	},
 ])
-
 </script>
 
 <style scoped>

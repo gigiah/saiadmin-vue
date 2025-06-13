@@ -634,6 +634,10 @@ const getTableData = () => {
 	return tableData.value
 }
 
+const setTableData = (data) => {
+	 tableData.value = data;
+}
+
 const __summary = ({ data }) => {
 	if (options.value.showSummary && isArray(options.value.summary)) {
 		const summary = options.value.summary
@@ -774,6 +778,7 @@ defineExpose({
 	addAction,
 	editAction,
 	getTableData,
+	setTableData,
 	setSelecteds,
 	getCurrentAction,
 	getFormData,
