@@ -123,6 +123,9 @@ const toLogin = (e) => {
 			</div>
 		</div>
 	</div>
+	<div class="icp-footer">
+		<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">粤ICP备2024237302号-2</a>
+	</div>
 </template>
 
 <style scoped lang="less">
@@ -201,6 +204,26 @@ const toLogin = (e) => {
 
 	.weibo:hover {
 		background: #f3ce2b;
+	}
+}
+
+.icp-footer {
+	position: fixed;
+	bottom: 16px;
+	left: 0;
+	right: 0;
+	z-index: 4;
+	text-align: center;
+	font-size: 12px;
+
+	a {
+		color: rgba(255, 255, 255, 0.85);
+		text-decoration: none;
+
+		&:hover {
+			color: #fff;
+			text-decoration: underline;
+		}
 	}
 }
 </style>

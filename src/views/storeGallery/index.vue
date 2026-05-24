@@ -83,6 +83,18 @@ const columns = reactive([
     commonRules: [{ required: true, message: '营销区域必填' }],
   },
   {
+    title: '游客可访问',
+    dataIndex: 'is_guest_access',
+    width: 100,
+    search: false,
+    addDisplay: true,
+    editDisplay: true,
+    hide: false,
+    dict: { name: 'data_status', props: { label: 'label', value: 'value' }, translation: true },
+    formType: 'radio',
+    commonRules: [{ required: false, message: '游客可访问必填' }],
+  },
+  {
     title: '用品类型封面',
     dataIndex: 'cover_url',
     width: 180,
